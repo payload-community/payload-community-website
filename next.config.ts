@@ -28,7 +28,7 @@ const serverHostname = process.env.NEXT_PUBLIC_SERVER_URL
   : undefined
 
 const nextConfig: NextConfig = {
-  // The dev server is reached through the DDEV router (e.g. https://plc.ddev.site:3000).
+  // The dev server is reached through the DDEV router (e.g. https://plc.ddev.site).
   allowedDevOrigins: serverHostname ? [serverHostname] : [],
   // E2E runs a second dev server next to `pnpm dev`; each needs its own build directory.
   distDir: process.env.NEXT_DIST_DIR || '.next',
@@ -38,6 +38,8 @@ const nextConfig: NextConfig = {
     loadPaths: ['./node_modules/@payloadcms/ui/dist/scss/'],
   },
   images: {
+    // In DDEV, garage.plc.ddev.site resolves to the router's private IP. Production keeps the SSRF guard.
+    dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
     qualities: [100],
     remotePatterns: [
       ...toRemotePattern(process.env.NEXT_PUBLIC_SERVER_URL),

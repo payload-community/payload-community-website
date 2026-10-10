@@ -28,12 +28,12 @@ Open:
 
 | What | URL |
 | --- | --- |
-| Website | https://plc.ddev.site:3000 |
-| Admin panel | https://plc.ddev.site:3000/admin |
+| Website | https://plc.ddev.site |
+| Admin panel | https://plc.ddev.site/admin |
 | Uploaded files (Garage web endpoint) | https://garage.plc.ddev.site:3902/media/... |
 | Mailpit (outgoing email) | https://plc.ddev.site:8026 |
 
-The Next.js dev server listens on port 3000 inside the container. `.ddev/config.payload.yaml` exposes it through the DDEV router as `https://plc.ddev.site:3000` (and `http://plc.ddev.site:3001`). After changing files in `.ddev/`, run `ddev restart` on the host.
+The Next.js dev server listens on port 3000 inside the container. The DDEV add-on config `.ddev/config.generic-app.yaml` exposes it through the DDEV router as `https://plc.ddev.site`. DDEV configuration is kept locally and is not committed (`/.ddev` is gitignored). After changing files in `.ddev/`, run `ddev restart` on the host.
 
 Inside the container the server is also reachable at `http://localhost:3000`.
 
@@ -45,7 +45,7 @@ All variables are documented in [`.env.example`](../.env.example). The most impo
 | --- | --- |
 | `DATABASE_URI` | `mongodb://db:db@mongo:27017/plc?authSource=admin` |
 | `PAYLOAD_SECRET`, `CRON_SECRET`, `PREVIEW_SECRET` | Random strings, e.g. `openssl rand -hex 32` |
-| `NEXT_PUBLIC_SERVER_URL` | `https://plc.ddev.site:3000` (no trailing slash). Also the base of the OAuth callback URLs. |
+| `NEXT_PUBLIC_SERVER_URL` | `https://plc.ddev.site` (no trailing slash). Also the base of the OAuth callback URLs. |
 | `S3_ENDPOINT` | `http://garage:3900` (S3 API, inside the DDEV network) |
 | `S3_REGION` / `S3_BUCKET` | `garage` / `garage` |
 | `S3_ACCESS_KEY_ID` / `S3_SECRET_ACCESS_KEY` | Garage key created by the DDEV add-on |
@@ -62,7 +62,7 @@ Never commit `.env`. When you add a variable, add it to `.env.example` with a co
 
 ## Uploads and images
 
-Uploads (the `media` collection) are stored in Garage through `@payloadcms/storage-s3` under the `media/` key prefix. Payload saves the public URL (`${S3_PUBLIC_URL}/media/...`) and browsers load files directly from Garage's web endpoint. `next/image` is allowed to optimize images from `S3_PUBLIC_URL` (see `images.remotePatterns` in `next.config.ts`).
+Uploads (the `media` collection) are stored in Garage through `@payloadcms/storage-s3` under the `media/` key prefix. Payload saves the public URL (`${S3_PUBLIC_URL}/media/...`) and browsers load files directly from Garage's web endpoint. `next/image` is allowed to optimize images from `S3_PUBLIC_URL` (see `images.remotePatterns` in `next.config.ts`). In DDEV, `garage.plc.ddev.site` resolves to a private IP, which Next.js blocks by default, so `images.dangerouslyAllowLocalIP` is enabled in development only. A production build run locally (`pnpm build && pnpm start`) cannot optimize Garage images.
 
 ## Seeding
 
@@ -95,18 +95,18 @@ Sign-in with GitHub and Google uses these callback URLs, built from `NEXT_PUBLIC
 
 | Provider | Callback URL (local) |
 | --- | --- |
-| GitHub | `https://plc.ddev.site:3000/api/users/oauth/github/callback` |
-| Google | `https://plc.ddev.site:3000/api/users/oauth/google/callback` |
+| GitHub | `https://plc.ddev.site/api/users/oauth/github/callback` |
+| Google | `https://plc.ddev.site/api/users/oauth/google/callback` |
 
-In production, replace `https://plc.ddev.site:3000` with the production `NEXT_PUBLIC_SERVER_URL`. Create separate OAuth apps for local development and for each deployed environment.
+In production, replace `https://plc.ddev.site` with the production `NEXT_PUBLIC_SERVER_URL`. Create separate OAuth apps for local development and for each deployed environment.
 
 ### GitHub OAuth App
 
 1. Open GitHub **Settings → Developer settings → OAuth Apps → New OAuth App** (or the same page in your organization's settings).
 2. Fill in:
    - **Application name:** `Payload Community Portal (local)`
-   - **Homepage URL:** `https://plc.ddev.site:3000`
-   - **Authorization callback URL:** `https://plc.ddev.site:3000/api/users/oauth/github/callback`
+   - **Homepage URL:** `https://plc.ddev.site`
+   - **Authorization callback URL:** `https://plc.ddev.site/api/users/oauth/github/callback`
    - Leave **Enable Device Flow** unchecked.
 3. Click **Register application**, then **Generate a new client secret**.
 4. Put the values into `.env` as `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET`.
@@ -120,14 +120,14 @@ The portal requests the `read:user` and `user:email` scopes when users sign in; 
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID**:
    - **Application type:** Web application
    - **Name:** `Payload Community Portal (local)`
-   - **Authorized JavaScript origins:** `https://plc.ddev.site:3000`
-   - **Authorized redirect URIs:** `https://plc.ddev.site:3000/api/users/oauth/google/callback`
+   - **Authorized JavaScript origins:** `https://plc.ddev.site`
+   - **Authorized redirect URIs:** `https://plc.ddev.site/api/users/oauth/google/callback`
 4. Click **Create** and put the values into `.env` as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
 
 A single Google client can list several redirect URIs, but separate clients per environment keep secrets isolated.
 
 ## Troubleshooting
 
-- **`https://plc.ddev.site:3000` shows a DDEV 502 page:** the dev server is not running. Start `pnpm dev` inside the container.
+- **`https://plc.ddev.site` shows a DDEV 502 page:** the dev server is not running. Start `pnpm dev` inside the container.
 - **Uploads fail with `getaddrinfo ... garage`, or Garage URLs return 502:** the Garage container is not running. Check `ddev describe` on the host and run `ddev restart`.
 - **Port 3000 is already in use:** another `next dev` is running in the container. Stop it, or use the running one.

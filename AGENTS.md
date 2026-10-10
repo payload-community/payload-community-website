@@ -12,7 +12,7 @@ Guidance for AI agents and developers working in this repository. Read `spec/REA
 - Playwright browsers are installed; run headless (`DISPLAY=:0` exists for headed debugging).
 - Helm v4 is installed but there is **no cluster**: only `helm lint` / `helm template`. Never deploy.
 - `.env` holds real secrets: never overwrite it or print its values. Add new variables to `.env` with empty values and document them in `.env.example`. If a required value is empty, tell the user.
-- Never edit files marked `#ddev-generated` in `.ddev/`; project-specific DDEV settings go in `.ddev/config.payload.yaml`.
+- Never edit files marked `#ddev-generated` in `.ddev/`. DDEV config is local only (`/.ddev` is gitignored); `.ddev/config.generic-app.yaml` (add-on) exposes Next.js port 3000 as `https://plc.ddev.site`.
 
 ## Engineering rules
 
@@ -82,7 +82,7 @@ src/
   locales/       Lingui catalogs
 tests/           e2e (Playwright), unit (Vitest), fixtures
 deploy/          helm/payload-cms-community-portal, grafana dashboards
-.ddev/           DDEV config (only config.payload.yaml is ours)
+.ddev/           DDEV config (local only, not committed)
 ```
 
 ## Milestones

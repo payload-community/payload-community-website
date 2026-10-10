@@ -22,7 +22,7 @@ Plugin: `payload-oauth2` 1.0.21, two instances ([ADR-001](../decisions/0001-oaut
 | PKCE | enabled (S256) | enabled (S256) |
 | enabled when | `GITHUB_CLIENT_ID` and `GITHUB_CLIENT_SECRET` set | `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET` set |
 
-Local dev: `NEXT_PUBLIC_SERVER_URL=https://plc.ddev.site:3000` (or the exposed HTTPS port chosen in M1) → callbacks e.g. `https://plc.ddev.site:3000/api/users/oauth/github/callback`.
+Local dev: `NEXT_PUBLIC_SERVER_URL=https://plc.ddev.site` (the DDEV add-on routes it to the Next.js server on port 3000) → callbacks e.g. `https://plc.ddev.site/api/users/oauth/github/callback`.
 
 Sign-in methods (website and admin): GitHub, Google, email + password. Sign-up methods: GitHub, Google, and the website registration form (email + password with activation link). One account can have any combination of GitHub, Google and a password.
 
