@@ -4,7 +4,7 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 ## Open
 
-No open product questions.
+**Q21. Moderation controls in the admin panel** (M3, decided as [ADR-026](decisions/0026-moderation-admin-controls.md), please confirm). Regular users only get *Save Draft*; Payload's *Unpublish* control is hidden (unpublishing is a moderation action) and its REST equivalent counts as `unpublish`; a moderator's *Publish changes* on someone else's unpublished entry counts as an approval and emails the author.
 
 ### Verification tasks (agreed approach; confirm during implementation)
 

@@ -59,3 +59,4 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [023](0023-small-image-with-bundled-cli-scripts.md) | Small image: Next.js standalone output plus a bundled CLI script | Accepted | 2026-10-10 |
 | [024](0024-unique-optional-fields-partial-indexes.md) | Unique-when-set fields use partial unique indexes | Accepted | 2026-10-10 |
 | [025](0025-react-email-package.md) | Email templates use `react-email` 6 instead of `@react-email/components` | Proposed | 2026-10-10 |
+| [026](0026-moderation-admin-controls.md) | Moderation controls in the admin panel | Proposed | 2026-10-10 |

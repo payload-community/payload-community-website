@@ -23,13 +23,13 @@ All four collections have `versions: { drafts: { validate: false }, maxPerDoc: 2
 |---|---|---|
 | `moderation.status` | select `pending` \| `published` \| `rejected` \| `unpublished`, required, `index: true` | Read-only in the admin UI for everyone; set only by hooks/moderation actions. |
 | `moderation.rejectionReason` | textarea | Visible when status is `rejected`. Written only by the reject action. Visible to the owner. |
-| `moderation.moderatedBy` | relationship → users | Set by moderation actions. |
+| `moderation.moderatedBy` | relationship → users | Set by moderation actions (and by a moderator's Publish). Read access: moderators/admins only. |
 | `moderation.moderatedAt` | date | Set by moderation actions. |
 | `moderation.submittedAt` | date, `index: true` | Set when the entry transitions **into** `pending`; used for "date of submission" and oldest-first sort. |
 | `createdBy` | relationship → users, `index: true` | Set on create by a hook (`req.user`), read-only. Empty for imported entries. |
 | `origin` | select | Set on create by a hook, read-only (values per collection). |
 
-Plus a custom sidebar UI field `moderationActions` (Approve / Reject / Unpublish / Re-publish buttons) visible only to moderators; it calls the moderation endpoint ([§8](moderation.md#8-moderation-dashboard-and-actions)).
+Plus a custom sidebar UI field `moderationActions` (Approve / Reject / Unpublish / Re-publish buttons, `src/moderation/components/ModerationActions.tsx`) visible only to moderators; it calls the moderation endpoint ([§8](moderation.md#8-moderation-dashboard-and-actions)) and is disabled while the form has unsaved changes.
 
 ### 4.2 `users` (auth)
 

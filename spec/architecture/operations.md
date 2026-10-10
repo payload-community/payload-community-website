@@ -12,13 +12,12 @@ Queues: `default` (emails/notifications), `sync` (synchronizations).
 |---|---|---|---|---|---|
 | `syncPosts` | sync | `0 */6 * * *` | 2 | `{ sourceId? }` | [§11.1](sync.md#111-post-sync-syncposts) |
 | `syncPlugins` | sync | `0 3 * * *` | 2 | `{}` | [§11.2](sync.md#112-plugin-sync-syncplugins) |
-| `notifyModerators` | default | – | 3 | `{ collection, id, transition }` | Resolve recipients, queue one `sendEmail` per recipient. |
-| `notifyAuthor` | default | – | 3 | `{ collection, id, outcome: 'approved' \| 'rejected' }` | Check author preference, queue `sendEmail`. |
 | `sendInvitation` | default | – | 3 | `{ userId }` | `payload.forgotPassword({ disableEmail: true })` → token, extend expiry to 7 days, queue `sendEmail` (invitation template). |
 | `sendEmail` | default | – | 5 (exponential backoff) | `{ to, template, data }` | Render template, `payload.sendEmail`. |
 
 - Every task handler is wrapped in `withSpan('job <slug>')` and logs a single structured summary line.
 - Jobs are queued from `afterChange` hooks with `payload.jobs.queue` (never inline email sending); a failed queue call is logged and never fails the save.
+- Moderation notifications have no fan-out task: the shared `afterChange` hook resolves the recipients and queues one `sendEmail` job per recipient inside the request transaction ([ADR-026](../decisions/0026-moderation-admin-controls.md)).
 - `jobs.autoRun`: `process.env.JOBS_AUTORUN !== 'false'` ⇒ `[{ cron: '* * * * *', allQueues: true, limit: 20 }]` else `[]`. `jobs.shouldAutoRun` mirrors the flag. Scheduling (`schedule` on tasks) is handled by the same cron (`handleSchedules`).
 - **Kubernetes**: web pods `JOBS_AUTORUN=false`; worker pod (1 replica, `Recreate`) runs `node cli.mjs worker` from the same image ([ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md)): it calls `getPayload({ config, cron: true })` with `JOBS_AUTORUN=true`, so Payload's own autoRun cron handles schedules and runs all queues every minute — the same behaviour as `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues`, without shipping the Payload CLI. Payload's schedule handling records the next scheduled job in the DB, so even an accidental second worker would not double-queue a schedule slot. SIGTERM → `payload.destroy()` (stops crons, closes the DB) before exit.
 - **Fallback without a worker** (documented, not the default): a Kubernetes CronJob running `curl -X GET http://<web-service>/api/payload-jobs/run?allQueues=true&limit=20` with `Authorization: Bearer $CRON_SECRET` every minute (`concurrencyPolicy: Forbid`). The built-in endpoint also calls `handleSchedules` (verified in `payload/dist/queues/endpoints/run.js`). Downsides: long syncs run inside an HTTP request on a web pod (use the internal Service, not the Ingress, to avoid proxy timeouts) and are interrupted by web rollouts (Payload retries them).
@@ -43,6 +42,8 @@ Queues: `default` (emails/notifications), `sync` (synchronizations).
 The `verifyEmail` and `forgotPassword` emails are sent by Payload inside the request (built-in auth flows, not our jobs); they are small, and a failure is returned to the user, who can retry.
 
 De-duplication: notifications are queued only on a status **transition** (into `pending`, `published` via moderation, `rejected`). Retrying a `sendEmail` job never re-renders another recipient.
+
+`entryApproved` is also sent when a moderator publishes someone else's entry with **Publish changes** while its latest status was not `published` ([ADR-026](../decisions/0026-moderation-admin-controls.md)). Templates: `src/email/render.ts` (data types per template) and `src/email/templates/Layout.tsx` (`ActionEmail` with optional detail lines and a secondary link).
 
 ---
 

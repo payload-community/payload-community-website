@@ -59,3 +59,28 @@ Notes:
 - **Admin view** `/admin/moderation` (`admin.components.views.moderation`, server component, `@payloadcms/ui` `Gutter`, `Button`, `Pill`, tables). Tabs (`?tab=pending|rejected|unpublished`, search params): one merged list of the four collections via `payload.find({ draft: true, where: status })` per collection, merged and sorted by `moderation.submittedAt` (pending oldest first) — paged 50 per tab. Columns: type, title, author, submitted, link to edit view and versions (diff) view; actions approve / reject (small client form with reason) / re-publish.
 - Nav link via `admin.components.afterNavLinks`, rendered only for moderators/admins; the view itself checks the role server-side and returns 404/redirect for others.
 - **Dashboard widget** (`beforeDashboard`): pending count per type + link to the dashboard (moderators/admins only).
+
+---
+
+## Implementation (M3)
+
+| Part | Code |
+|---|---|
+| Constants (`MAX_PENDING_SUBMISSIONS`, statuses, actions, allowed source statuses, portal paths) | `src/moderation/config.ts` |
+| `beforeOperation` (`enforceDrafts`), `beforeChange` (`applyModerationState`), `afterChange` (`notifyTransitions`) | `src/moderation/workflow.ts`, wired in `src/moderation/collection.ts` |
+| Submission limit | `src/moderation/limit.ts` (`countPendingSubmissions`: `find({ draft: true, limit: 1 })` per collection — `count` has no `draft` option in 3.90.2) |
+| Recipients and email jobs | `src/moderation/notifications.ts` |
+| Endpoint | `src/moderation/endpoint.ts` (zod-validated params and body; 401 anonymous, 403 non-moderator, 404 unknown entry, 409 action not allowed from the current status) |
+| Queue queries | `src/moderation/queue.ts` |
+| Admin components | `src/moderation/components/` (`ModerationView`, `ModerationNavLink`, `ModerationWidget`, `ModerationActions`, `ActionButtons`, `PendingSlotsBanner` / `PendingSlotsNotice`, `ModeratedButtons`) |
+
+Refinements of the sections above ([ADR-026](../decisions/0026-moderation-admin-controls.md)):
+
+- Regular users see only **Save Draft**; Payload's *Publish* and *Unpublish* buttons are not rendered for them. Payload's *Unpublish* is hidden for moderators too, and a moderator's main-document write with `_status: 'draft'` (REST/bulk unpublish) is treated as the `unpublish` action.
+- `approve` is accepted from `pending`, `rejected` and `unpublished` (same as `republish`); the UI shows *Approve* for pending entries and *Re-publish* for the others.
+- T8 on someone else's entry whose latest status was not `published` sets `moderatedBy`/`moderatedAt` and sends `entryApproved`.
+- Values sent for `moderation.*` by users are ignored rather than rejected: field access is `create/update: noOne`, and the `beforeChange` hook recomputes the group from the latest version.
+- On system creates, the status is `published` when `_status` is `published`, otherwise the given status (default `pending`); system updates keep the status.
+- A resubmission (T3/T4) clears `rejectionReason` and sets a new `submittedAt`; `moderatedBy`/`moderatedAt` keep the last decision.
+- The 429 message is built from the `plc` translation catalog directly: on REST requests `req.t` only has Payload's API translations.
+- Deferred: the `plc.moderation.submissions_refused` metric (M6, OpenTelemetry; a structured log line is written now) and cache revalidation in `afterChange` (M4, website pages).
