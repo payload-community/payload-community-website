@@ -10,6 +10,7 @@ const websiteFiles = [
   'src/Footer/**/*.tsx',
   'src/Header/**/*.tsx',
   'src/heros/**/*.tsx',
+  'src/providers/**/*.tsx',
   'src/website/**/*.{ts,tsx}',
 ]
 const websiteIgnores = [
@@ -55,7 +56,11 @@ const eslintConfig = [
           ],
           ignoreNames: [
             { regex: { pattern: 'className$', flags: 'i' } },
+            '__html',
+            'Cache-Control',
+            'controls',
             'data-testid',
+            'position',
             'rel',
             'src',
             'styleName',

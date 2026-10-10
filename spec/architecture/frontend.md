@@ -24,15 +24,16 @@ Part of the [architecture](README.md). Section numbers are global across the arc
 | `/submit/{posts,resources,plugins,builds}` | redirect | → `/admin/collections/{slug}/create` (sign-in first if anonymous). |
 | `/sitemap.xml`, `/robots.txt`, `/pages-sitemap.xml`, `/news-sitemap.xml`, `/resources-sitemap.xml`, `/plugins-sitemap.xml`, `/builds-sitemap.xml` | next-sitemap + route handlers | |
 | `/api/health/live`, `/api/health/ready` | Next route handlers | live: no I/O; ready: `getPayload()` + MongoDB `ping`. |
+| `/site-config.json` | route handler | Runtime, non-secret client settings (`gaMeasurementId`), [ADR-028](../decisions/0028-website-chrome-runtime-config-and-consent.md). |
 | `/admin/**` | Payload | + `/admin/moderation`. |
 
 Detail pages (resources, plugins, builds) are server components using `payload.find({ where: { slug }, draft: false, overrideAccess: false, limit: 1 })` with `generateStaticParams` + on-demand revalidation by cache tag (`afterChange` hooks), `generateMetadata` (title, description, canonical, OG image = default or owner avatar), and JSON-LD (`SoftwareSourceCode` for plugins and builds, `CreativeWork`/`WebPage` for resources). Moderators/owners preview drafts through the template's live preview route.
 
 Listing implementation: server components reading `searchParams` through `nuqs` server cache (`createSearchParamsCache`), filters as `<form method="get">`/links (works without JS), `payload.find({ where, sort, page, limit: 24, draft: false, overrideAccess: false })`. Distinct values for filters via `payload.findDistinct` (`tags`, `topics`, `basePayloadVersion`, `type`). Search = `or: [{ title: { like: q } }, { summary|description: { like: q } }]`.
 
-Navigation (seeded `header.navItems`): Home `/`, News `/news`, Resources `/resources`, Plugins `/plugins`, Builds `/builds`, Community `/community`, About `/about`. Header right: theme switcher, Sign in / account menu.
+Navigation (seeded `header.navItems`): Home `/`, News `/news`, Resources `/resources`, Plugins `/plugins`, Builds `/builds`, Community `/community`, About `/about`; the current section is marked with `aria-current`, small screens get a menu button. Header: text wordmark (not Payload's logo), theme switcher, and an account menu loaded in the browser from `/api/users/me` ("Sign in", or My account, My entries → `/admin`, Moderation queue for moderators/admins, Sign out), so pages stay static ([ADR-028](../decisions/0028-website-chrome-runtime-config-and-consent.md)). The Payload admin bar is shown to moderators and admins only.
 
-Footer: seeded links (Privacy policy, GitHub repository), "Cookie settings" (opens the consent preferences; only when GA is configured), and the Lingui note "Payload CMS Community Portal is a community project. It is not affiliated with or endorsed by Payload."
+Footer: wordmark, seeded links (Privacy policy, GitHub repository), "Cookie settings" (opens the consent preferences; only when GA is configured), and the Lingui note "Payload CMS Community Portal is a community project. It is not affiliated with or endorsed by Payload."
 
 ---
 
@@ -47,5 +48,5 @@ Footer: seeded links (Privacy policy, GitHub repository), "Cookie settings" (ope
 ## 16. SEO, analytics, consent, security
 
 - SEO plugin titles `"{title} | Payload CMS Community Portal"`, OG image from `meta.image` / post image / default OG image; canonical URLs via `generateMetadata` (`alternates.canonical`); JSON-LD: `WebSite` (+ `SearchAction` for `/news?q=`) on home, `BlogPosting` on community posts, `ItemList` on listings.
-- GA4: `@next/third-parties/google` `<GoogleAnalytics>` rendered only after consent; `vanilla-cookieconsent` v3 with one optional category `analytics`; Consent Mode v2 default `denied` (`ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`) set in an inline script before GA, updated on consent change. Nothing renders when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is empty.
+- GA4: `@next/third-parties/google` `<GoogleAnalytics>` rendered only after consent; `vanilla-cookieconsent` v3 with one optional category `analytics` (`_ga*` cookies cleared on opt-out), texts translated with Lingui; Consent Mode v2 default `denied` (`ad_storage`, `ad_user_data`, `ad_personalization`, `analytics_storage`) pushed to `dataLayer` by `ConsentProvider` (`src/website/consent/`) right before GA is rendered, then updated on every consent change. The GA ID comes from `GET /site-config.json` at runtime; nothing renders when `NEXT_PUBLIC_GA_MEASUREMENT_ID` is empty ([ADR-028](../decisions/0028-website-chrome-runtime-config-and-consent.md)).
 - Security headers in `next.config.ts` `headers()`: CSP (self, `S3_PUBLIC_URL`, `www.googletagmanager.com`, `*.google-analytics.com`, `*.analytics.google.com`, avatars `avatars.githubusercontent.com`, `lh3.googleusercontent.com`), HSTS, `X-Content-Type-Options`, `Referrer-Policy`, `Permissions-Policy`, `frame-ancestors 'self'`. Payload `rateLimit`/`csrf`/`cors` set from `NEXT_PUBLIC_SERVER_URL`.

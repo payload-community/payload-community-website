@@ -61,3 +61,4 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [025](0025-react-email-package.md) | Email templates use `react-email` 6 instead of `@react-email/components` | Proposed | 2026-10-10 |
 | [026](0026-moderation-admin-controls.md) | Moderation controls in the admin panel | Proposed | 2026-10-10 |
 | [027](0027-lingui-wiring.md) | Lingui wiring on Next.js 16 (SWC plugin pin, compiled catalogs, lint guardrail) | Proposed | 2026-10-10 |
+| [028](0028-website-chrome-runtime-config-and-consent.md) | Website header, footer, runtime client config and consent | Proposed | 2026-10-10 |

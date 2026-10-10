@@ -20,6 +20,11 @@ type CMSLinkType = {
   url?: string | null
 }
 
+const referencePath = (relationTo: 'pages' | 'posts', slug: string): string => {
+  if (relationTo === 'posts') return `/news/${slug}`
+  return slug === 'home' ? '/' : `/${slug}`
+}
+
 export const CMSLink: React.FC<CMSLinkType> = (props) => {
   const {
     type,
@@ -35,9 +40,7 @@ export const CMSLink: React.FC<CMSLinkType> = (props) => {
 
   const href =
     type === 'reference' && typeof reference?.value === 'object' && reference.value.slug
-      ? `${reference?.relationTo !== 'pages' ? `/${reference?.relationTo}` : ''}/${
-          reference.value.slug
-        }`
+      ? referencePath(reference.relationTo, reference.value.slug)
       : url
 
   if (!href) return null

@@ -12,6 +12,7 @@ export default defineConfig({
         '<rootDir>/src/components',
         '<rootDir>/src/Footer',
         '<rootDir>/src/Header',
+        '<rootDir>/src/providers',
         '<rootDir>/src/heros',
         '<rootDir>/src/website',
       ],

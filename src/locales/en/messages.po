@@ -7,10 +7,219 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
+#. Cookie settings dialog button
+#: src/website/consent/ConsentProvider.tsx
+msgid "Accept all"
+msgstr "Accept all"
+
+#. Cookie banner button
+#: src/website/consent/ConsentProvider.tsx
+msgid "Accept analytics"
+msgstr "Accept analytics"
+
+#. Accessible name of the account menu button in the header
+#: src/Header/AccountMenu.tsx
+msgid "Account menu for {displayName}"
+msgstr "Account menu for {displayName}"
+
+#. Cookie settings section
+#: src/website/consent/ConsentProvider.tsx
+msgid "Analytics"
+msgstr "Analytics"
+
+#. Color theme option: follow the system setting
+#: src/providers/Theme/ThemeSelector/index.tsx
+msgid "Auto"
+msgstr "Auto"
+
+#. Admin bar: used in "New build" / "Edit build"
+#: src/components/AdminBar/index.tsx
+msgid "build"
+msgstr "build"
+
+#. Admin bar: collection name
+#: src/components/AdminBar/index.tsx
+msgid "Builds"
+msgstr "Builds"
+
+#. Accessible label of the close button of the cookie settings dialog
+#: src/website/consent/ConsentProvider.tsx
+msgid "Close"
+msgstr "Close"
+
+#. Second line of the site wordmark, below 'Payload CMS'
+#: src/components/Logo/Logo.tsx
+msgid "Community Portal"
+msgstr "Community Portal"
+
+#. Cookie settings dialog title
+#. Footer link that reopens the cookie settings dialog
+#: src/website/consent/ConsentProvider.tsx
+msgid "Cookie settings"
+msgstr "Cookie settings"
+
+#. Cookie banner title
+#: src/website/consent/ConsentProvider.tsx
+msgid "Cookies and analytics"
+msgstr "Cookies and analytics"
+
+#. Color theme option
+#: src/providers/Theme/ThemeSelector/index.tsx
+msgid "Dark"
+msgstr "Dark"
+
+#. Admin bar link to the admin panel dashboard
+#: src/components/AdminBar/index.tsx
+msgid "Dashboard"
+msgstr "Dashboard"
+
 #: src/app/(frontend)/not-found.tsx
 msgid "Go home"
 msgstr "Go home"
 
+#. Description of the optional analytics cookie category
+#: src/website/consent/ConsentProvider.tsx
+msgid "Google Analytics measures visits and page views. Your IP address is processed by Google."
+msgstr "Google Analytics measures visits and page views. Your IP address is processed by Google."
+
+#. Color theme option
+#: src/providers/Theme/ThemeSelector/index.tsx
+msgid "Light"
+msgstr "Light"
+
+#. Accessible name of the main navigation
+#: src/Header/Nav/index.tsx
+msgid "Main"
+msgstr "Main"
+
+#. Account menu item for moderators: the queue of entries waiting for review
+#: src/Header/AccountMenu.tsx
+msgid "Moderation queue"
+msgstr "Moderation queue"
+
+#. Account menu item: the user's account page on the website
+#: src/Header/AccountMenu.tsx
+msgid "My account"
+msgstr "My account"
+
+#. Account menu item: opens the admin panel where users manage their submitted entries
+#: src/Header/AccountMenu.tsx
+msgid "My entries"
+msgstr "My entries"
+
+#. Cookie settings section
+#: src/website/consent/ConsentProvider.tsx
+msgid "Necessary"
+msgstr "Necessary"
+
+#. Accessible name of the menu button shown on small screens
+#: src/Header/Nav/index.tsx
+msgid "Open navigation menu"
+msgstr "Open navigation menu"
+
+#. Admin bar: used in "New page" / "Edit page"
+#: src/components/AdminBar/index.tsx
+msgid "page"
+msgstr "page"
+
+#. Admin bar: collection name
+#: src/components/AdminBar/index.tsx
+msgid "Pages"
+msgstr "Pages"
+
+#. First line of the site wordmark in the header and footer
+#: src/components/Logo/Logo.tsx
+msgid "Payload CMS"
+msgstr "Payload CMS"
+
+#: src/Footer/Component.tsx
+msgid "Payload CMS Community Portal is a community project. It is not affiliated with or endorsed by Payload."
+msgstr "Payload CMS Community Portal is a community project. It is not affiliated with or endorsed by Payload."
+
+#. Accessible name of the site wordmark link in the header
+#: src/Header/Component.client.tsx
+msgid "Payload CMS Community Portal, home"
+msgstr "Payload CMS Community Portal, home"
+
+#. Admin bar: used in "New plugin" / "Edit plugin"
+#: src/components/AdminBar/index.tsx
+msgid "plugin"
+msgstr "plugin"
+
+#. Admin bar: collection name
+#: src/components/AdminBar/index.tsx
+msgid "Plugins"
+msgstr "Plugins"
+
+#. Admin bar: used in "New post" / "Edit post"
+#: src/components/AdminBar/index.tsx
+msgid "post"
+msgstr "post"
+
+#. Admin bar: collection name of news posts
+#: src/components/AdminBar/index.tsx
+msgid "Posts"
+msgstr "Posts"
+
+#. Cookie banner button
+#: src/website/consent/ConsentProvider.tsx
+msgid "Reject"
+msgstr "Reject"
+
+#. Cookie settings dialog button
+#: src/website/consent/ConsentProvider.tsx
+msgid "Reject all"
+msgstr "Reject all"
+
+#. Description of the always-on cookie category
+#: src/website/consent/ConsentProvider.tsx
+msgid "Required for signing in and for remembering your choices, such as the color theme. Always on."
+msgstr "Required for signing in and for remembering your choices, such as the color theme. Always on."
+
+#. Admin bar: used in "New resource" / "Edit resource"
+#: src/components/AdminBar/index.tsx
+msgid "resource"
+msgstr "resource"
+
+#. Admin bar: collection name
+#: src/components/AdminBar/index.tsx
+msgid "Resources"
+msgstr "Resources"
+
+#. Cookie settings dialog button
+#: src/website/consent/ConsentProvider.tsx
+msgid "Save settings"
+msgstr "Save settings"
+
+#: src/providers/Theme/ThemeSelector/index.tsx
+msgid "Select a color theme"
+msgstr "Select a color theme"
+
+#. Cookie banner button that opens the detailed cookie settings
+#: src/website/consent/ConsentProvider.tsx
+msgid "Settings"
+msgstr "Settings"
+
+#. Header button that opens the sign-in page
+#: src/Header/AccountMenu.tsx
+msgid "Sign in"
+msgstr "Sign in"
+
+#. Account menu item that signs the user out
+#: src/Header/AccountMenu.tsx
+msgid "Sign out"
+msgstr "Sign out"
+
+#. Placeholder of the color theme selector
+#: src/providers/Theme/ThemeSelector/index.tsx
+msgid "Theme"
+msgstr "Theme"
+
 #: src/app/(frontend)/not-found.tsx
 msgid "This page could not be found."
 msgstr "This page could not be found."
+
+#. Cookie banner text; the link opens the privacy policy
+#: src/website/consent/ConsentProvider.tsx
+msgid "We would like to use Google Analytics to understand how the site is used. It is only loaded if you agree. <a href=\"/privacy\">Privacy policy</a>"
+msgstr "We would like to use Google Analytics to understand how the site is used. It is only loaded if you agree. <a href=\"/privacy\">Privacy policy</a>"

@@ -1,29 +1,25 @@
+import { Trans } from '@lingui/react/macro'
 import clsx from 'clsx'
 import React from 'react'
 
 interface Props {
   className?: string
-  loading?: 'lazy' | 'eager'
-  priority?: 'auto' | 'high' | 'low'
 }
 
-export const Logo = (props: Props) => {
-  const { loading: loadingFromProps, priority: priorityFromProps, className } = props
-
-  const loading = loadingFromProps || 'lazy'
-  const priority = priorityFromProps || 'low'
-
+/** Text wordmark: the portal is not affiliated with Payload, so it does not use Payload's logo. */
+export const Logo = ({ className }: Props) => {
   return (
-    /* eslint-disable @next/next/no-img-element */
-    <img
-      alt="Payload Logo"
-      width={193}
-      height={34}
-      loading={loading}
-      fetchPriority={priority}
-      decoding="async"
-      className={clsx('max-w-[9.375rem] w-full h-[34px]', className)}
-      src="https://raw.githubusercontent.com/payloadcms/payload/3.x/packages/ui/src/assets/payload-logo-light.svg"
-    />
+    <span className={clsx('flex flex-col leading-tight font-semibold', className)}>
+      <span className="text-lg">
+        <Trans comment="First line of the site wordmark in the header and footer">
+          Payload CMS
+        </Trans>
+      </span>
+      <span className="text-xs font-normal uppercase tracking-widest opacity-70">
+        <Trans comment="Second line of the site wordmark, below 'Payload CMS'">
+          Community Portal
+        </Trans>
+      </span>
+    </span>
   )
 }
