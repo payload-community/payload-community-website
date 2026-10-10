@@ -97,7 +97,7 @@ Access: read anyone (no secrets; needed for source names on cards), create/updat
 | `source` | relationship → sources | imported | Sync-owned. |
 | `author` | text | imported | Sync-owned; "Firstname Lastname, …". |
 | `createdBy` | relationship → users | community | Hook. |
-| `populatedAuthor` | group (`id`, `name`, `avatarUrl`), virtual via `afterRead` | community | Template pattern: lets anonymous readers see the author name without reading `users`. |
+| `populatedAuthor` | group (`id`, `name`, `avatarUrl`), virtual via `afterRead` | community | Template pattern: lets anonymous readers see the author name without reading `users`. Added to all moderated collections by `moderatedCollection` (`src/moderation/author.ts`, memoized per request). |
 | `summary` | textarea | both | Imported: plain text from Lexical `excerpt`. |
 | `content` | richText (Lexical) | community | Required for community posts (`admin.condition`). |
 | `image` | upload → post-media | both | |

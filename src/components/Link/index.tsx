@@ -20,7 +20,7 @@ type CMSLinkType = {
   url?: string | null
 }
 
-const referencePath = (relationTo: 'pages' | 'posts', slug: string): string => {
+export const referencePath = (relationTo: 'pages' | 'posts', slug: string): string => {
   if (relationTo === 'posts') return `/news/${slug}`
   return slug === 'home' ? '/' : `/${slug}`
 }

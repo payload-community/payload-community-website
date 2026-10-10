@@ -1,8 +1,12 @@
 import type { CollectionConfig } from 'payload'
 
+import { generatePreviewPath } from '@/utilities/generatePreviewPath'
+
 import { moderatedAccess } from './access'
+import { populateAuthor, populatedAuthorField } from './author'
 import { moderationFields } from './fields'
 import { setOwnership } from './hooks'
+import { revalidateDeletedEntry, revalidateEntry } from './revalidate'
 import { applyModerationState, enforceDrafts, notifyTransitions } from './workflow'
 
 type ModerationOptions = {
@@ -41,11 +45,21 @@ export const moderatedCollection = (
         UnpublishButton: `${components}/ModeratedButtons#ModeratedUnpublishButton`,
       },
     },
+    preview: (data, { req }) =>
+      importedOrigin && data?.origin === importedOrigin && config.slug === 'posts'
+        ? null
+        : generatePreviewPath({
+            collection: config.slug as 'builds' | 'plugins' | 'posts' | 'resources',
+            req,
+            slug: data?.slug as string,
+          }),
   },
-  fields: [...config.fields, ...moderationFields(origins)],
+  fields: [...config.fields, ...moderationFields(origins), populatedAuthorField],
   hooks: {
     ...config.hooks,
-    afterChange: [...(config.hooks?.afterChange ?? []), notifyTransitions],
+    afterRead: [...(config.hooks?.afterRead ?? []), populateAuthor],
+    afterChange: [...(config.hooks?.afterChange ?? []), notifyTransitions, revalidateEntry],
+    afterDelete: [...(config.hooks?.afterDelete ?? []), revalidateDeletedEntry],
     beforeChange: [
       setOwnership({ systemOrigin: importedOrigin ?? userOrigin, userOrigin }),
       applyModerationState,

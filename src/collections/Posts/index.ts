@@ -22,8 +22,6 @@ import { MediaBlock } from '@/blocks/MediaBlock/config'
 import { emptyToNull } from '@/fields/hooks/emptyToNull'
 import { moderatedCollection } from '@/moderation/collection'
 
-import { populateAuthor } from './hooks/populateAuthor'
-
 const isImported = (data: Record<string, unknown> | undefined) => data?.origin === 'imported'
 
 const syncField = { access: syncFieldAccess, admin: { position: 'sidebar' as const } }
@@ -61,8 +59,10 @@ export const Posts = moderatedCollection(
                     HorizontalRuleFeature(),
                   ],
                 }),
-                validate: (value: unknown, { siblingData }: { siblingData: Record<string, unknown> }) =>
-                  isImported(siblingData) || Boolean(value) || 'Content is required.',
+                validate: (
+                  value: unknown,
+                  { siblingData }: { siblingData: Record<string, unknown> },
+                ) => isImported(siblingData) || Boolean(value) || 'Content is required.',
               },
               { name: 'tags', type: 'text', hasMany: true, index: true },
             ],
@@ -106,21 +106,7 @@ export const Posts = moderatedCollection(
         index: true,
       },
       { name: 'externalId', type: 'text', ...syncField, index: true },
-      {
-        name: 'populatedAuthor',
-        type: 'group',
-        admin: { hidden: true },
-        fields: [
-          { name: 'id', type: 'text' },
-          { name: 'name', type: 'text' },
-          { name: 'avatarUrl', type: 'text' },
-        ],
-        virtual: true,
-      },
     ],
-    hooks: {
-      afterRead: [populateAuthor],
-    },
   },
   { importedOrigin: 'imported', origins: ['imported', 'community'], userOrigin: 'community' },
 )

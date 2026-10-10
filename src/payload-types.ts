@@ -198,11 +198,6 @@ export interface Post {
   author?: string | null;
   url?: string | null;
   externalId?: string | null;
-  populatedAuthor?: {
-    id?: string | null;
-    name?: string | null;
-    avatarUrl?: string | null;
-  };
   moderation: {
     status: 'pending' | 'published' | 'rejected' | 'unpublished';
     rejectionReason?: string | null;
@@ -212,6 +207,11 @@ export interface Post {
   };
   createdBy?: (string | null) | User;
   origin?: ('imported' | 'community') | null;
+  populatedAuthor?: {
+    id?: string | null;
+    name?: string | null;
+    avatarUrl?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -367,6 +367,11 @@ export interface Resource {
   };
   createdBy?: (string | null) | User;
   origin?: 'community' | null;
+  populatedAuthor?: {
+    id?: string | null;
+    name?: string | null;
+    avatarUrl?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -413,6 +418,11 @@ export interface Plugin {
   };
   createdBy?: (string | null) | User;
   origin?: ('imported' | 'manual') | null;
+  populatedAuthor?: {
+    id?: string | null;
+    name?: string | null;
+    avatarUrl?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -455,6 +465,11 @@ export interface Build {
   };
   createdBy?: (string | null) | User;
   origin?: 'community' | null;
+  populatedAuthor?: {
+    id?: string | null;
+    name?: string | null;
+    avatarUrl?: string | null;
+  };
   updatedAt: string;
   createdAt: string;
   _status?: ('draft' | 'published') | null;
@@ -1085,13 +1100,6 @@ export interface PostsSelect<T extends boolean = true> {
   author?: T;
   url?: T;
   externalId?: T;
-  populatedAuthor?:
-    | T
-    | {
-        id?: T;
-        name?: T;
-        avatarUrl?: T;
-      };
   moderation?:
     | T
     | {
@@ -1103,6 +1111,13 @@ export interface PostsSelect<T extends boolean = true> {
       };
   createdBy?: T;
   origin?: T;
+  populatedAuthor?:
+    | T
+    | {
+        id?: T;
+        name?: T;
+        avatarUrl?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1130,6 +1145,13 @@ export interface ResourcesSelect<T extends boolean = true> {
       };
   createdBy?: T;
   origin?: T;
+  populatedAuthor?:
+    | T
+    | {
+        id?: T;
+        name?: T;
+        avatarUrl?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1171,6 +1193,13 @@ export interface PluginsSelect<T extends boolean = true> {
       };
   createdBy?: T;
   origin?: T;
+  populatedAuthor?:
+    | T
+    | {
+        id?: T;
+        name?: T;
+        avatarUrl?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;
@@ -1208,6 +1237,13 @@ export interface BuildsSelect<T extends boolean = true> {
       };
   createdBy?: T;
   origin?: T;
+  populatedAuthor?:
+    | T
+    | {
+        id?: T;
+        name?: T;
+        avatarUrl?: T;
+      };
   updatedAt?: T;
   createdAt?: T;
   _status?: T;

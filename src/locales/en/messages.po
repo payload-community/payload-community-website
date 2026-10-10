@@ -43,6 +43,31 @@ msgstr "Accept analytics"
 msgid "Account menu for {displayName}"
 msgstr "Account menu for {displayName}"
 
+#. Detail page fact: when the entry was added to the portal
+#: src/website/detail-labels.ts
+msgid "Added"
+msgstr "Added"
+
+#. Back link on a build page
+#: src/app/(frontend)/builds/[slug]/page.tsx
+msgid "All builds"
+msgstr "All builds"
+
+#. Back link on a news post
+#: src/app/(frontend)/news/[slug]/page.tsx
+msgid "All news"
+msgstr "All news"
+
+#. Back link on a plugin page
+#: src/app/(frontend)/plugins/[slug]/page.tsx
+msgid "All plugins"
+msgstr "All plugins"
+
+#. Back link on a resource page
+#: src/app/(frontend)/resources/[slug]/page.tsx
+msgid "All resources"
+msgstr "All resources"
+
 #. Filter option: posts from all sources
 #: src/website/listing/copy.ts
 msgid "All sources"
@@ -78,12 +103,24 @@ msgstr "Analytics"
 msgid "Apply"
 msgstr "Apply"
 
+#. Badge: the GitHub repository is archived (read-only)
+#: src/app/(frontend)/plugins/[slug]/page.tsx
+msgid "Archived"
+msgstr "Archived"
+
 #. Color theme option: follow the system setting
 #: src/providers/Theme/ThemeSelector/index.tsx
 msgid "Auto"
 msgstr "Auto"
 
+#. Build page fact: the Payload release the build starts from
+#: src/website/detail-labels.ts
+msgid "Based on Payload"
+msgstr "Based on Payload"
+
 #. Build card: the Payload release the build is based on, e.g. 'Based on Payload 3.90.2'
+#. Build page: the Payload release the build is based on, e.g. 'Based on Payload 3.90.2'
+#: src/app/(frontend)/builds/[slug]/page.tsx
 #: src/website/cards.tsx
 msgid "Based on Payload {version}"
 msgstr "Based on Payload {version}"
@@ -106,11 +143,15 @@ msgid "Builds"
 msgstr "Builds"
 
 #. Card footer of a community post: who wrote it
+#. News post byline
+#: src/app/(frontend)/news/[slug]/page.tsx
 #: src/website/cards.tsx
 msgid "by {authorName}"
 msgstr "by {authorName}"
 
 #. Shown instead of the author's name when the account was deleted
+#. Shown instead of the author's name when the account was deleted
+#: src/app/(frontend)/news/[slug]/page.tsx
 #: src/website/cards.tsx
 msgid "by a former member"
 msgstr "by a former member"
@@ -156,6 +197,11 @@ msgstr "Copied!"
 msgid "Copy"
 msgstr "Copy"
 
+#. Accessible name of the copy button next to the install command
+#: src/website/detail-components.tsx
+msgid "Copy the install command for {packageName}"
+msgstr "Copy the install command for {packageName}"
+
 #. Resource type
 #: src/website/labels.ts
 msgid "Course"
@@ -165,6 +211,11 @@ msgstr "Course"
 #: src/website/cards.tsx
 msgid "Created {created}"
 msgstr "Created {created}"
+
+#. Plugin page fact: when the GitHub repository was created
+#: src/website/detail-labels.ts
+msgid "Created on GitHub"
+msgstr "Created on GitHub"
 
 #. Color theme option
 #: src/providers/Theme/ThemeSelector/index.tsx
@@ -185,10 +236,30 @@ msgstr "Docs"
 msgid "Docs, courses, videos, tools and other resources for learning and building with Payload."
 msgstr "Docs, courses, videos, tools and other resources for learning and building with Payload."
 
+#. Banner on a previewed draft post
+#: src/app/(frontend)/news/[slug]/page.tsx
+msgid "Draft preview: this version is not published."
+msgstr "Draft preview: this version is not published."
+
 #. Accessible name of the filter form on listing pages
 #: src/website/listing/components.tsx
 msgid "Filters"
 msgstr "Filters"
+
+#. Badge: the repository is a fork of another repository
+#: src/app/(frontend)/plugins/[slug]/page.tsx
+msgid "Fork"
+msgstr "Fork"
+
+#. Plugin page fact: GitHub forks
+#: src/website/detail-labels.ts
+msgid "Forks"
+msgstr "Forks"
+
+#. Plugin page fact: GitHub stars
+#: src/website/detail-labels.ts
+msgid "GitHub stars"
+msgstr "GitHub stars"
 
 #: src/app/(frontend)/not-found.tsx
 msgid "Go home"
@@ -198,6 +269,41 @@ msgstr "Go home"
 #: src/website/consent/ConsentProvider.tsx
 msgid "Google Analytics measures visits and page views. Your IP address is processed by Google."
 msgstr "Google Analytics measures visits and page views. Your IP address is processed by Google."
+
+#. Detail page fact: project website link
+#: src/website/detail-labels.ts
+msgid "Homepage"
+msgstr "Homepage"
+
+#. Build page section heading: pull requests or patches included in the build
+#: src/website/detail-labels.ts
+msgid "Included changes"
+msgstr "Included changes"
+
+#. Plugin page fact: last code push on GitHub
+#: src/website/detail-labels.ts
+msgid "Last code update"
+msgstr "Last code update"
+
+#. Plugin page fact: when the latest npm version was published
+#: src/website/detail-labels.ts
+msgid "Last published"
+msgstr "Last published"
+
+#. Detail page fact: when the entry was last changed
+#: src/website/detail-labels.ts
+msgid "Last updated"
+msgstr "Last updated"
+
+#. Plugin page fact: latest npm version
+#: src/website/detail-labels.ts
+msgid "Latest version"
+msgstr "Latest version"
+
+#. Plugin page fact: software license, e.g. MIT
+#: src/website/detail-labels.ts
+msgid "License"
+msgstr "License"
 
 #. Color theme option
 #: src/providers/Theme/ThemeSelector/index.tsx
@@ -256,6 +362,11 @@ msgstr "Nothing here yet."
 #: src/website/listing/components.tsx
 msgid "Nothing matches these filters. Try a different search or clear the filters."
 msgstr "Nothing matches these filters. Try a different search or clear the filters."
+
+#. Detail page fact: npm package name
+#: src/website/detail-labels.ts
+msgid "npm package"
+msgstr "npm package"
 
 #. Card footer of an imported news post: the site it comes from
 #: src/website/cards.tsx
@@ -365,6 +476,11 @@ msgstr "Reject"
 msgid "Reject all"
 msgstr "Reject all"
 
+#. Plugin page section heading: GitHub repository facts
+#: src/website/detail-labels.ts
+msgid "Repository"
+msgstr "Repository"
+
 #. Description of the always-on cookie category
 #: src/website/consent/ConsentProvider.tsx
 msgid "Required for signing in and for remembering your choices, such as the color theme. Always on."
@@ -451,6 +567,16 @@ msgstr "Submit a plugin"
 msgid "Submit a resource"
 msgstr "Submit a resource"
 
+#. Detail page: the member who submitted the entry
+#: src/website/detail-components.tsx
+msgid "Submitted by {name}"
+msgstr "Submitted by {name}"
+
+#. Detail page: shown when the submitter deleted their account
+#: src/website/detail-components.tsx
+msgid "Submitted by a former member"
+msgstr "Submitted by a former member"
+
 #. Filter label
 #: src/website/listing/copy.ts
 msgid "Tag"
@@ -501,6 +627,23 @@ msgstr "Updated <0>{updated}</0>"
 msgid "Video"
 msgstr "Video"
 
+#. Button on a plugin page
+#: src/app/(frontend)/plugins/[slug]/page.tsx
+msgid "View on npm"
+msgstr "View on npm"
+
+#. Main button on plugin and build pages
+#. Main button on plugin and build pages
+#: src/app/(frontend)/builds/[slug]/page.tsx
+#: src/app/(frontend)/plugins/[slug]/page.tsx
+msgid "View repository"
+msgstr "View repository"
+
+#. Main button on a resource page, e.g. 'Visit payloadcms.com'
+#: src/app/(frontend)/resources/[slug]/page.tsx
+msgid "Visit {host}"
+msgstr "Visit {host}"
+
 #. Cookie banner text; the link opens the privacy policy
 #: src/website/consent/ConsentProvider.tsx
 msgid "We would like to use Google Analytics to understand how the site is used. It is only loaded if you agree. <a href=\"/privacy\">Privacy policy</a>"
@@ -510,6 +653,11 @@ msgstr "We would like to use Google Analytics to understand how the site is used
 #: src/website/labels.ts
 msgid "Website"
 msgstr "Website"
+
+#. Plugin page fact: npm downloads in the last week
+#: src/website/detail-labels.ts
+msgid "Weekly downloads"
+msgstr "Weekly downloads"
 
 #. Button on the news listing
 #: src/website/listing/copy.ts

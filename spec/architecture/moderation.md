@@ -14,7 +14,10 @@ Part of the [architecture](README.md). Section numbers are global across the arc
 ### 6.2 Enforcement hooks (shared factory `moderatedCollection()`)
 1. **`beforeOperation` (create/update)** — if the user is a regular user and the request is not a system request: force `args.draft = true` and `args.data._status = 'draft'`. This makes publishing impossible for regular users through admin, REST and GraphQL (Payload only publishes when `draft` is false or `_status == 'published'`).
 2. **`beforeChange`** — compute the next `moderation.status` (table below), set `origin`, `createdBy`, `submittedAt`, apply the **submission limit** ([§7](#7-submission-limit)); reject `moderation.*` changes not coming from a moderation action.
-3. **`afterChange`** — detect transitions (`previousDoc.moderation.status` → `doc.moderation.status`) and queue notification jobs ([§10](operations.md#10-email)); revalidate Next.js cache tags when the main document changed.
+3. **`afterChange`** — detect transitions (`previousDoc.moderation.status` → `doc.moderation.status`) and queue notification jobs ([§10](operations.md#10-email)); `revalidateEntry` refreshes the detail page, `/` and the section sitemap tag when the entry is or was published (`afterDelete` likewise; guarded outside Next.js, [ADR-029](../decisions/0029-website-page-caching-and-revalidation.md)).
+4. **`afterRead`** — `populateAuthor` fills the virtual `populatedAuthor` (public name and avatar of `createdBy`).
+
+The factory also sets `admin.preview` (draft preview through `/next/preview`; none for imported posts).
 
 ### 6.3 Transitions
 
@@ -83,4 +86,4 @@ Refinements of the sections above ([ADR-026](../decisions/0026-moderation-admin-
 - On system creates, the status is `published` when `_status` is `published`, otherwise the given status (default `pending`); system updates keep the status.
 - A resubmission (T3/T4) clears `rejectionReason` and sets a new `submittedAt`; `moderatedBy`/`moderatedAt` keep the last decision.
 - The 429 message is built from the `plc` translation catalog directly: on REST requests `req.t` only has Payload's API translations.
-- Deferred: the `plc.moderation.submissions_refused` metric (M6, OpenTelemetry; a structured log line is written now) and cache revalidation in `afterChange` (M4, website pages).
+- Deferred: the `plc.moderation.submissions_refused` metric (M6, OpenTelemetry; a structured log line is written now) and cache revalidation in `afterChange` (done in M4, ADR-029).

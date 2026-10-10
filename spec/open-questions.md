@@ -10,6 +10,8 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 **Q23. Listing details not in the brief** (M4, least-effort choices, please confirm). Resources and builds can also be sorted by `newest` (creation date) besides `updated`; filtered/searched listing views are `noindex, follow` with the plain listing as canonical; pages past the last one return 404; each listing shows a "Submit …" button to `/submit/{collection}`; the post `source` filter uses the source ID (sources have no slug) and lists only sources with visible posts.
 
+**Q24. Page caching** (M4, decided as [ADR-029](decisions/0029-website-page-caching-and-revalidation.md), please confirm). Instead of cache tags only, detail pages use `revalidate = 300` plus on-demand `revalidatePath` from the moderation hooks, because the jobs worker and other replicas cannot reach a replica's Next.js cache. Sync updates and changes on other replicas appear within 5 minutes.
+
 ### Verification tasks (agreed approach; confirm during implementation)
 
 **T2. Lingui SWC plugin compatibility** (M4, decided as [ADR-027](decisions/0027-lingui-wiring.md), please confirm). 6.7.1 does not load with Next 16.3.3 (`swc_core` 73); `@lingui/swc-plugin` is pinned to 6.1.0, the newest release that compiles, with Lingui 6.9.0. `eslint-plugin-lingui` is added as a lint guardrail for unwrapped website strings.
