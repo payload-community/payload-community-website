@@ -62,6 +62,8 @@ const eslintConfig = [
             'data-testid',
             'position',
             'rel',
+            'size',
+            'sizes',
             'src',
             'styleName',
           ],

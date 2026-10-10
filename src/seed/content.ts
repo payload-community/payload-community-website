@@ -45,6 +45,13 @@ export const SECTIONS = [
   },
 ] as const
 
+export const HOME_CTA = {
+  appearance: 'default',
+  label: 'Join with GitHub, Google or email and contribute',
+  type: 'custom',
+  url: '/sign-up',
+} as const
+
 export const HOME_INTRO = `# Payload CMS Community Portal
 
 News, resources, plugins and builds for [Payload](https://payloadcms.com), collected and shared by the community.`

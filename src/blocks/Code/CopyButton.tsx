@@ -1,32 +1,33 @@
 'use client'
 import { Button } from '@/components/ui/button'
-import { CopyIcon } from '@payloadcms/ui/icons/Copy'
+import { useLingui } from '@lingui/react/macro'
+import { Check, Copy } from 'lucide-react'
 import { useState } from 'react'
 
-export function CopyButton({ code }: { code: string }) {
-  const [text, setText] = useState('Copy')
-
-  function updateCopyStatus() {
-    if (text === 'Copy') {
-      setText(() => 'Copied!')
-      setTimeout(() => {
-        setText(() => 'Copy')
-      }, 1000)
-    }
-  }
+export function CopyButton({ code, label }: { code: string; label?: string }) {
+  const { t } = useLingui()
+  const [copied, setCopied] = useState(false)
 
   return (
     <div className="flex justify-end align-middle">
       <Button
+        aria-label={label}
         className="flex gap-1"
-        variant={'secondary'}
         onClick={async () => {
           await navigator.clipboard.writeText(code)
-          updateCopyStatus()
+          setCopied(true)
+          setTimeout(() => setCopied(false), 1500)
         }}
+        size="sm"
+        type="button"
+        variant="secondary"
       >
-        <p>{text}</p>
-        <CopyIcon />
+        <span aria-live="polite">
+          {copied
+            ? t({ comment: 'Copy button state after the code was copied', message: 'Copied!' })
+            : t({ comment: 'Button that copies a code snippet to the clipboard', message: 'Copy' })}
+        </span>
+        {copied ? <Check aria-hidden className="size-4" /> : <Copy aria-hidden className="size-4" />}
       </Button>
     </div>
   )

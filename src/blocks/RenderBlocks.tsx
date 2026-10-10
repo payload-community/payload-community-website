@@ -4,15 +4,19 @@ import type { Page } from '@/payload-types'
 
 import { ArchiveBlock } from '@/blocks/ArchiveBlock/Component'
 import { CallToActionBlock } from '@/blocks/CallToAction/Component'
+import { CollectionListBlock } from '@/blocks/CollectionList/Component'
 import { ContentBlock } from '@/blocks/Content/Component'
 import { MediaBlock } from '@/blocks/MediaBlock/Component'
+import { SectionsOverviewBlock } from '@/blocks/SectionsOverview/Component'
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const blockComponents: Partial<Record<Page['layout'][0]['blockType'], React.FC<any>>> = {
   archive: ArchiveBlock,
+  collectionList: CollectionListBlock,
   content: ContentBlock,
   cta: CallToActionBlock,
   mediaBlock: MediaBlock,
+  sectionsOverview: SectionsOverviewBlock,
 }
 
 export const RenderBlocks: React.FC<{

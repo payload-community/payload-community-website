@@ -7,6 +7,23 @@ msgstr ""
 "X-Generator: @lingui/cli\n"
 "Language: en\n"
 
+#: src/website/cards.tsx
+msgid "{downloads, plural, one {# npm download per week} other {# npm downloads per week}}"
+msgstr "{downloads, plural, one {# npm download per week} other {# npm downloads per week}}"
+
+#: src/website/cards.tsx
+msgid "{forks, plural, one {# fork} other {# forks}}"
+msgstr "{forks, plural, one {# fork} other {# forks}}"
+
+#: src/website/cards.tsx
+msgid "{stars, plural, one {# GitHub star} other {# GitHub stars}}"
+msgstr "{stars, plural, one {# GitHub star} other {# GitHub stars}}"
+
+#. Compact weekly npm downloads, e.g. '1.2K/week'
+#: src/website/cards.tsx
+msgid "{weeklyDownloads}/week"
+msgstr "{weeklyDownloads}/week"
+
 #. Cookie settings dialog button
 #: src/website/consent/ConsentProvider.tsx
 msgid "Accept all"
@@ -32,6 +49,16 @@ msgstr "Analytics"
 msgid "Auto"
 msgstr "Auto"
 
+#. Build card: the Payload release the build is based on, e.g. 'Based on Payload 3.90.2'
+#: src/website/cards.tsx
+msgid "Based on Payload {version}"
+msgstr "Based on Payload {version}"
+
+#. Resource type
+#: src/website/labels.ts
+msgid "Blog"
+msgstr "Blog"
+
 #. Admin bar: used in "New build" / "Edit build"
 #: src/components/AdminBar/index.tsx
 msgid "build"
@@ -42,10 +69,25 @@ msgstr "build"
 msgid "Builds"
 msgstr "Builds"
 
+#. Card footer of a community post: who wrote it
+#: src/website/cards.tsx
+msgid "by {authorName}"
+msgstr "by {authorName}"
+
+#. Shown instead of the author's name when the account was deleted
+#: src/website/cards.tsx
+msgid "by a former member"
+msgstr "by a former member"
+
 #. Accessible label of the close button of the cookie settings dialog
 #: src/website/consent/ConsentProvider.tsx
 msgid "Close"
 msgstr "Close"
+
+#. Resource type: a community space such as a forum
+#: src/website/labels.ts
+msgid "Community"
+msgstr "Community"
 
 #. Second line of the site wordmark, below 'Payload CMS'
 #: src/components/Logo/Logo.tsx
@@ -63,6 +105,26 @@ msgstr "Cookie settings"
 msgid "Cookies and analytics"
 msgstr "Cookies and analytics"
 
+#. Copy button state after the code was copied
+#: src/blocks/Code/CopyButton.tsx
+msgid "Copied!"
+msgstr "Copied!"
+
+#. Button that copies a code snippet to the clipboard
+#: src/blocks/Code/CopyButton.tsx
+msgid "Copy"
+msgstr "Copy"
+
+#. Resource type
+#: src/website/labels.ts
+msgid "Course"
+msgstr "Course"
+
+#. Plugin card: when the plugin was created
+#: src/website/cards.tsx
+msgid "Created {created}"
+msgstr "Created {created}"
+
 #. Color theme option
 #: src/providers/Theme/ThemeSelector/index.tsx
 msgid "Dark"
@@ -72,6 +134,11 @@ msgstr "Dark"
 #: src/components/AdminBar/index.tsx
 msgid "Dashboard"
 msgstr "Dashboard"
+
+#. Resource type: documentation
+#: src/website/labels.ts
+msgid "Docs"
+msgstr "Docs"
 
 #: src/app/(frontend)/not-found.tsx
 msgid "Go home"
@@ -112,10 +179,20 @@ msgstr "My entries"
 msgid "Necessary"
 msgstr "Necessary"
 
+#. Card footer of an imported news post: the site it comes from
+#: src/website/cards.tsx
+msgid "on {sourceName}"
+msgstr "on {sourceName}"
+
 #. Accessible name of the menu button shown on small screens
 #: src/Header/Nav/index.tsx
 msgid "Open navigation menu"
 msgstr "Open navigation menu"
+
+#. Resource type
+#: src/website/labels.ts
+msgid "Other"
+msgstr "Other"
 
 #. Admin bar: used in "New page" / "Edit page"
 #: src/components/AdminBar/index.tsx
@@ -210,6 +287,11 @@ msgstr "Sign in"
 msgid "Sign out"
 msgstr "Sign out"
 
+#. Accessible name of the list of tags on a card
+#: src/website/cards.tsx
+msgid "Tags"
+msgstr "Tags"
+
 #. Placeholder of the color theme selector
 #: src/providers/Theme/ThemeSelector/index.tsx
 msgid "Theme"
@@ -219,7 +301,33 @@ msgstr "Theme"
 msgid "This page could not be found."
 msgstr "This page could not be found."
 
+#. Resource type
+#: src/website/labels.ts
+msgid "Tool"
+msgstr "Tool"
+
+#. Plugin card: when the plugin's code was last updated
+#: src/website/cards.tsx
+msgid "Updated {updated}"
+msgstr "Updated {updated}"
+
+#. Card footer: when the entry was last updated
+#. Card footer: when the entry was last updated
+#: src/website/cards.tsx
+msgid "Updated <0>{updated}</0>"
+msgstr "Updated <0>{updated}</0>"
+
+#. Resource type
+#: src/website/labels.ts
+msgid "Video"
+msgstr "Video"
+
 #. Cookie banner text; the link opens the privacy policy
 #: src/website/consent/ConsentProvider.tsx
 msgid "We would like to use Google Analytics to understand how the site is used. It is only loaded if you agree. <a href=\"/privacy\">Privacy policy</a>"
 msgstr "We would like to use Google Analytics to understand how the site is used. It is only loaded if you agree. <a href=\"/privacy\">Privacy policy</a>"
+
+#. Resource type
+#: src/website/labels.ts
+msgid "Website"
+msgstr "Website"

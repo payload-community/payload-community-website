@@ -8,6 +8,7 @@ import {
   COMMUNITY_MARKDOWN,
   FOOTER_NAV,
   HEADER_NAV,
+  HOME_CTA,
   HOME_INTRO,
   PAYLOAD_BLOG_SOURCE,
   PRIVACY_MARKDOWN,
@@ -39,7 +40,7 @@ const pageData = async (payload: Payload, slug: string): Promise<Omit<Page, 'cre
     case 'home':
       return {
         _status: 'published',
-        hero: await lowImpact(HOME_INTRO),
+        hero: { ...(await lowImpact(HOME_INTRO)), links: [{ link: { ...HOME_CTA } }] },
         layout: [
           { blockType: 'sectionsOverview', sections: SECTIONS.map((section) => ({ ...section })) },
           {
@@ -57,6 +58,14 @@ const pageData = async (payload: Payload, slug: string): Promise<Omit<Page, 'cre
             link: { href: '/plugins', label: 'All plugins' },
             relationTo: 'plugins',
             sort: 'stars',
+          },
+          {
+            blockType: 'collectionList',
+            heading: 'Featured builds',
+            limit: 3,
+            link: { href: '/builds', label: 'All builds' },
+            relationTo: 'builds',
+            sort: 'latest',
           },
         ],
         slug,
