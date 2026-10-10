@@ -1,55 +1,23 @@
 # Open questions
 
-Each item has the **default** we implement unless you decide otherwise. Proposed changes to `spec/BRIEF.md` / `spec/bootstrap-prompt.md` are at the end.
+Open items first, then resolved ones (kept for traceability). Proposed changes to `spec/BRIEF.md` / `spec/bootstrap-prompt.md` are at the end.
 
-## Product
+## Open
 
-**Q1. OAuth accounts without a verified email.** GitHub users without a verified primary email, or Google accounts with `email_verified: false`, cannot be linked safely, and the users collection needs a unique email.
-*Default:* refuse sign-in with a message asking to verify the email at the provider (ADR-005). *Alternative:* create the account with no email (requires making email optional → custom auth handling).
+**Q17. Sign-up with an email that already has an account.** To avoid revealing which emails are registered, `/sign-up` always answers "Check your inbox".
+*Default:* no email is sent to the existing account in v1. *Alternative:* send "You already have an account — sign in or reset your password" to that address (better UX, one more template).
 
-**Q2. Linking providers with different emails.** Linking is only by matching verified email. A user whose GitHub and Google emails differ gets two accounts.
-*Default:* accept for now. *Idea:* "Connect GitHub/Google" buttons on the account page while signed in (see `ideas.md`).
+**Q18. Unverified accounts cleanup.** Self-registered accounts that never activate stay in the database.
+*Default:* keep them for now. *Alternative:* a daily job deletes unverified accounts older than 7 days.
 
-**Q3. Content of deleted users.**
-*Default:* anonymize — clear `createdBy` on published entries (shown as "Former member"), delete their pending and rejected entries. *Alternative A:* delete everything they created. *Alternative B:* anonymize everything, including pending entries.
+**Q19. Bot protection on registration.** Rate limiting + email activation only.
+*Default:* no CAPTCHA in v1. *Alternative:* Cloudflare Turnstile or hCaptcha on `/sign-up` (third-party script → consent/CSP implications).
 
-**Q4. Rejection of an edit to a published entry.** The published version stays live and the latest draft is `rejected`; the author can edit again (back to `pending`).
-*Default:* as described. Should the author also be able to "discard changes" (restore the published version as latest)? Payload's version restore covers this for moderators; not exposed to authors by default.
+**Q20. Garage public URL** — see the question asked in the 2026-10-10 review (serve files from Garage's own public web endpoint vs. under the portal domain).
 
-**Q5. Unpublish while an edit is pending.** Unpublishing makes the latest draft the hidden main document (pending changes leave the queue).
-*Default:* accept and document for moderators.
+### Technical (verify during implementation)
 
-**Q6. Moderator drafts.** A moderator saving a *draft* of a new entry: should it appear in the pending queue?
-*Default:* yes, as `pending`, without notifications. Alternatively we add a `draft` moderation status (more states).
-
-**Q7. Sync data freshness for plugins with a pending edit.** We refresh the published document directly via the DB adapter (ADR-012). OK to have this single low-level write?
-
-**Q8. Manual plugin merge.** When the search finds a repo that exists as a manual plugin, we update only sync-owned fields (stars, topics, dates, npm data) and keep the user's name/description/homepage. Should GitHub's description override the user's?
-*Default:* keep the user's values.
-
-**Q9. Imported plugin edits by moderators.** Imported plugins are read-only for everyone except admins (moderators can unpublish/delete). Should moderators be able to override descriptions (would be overwritten by the next sync anyway)?
-*Default:* no.
-
-**Q10. Admin role removal.** Users in `ADMIN_GITHUB_LOGINS`/`ADMIN_EMAILS` get `admin` on every sign-in; removing them from the list does not revoke the role.
-*Default:* no automatic revocation (admins remove roles in the panel).
-
-**Q11. Posts tags for imported posts.** We map the source category name (`Blog`, `Releases`, `Guides`) to `tags`.
-*Default:* yes. Confirm this is the desired tag vocabulary for News filters.
-
-**Q12. Builds detail pages.** Builds have a unique slug but no detail pages (brief: cards link externally). Slug is used as an anchor only.
-
-**Q13. Reset-password UX.** Invitation and forgot-password links open Payload's admin reset page (`/admin/reset/{token}`), then the user lands in `/admin`.
-*Default:* reuse the admin pages (least code). *Alternative:* website `/reset-password` page with the template's styling (small form calling the REST endpoint).
-
-**Q14. Moderation notification recipients.** Admins without the moderator role also receive submission emails (brief: "all Moderators and Admins"), unless they turn it off.
-
-**Q15. Privacy policy content.** The seed creates a placeholder privacy policy describing the data we collect (provider profile, email, GA after consent). Needs a legal review and the operator's identity/contact.
-
-**Q16. Production email.** SPF/DKIM/DMARC records are listed in `docs/deployment.md` once the provider and the sending domain are chosen.
-
-## Technical
-
-**T1. Admin create view without password fields.** Payload's create view for auth collections shows password fields. We plan to hide them and set a random password in `beforeValidate` (M2). If the admin UI still requires them, fallback: a small custom field component that pre-fills a generated password and hides the inputs. Verified in M2.
+**T1. Admin create view without password fields.** Payload's create view for auth collections shows password fields. We plan to hide them and set a random password in `beforeValidate` (M2). If the admin UI still requires them, fallback: a small custom field component that pre-fills a generated password and hides the inputs.
 
 **T2. Lingui SWC plugin compatibility.** `@lingui/swc-plugin` must match the SWC version bundled with Next.js. If 6.7.1 does not load with Next 16.3.3, fallback: pin the swc plugin version listed as compatible in Lingui's compatibility table. Verified in M4.
 
@@ -59,6 +27,29 @@ Each item has the **default** we implement unless you decide otherwise. Proposed
 
 **T5. Image size for the one-image design** (ADR-010). Expect ~600–900 MB; acceptable?
 
+**T6. Built-in verify view.** Confirm that `/admin/users/verify/{token}` works for non-admin users and redirects to the login screen; otherwise add a small website `/verify-email` page calling `POST /api/users/verify/{token}`.
+
+## Resolved (2026-10-10 review)
+
+| # | Question | Resolution |
+|---|---|---|
+| Q1 | OAuth accounts without a verified email | Refuse sign-in until the email is verified at the provider (ADR-005). |
+| Q2 | Linking providers with different emails | Same verified email links automatically; additionally users can connect providers from `/account` (idea I1 approved, ADR-021). |
+| Q3 | Content of deleted users | Anonymize all content, in every status (ADR-011). |
+| Q4 | Rejected edit of a published entry | Published version stays live; author can edit again; no author "discard changes". |
+| Q5 | Unpublish while an edit is pending | Latest draft becomes the hidden document; documented for moderators. |
+| Q6 | Moderator drafts of new entries | Shown in the queue as `pending`, without notifications. |
+| Q7 | Plugin sync freshness with a pending edit | `payload.db.updateOne` on the published document (ADR-012). |
+| Q8 | Manual plugin merge | Keep the user's name/description/homepage; update only sync-owned fields. |
+| Q9 | Moderators editing imported plugins | No; admins only. |
+| Q10 | Admin role removal | No automatic revocation. |
+| Q11 | Imported post tags | Source category name. |
+| Q12 | Detail pages | Detail pages for Resources, Plugins and Builds (ADR-019). |
+| Q13 | Reset-password UX | Reuse Payload's admin reset/forgot views. |
+| Q14 | Admins receive moderation emails | Yes, unless turned off. |
+| Q15 | Privacy policy | Generated default page from the seed (ADR-022). |
+| Q16 | Production email DNS | SPF/DKIM/DMARC listed in `docs/deployment.md` once the provider is chosen. |
+
 ## Proposed changes to the brief / bootstrap prompt
 
 - **P1.** Brief, Posts: add "Imported posts without a public URL (e.g. uncategorized or future-dated) are skipped."
@@ -66,3 +57,7 @@ Each item has the **default** we implement unless you decide otherwise. Proposed
 - **P3.** Bootstrap prompt, Post sync: the public URL pattern is `https://payloadcms.com/posts/{category.slug}/{slug}` (verified), not `/posts/blog/{slug}` for every post.
 - **P4.** Bootstrap prompt, worker: the exact command for 3.90.2 is `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues`.
 - **P5.** Brief, Moderation: mention moderation statuses are per version (an edit can be `rejected` while the published version stays live).
+- **P6.** Brief, Listing pages: replace "Cards link directly to the external site. There are no detail pages for external entries." with "Resources, Plugins and Builds have detail pages with a prominent link to the external site; imported posts link to the original article." (ADR-019)
+- **P7.** Brief, Authentication: replace "OAuth … is the only way to sign up" and "There is no public sign-up with email and password" with "Users can also sign up with email and password; the account is activated through an emailed link." Bootstrap prompt §5 "No public sign-up with a password" and the matching E2E test ("There is no public sign-up") change accordingly: test that registration works only after activation. (ADR-020)
+- **P8.** Brief, Users: add "Signed-in users can connect and disconnect GitHub and Google on their account page." (ADR-021)
+- **P9.** Brief, Users and Roles: deleted users' content is anonymized in every status (ADR-011).

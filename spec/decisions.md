@@ -1,6 +1,6 @@
 # Decisions (ADR log)
 
-Format: context → decision → consequences. Status: **Proposed** (M0, waiting for review) unless stated otherwise. Download counts are npm weekly downloads for 2026-10-01…07.
+Format: context → decision → consequences. All ADRs below were **accepted** in the M0 review on 2026-10-10 (with the changes noted in each one). Download counts are npm weekly downloads for 2026-10-01…07.
 
 ---
 
@@ -23,10 +23,12 @@ Format: context → decision → consequences. Status: **Proposed** (M0, waiting
 - Admin `beforeLogin` component with the two buttons; website `/sign-in` page.
 - Reversible: the plugin only adds a strategy, two endpoints and the sub fields.
 
-## ADR-002 Users: no public password sign-up, invitations via `forgotPassword`
+## ADR-002 Users: admin-created accounts get an invitation via `forgotPassword`
 
-- `create` access admin-only; OAuth creates users via the Local API flagged with `req.context.oauthSignIn`.
-- A `beforeOperation` guard rejects non-local `create` without an admin user and without the OAuth flag — this also disables `/api/users/first-register` (ADR-004).
+*Revised 2026-10-10:* public email registration was added (ADR-020); this ADR now covers admin-created accounts only.
+
+- OAuth creates users via the Local API flagged with `req.context.oauthSignIn`; anonymous visitors can only register (ADR-020).
+- A `beforeOperation` guard on `create` restricts anonymous requests to `name`/`email`/`password` and rejects `/api/users/first-register` (ADR-004).
 - Admin-created users: random password set server-side; `afterChange` (create, no provider IDs) queues `sendInvitation`, which calls `payload.forgotPassword({ disableEmail: true })` for the token, extends the token expiry to 7 days via the DB adapter, and sends our "set your password" email linking to Payload's built-in `/admin/reset/{token}` view.
 - Regular forgot-password: built-in endpoint + customized `generateEmailHTML/Subject`; expiry 1 h.
 - Reset/forgot pages: Payload admin views are reused (no custom website reset page) — least code; the website links to `/admin/forgot`.
@@ -41,11 +43,11 @@ Format: context → decision → consequences. Status: **Proposed** (M0, waiting
 
 ## ADR-004 First admin and first-register screen
 
-Payload's "create first user" screen allows anyone to register when the users collection is empty. We block non-local user creation without an admin (ADR-002). First admins: OAuth sign-in with a GitHub login in `ADMIN_GITHUB_LOGINS` or a verified email in `ADMIN_EMAILS`; locally also `pnpm seed:dev`. Admin roles are added on every sign-in and never removed automatically.
+Payload's "create first user" screen creates an already-verified user when the users collection is empty, bypassing email activation. We block `first-register` (ADR-002). First admins: OAuth sign-in with a GitHub login in `ADMIN_GITHUB_LOGINS`, or a verified account (OAuth or activated password account) whose email is in `ADMIN_EMAILS`; locally also `pnpm seed:dev`. Admin roles are added on every sign-in and never removed automatically.
 
 ## ADR-005 OAuth sign-up requires a verified email
 
-The users collection keeps the local strategy, so `email` is required and unique. If a provider reports no verified email (GitHub: no verified primary email; Google: `email_verified: false`), sign-in is refused with an explanation instead of creating an account with an unverified or placeholder email. Avoids takeovers via unverified emails and keeps the schema simple. Listed in open questions (Q1).
+The users collection keeps the local strategy, so `email` is required and unique. If a provider reports no verified email (GitHub: no verified primary email; Google: `email_verified: false`), sign-in is refused with an explanation instead of creating an account with an unverified or placeholder email. Avoids takeovers via unverified emails and keeps the schema simple. Accepted (Q1).
 
 ## ADR-006 Storage: `@payloadcms/storage-s3`, public bucket URLs
 
@@ -71,9 +73,9 @@ Helm `pre-install,pre-upgrade` hook Job runs `payload migrate` then `pnpm seed` 
 
 Next.js `output: 'standalone'` for the web server, plus a `/app/cli` directory with production `node_modules` and `src/` for the Payload CLI (worker, migrations, seed). Larger image than standalone-only but a single artifact/tag for all three roles. Revisit if size becomes a problem (e.g. bundle the CLI entrypoints with `esbuild`).
 
-## ADR-011 Account deletion anonymizes content (default)
+## ADR-011 Account deletion anonymizes all content
 
-On user deletion, `createdBy` is cleared on their Posts/Resources/Plugins/Builds/Post Media; published content stays (shown as "Former member"); their pending/rejected entries are deleted (they would otherwise sit in the queue with no author). Proposed in open questions (Q3).
+*Revised 2026-10-10 (Q3):* on user deletion, `createdBy` is cleared on **all** their Posts/Resources/Plugins/Builds/Post Media, in every moderation status; content is shown as "Former member". Pending entries stay in the moderation queue and can still be approved or rejected; author notifications are skipped for entries without an author. Old versions keep only the deleted user's ID.
 
 ## ADR-012 Sync updates on documents with a pending draft
 
@@ -118,3 +120,29 @@ Website queries use the Local API with `overrideAccess: false`, `draft: false`, 
 - Public URL is `{siteOrigin}/posts/{category.slug}/{slug}` (category changes the path; `blog`, `releases`, `guides` exist).
 - Items without a category (4 of 119, no public page) and future-dated items (a placeholder `draft` post dated 2038) are skipped.
 - Tags come from `category.name`.
+
+## ADR-019 Detail pages for Resources, Plugins and Builds (extends the brief)
+
+*Context.* The brief says cards link directly to external sites and there are no detail pages except community posts. Reviewed 2026-10-10: detail pages are wanted (Q12).
+
+*Decision.* `/resources/{slug}`, `/plugins/{slug}`, `/builds/{slug}` show all public fields and a prominent external link (repository / website, new tab, `rel="noopener noreferrer"`); listing cards link to these pages. Imported posts keep linking to the original article. `slug` fields are added to Resources and Plugins (Builds already had one); plugin slugs are derived from `fullName` once and never change.
+
+*Consequences.* Better SEO (indexable pages, JSON-LD) and room for richer data; three more page templates and sitemaps; E2E tests cover them. Proposed brief change P6.
+
+## ADR-020 Email registration with activation link (extends the brief)
+
+*Context.* The brief allows sign-up only through OAuth; reviewed 2026-10-10: email/password registration with an activation link is wanted on the website.
+
+*Decision.* Payload's built-in `auth.verify`: anonymous `create` (registration form) → activation email → built-in verify view `/admin/users/verify/{token}`; unverified users cannot sign in. Custom code limited to: the guard that whitelists registration fields, a "resend activation" endpoint (not built into Payload 3.90.2), an `afterOperation` hook on `resetPassword` that marks the user verified (Payload does not), and the pre-hijacking protection in OAuth linking (an unverified password account claimed by OAuth gets a new random password).
+
+*Consequences.* Bots can register (mitigated by rate limits and verification; CAPTCHA deferred, Q19). Email enumeration on sign-up is avoided with generic responses (Q17). Proposed brief change P7.
+
+## ADR-021 Connect providers while signed in (approved idea I1)
+
+*Decision.* "Connected accounts" on `/account`: connect GitHub/Google to the current account regardless of the provider email (signed 10-minute intent cookie set by a POST + session + PKCE), refuse when the provider identity already belongs to another user, and allow disconnecting (recovery is always possible through the verified email). Automatic linking by matching verified email on sign-in stays (Q2).
+
+*Consequences.* Small extension of `resolveOAuthAccount()` plus a server action and the account UI; covered by unit tests of the linking logic.
+
+## ADR-022 Privacy policy content
+
+The seed creates a generated privacy policy page (data collected from GitHub/Google and the registration form, emails, Google Analytics after consent, account deletion and anonymization, contact placeholder). Accepted as is for now (Q15); legal review is the operator's responsibility before launch.

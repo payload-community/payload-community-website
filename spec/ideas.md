@@ -2,7 +2,7 @@
 
 | # | Idea | Value | Effort | Risks |
 |---|---|---|---|---|
-| I1 | **Connect another provider** from the account page while signed in (link GitHub + Google with different emails). | Fixes Q2 cleanly. | M — custom authorize flow carrying the current session. | Account-linking security; must re-verify the session. |
+| I1 | ✅ **Approved 2026-10-10, now ADR-021.** Connect another provider from the account page while signed in. | Fixes Q2 cleanly. | M | Account-linking security. |
 | I2 | **RSS/Atom adapter** for more news sources (dev.to tag, community blogs). | More news without manual posting. | S–M — new adapter behind the existing interface (`rss-parser`). | Feed quality; image hotlinking rules. |
 | I3 | **Plugin compatibility badge**: read `peerDependencies.payload` from the npm manifest and show "Payload 3.x / 2.x". | Helps users pick plugins. | S — extra field in the npm step. | Monorepos, missing peer deps. |
 | I4 | **Weekly digest email** (new plugins, posts, builds) with opt-in. | Engagement. | M — scheduled job + template + preference. | Deliverability, unsubscribe compliance. |
@@ -16,3 +16,5 @@
 | I12 | **Discord/Slack webhook** for new pending submissions. | Faster moderation. | S. | Secret management. |
 | I13 | **OpenGraph image generation** (`next/og`) for listings and community posts without images. | Better shares. | S. | Edge runtime constraints (use Node runtime). |
 | I14 | **Meilisearch/Atlas Search** if `like` queries get slow. | Better search relevance. | M–L. | New infrastructure. |
+| I15 | **"You already have an account" email** on sign-up with a registered address (Q17). | Clearer UX without enumeration. | S. | – |
+| I16 | **Website-styled auth pages** (`/reset-password`, `/verify-email`) instead of the admin views. | Consistent look for regular users. | S–M. | – |

@@ -1,8 +1,37 @@
 # Architecture — Payload CMS Community Portal
 
-Status: **M0 draft, waiting for review.** Source of truth for *what* to build is `spec/BRIEF.md`; implementation choices are logged in `spec/decisions.md` (referenced below as `ADR-NNN`).
+Status: **M0, reviewed 2026-10-10 (revision 2).** Source of truth for *what* to build is `spec/BRIEF.md`; implementation choices are logged in `spec/decisions.md` (referenced below as `ADR-NNN`). Where this document deliberately extends the brief (detail pages, email registration, connecting providers), the ADR says so.
 
-Versions verified on 2026-10-09: `payload` and all `@payloadcms/*` **3.90.2**; the Website template at tag `v3.90.2` pins `next` 16.3.3 and `react` 19.2.6 (we keep the template pins; see ADR-014).
+---
+
+## 0. Technology stack
+
+The brief names the technologies; this table pins the concrete packages and their role. Exact versions live in `package.json` / `pnpm-lock.yaml` (the source of truth); versions here are the ones verified at planning time (2026-10-09).
+
+| Area | Choice | Version | Notes |
+|---|---|---|---|
+| Runtime | Node.js | 24 | DDEV and Docker image |
+| Package manager | pnpm (corepack) | 10.x | only pnpm lockfile |
+| Framework | Next.js (App Router, `output: 'standalone'`) | 16.3.3 | template pin (ADR-014) |
+| UI runtime | React / React DOM | 19.2.6 | template pin |
+| CMS | `payload`, `@payloadcms/next`, `@payloadcms/ui` | 3.90.2 | all `@payloadcms/*` on the same exact version |
+| Starting point | Payload Website template | v3.90.2 | §2 |
+| Database | MongoDB + `@payloadcms/db-mongodb` | 3.90.2 | DBs `plc`, `plc_test` |
+| Rich text | `@payloadcms/richtext-lexical` | 3.90.2 | + plaintext converter for sync |
+| Payload plugins | `plugin-seo`, `plugin-redirects`, `storage-s3`, `email-nodemailer`, `live-preview-react`, `admin-bar` | 3.90.2 | |
+| File storage | Garage (S3-compatible) via `@payloadcms/storage-s3` | 3.90.2 | §13 |
+| Auth | Payload local strategy + `payload-oauth2` (GitHub, Google) | 1.0.21 | §12, ADR-001 |
+| Email | SMTP via `@payloadcms/email-nodemailer`; templates `@react-email/components` | 3.90.2 / 1.x | Mailpit locally |
+| Jobs | Payload Jobs Queue (`jobs.tasks` + `schedule`) | 3.90.2 | worker Deployment |
+| UI | Tailwind CSS 4 + shadcn/ui (template) | | light/dark theme |
+| i18n | Lingui (`@lingui/core`, `react`, `cli`, `swc-plugin`) | 6.x | website only; admin uses Payload i18n |
+| URL state | `nuqs` | 2.x | listings |
+| External APIs | `@octokit/rest` (+ throttling, retry), `zod`, `p-limit` | 22 / 4 / – | sync |
+| Analytics & consent | GA4 via `@next/third-parties`, `vanilla-cookieconsent` 3, Consent Mode v2 | | §16 |
+| Observability | OpenTelemetry `@opentelemetry/sdk-node` + auto-instrumentations, OTLP/HTTP protobuf; pino logs | 0.223 / 0.81 | Grafana (Tempo, Mimir, Loki) |
+| SEO | `plugin-seo`, `next-sitemap`, JSON-LD | | |
+| Tests | Vitest, Playwright, `@axe-core/playwright` | | |
+| Deployment | Docker (multi-stage), Kubernetes, Helm v4 chart | | §18 |
 
 ---
 
@@ -80,11 +109,12 @@ Plus a custom sidebar UI field `moderationActions` (Approve / Reject / Unpublish
 
 ### 4.2 `users` (auth)
 
-`auth`: local strategy enabled, `useSessions: true`, `tokenExpiration: 7 days`, `maxLoginAttempts: 5`, `lockTime: 10 min`, `forgotPassword.expiration: 1 h` with custom email (§10). Strategies added by `payload-oauth2` (`github`, `google`).
+`auth`: local strategy enabled, `verify: { generateEmailHTML, generateEmailSubject }` (email activation, §10), `useSessions: true`, `tokenExpiration: 7 days`, `maxLoginAttempts: 5`, `lockTime: 10 min`, `forgotPassword.expiration: 1 h` with custom email (§10). Strategies added by `payload-oauth2` (`github`, `google`). Payload refuses password sign-in for unverified users (`_verified: false`).
 
 | Field | Type | Access / notes |
 |---|---|---|
-| `email` | email (auth built-in), unique | create/update: admin. Always a provider-verified or admin-entered address. |
+| `email` | email (auth built-in), unique | Set on create (registration form, admin, or OAuth); update: admin only. |
+| `_verified` | built-in (auth `verify`) | `true` for OAuth users (provider-verified email) and admin-created users; self-registered users get `true` after clicking the activation link. |
 | `name` | text | Self + admin can update. From provider on first sign-in; not overwritten later if edited. |
 | `avatarUrl` | text | Read-only; refreshed from provider on each OAuth sign-in. |
 | `githubId` | text, unique (sparse), index | Read-only; set by OAuth. |
@@ -99,16 +129,19 @@ Collection access:
 
 | Operation | Anonymous | Regular | Moderator | Admin |
 |---|---|---|---|---|
-| admin panel (`access.admin`) | – | ✔ | ✔ | ✔ |
-| create (REST/GraphQL/admin) | ✘ | ✘ | ✘ | ✔ |
+| admin panel (`access.admin`) | – | ✔ (verified) | ✔ | ✔ |
+| create (REST/GraphQL) | ✔ registration only (`name`, `email`, `password`) | ✘ | ✘ | ✔ |
+| create (admin panel) | – | ✘ | ✘ | ✔ |
 | read | ✘ | self | all (email field: self/admin only) | all |
 | update | ✘ | self (not roles/email/provider IDs) | self | all |
 | delete | ✘ | self | self | all |
 
-- **OAuth creates users** through the Local API with `req.context.oauthSignIn = true` (set in the plugin's `getUserInfo`).
-- **No first-user registration**: a `beforeOperation` hook on `create` rejects any non-local request (`req.payloadAPI !== 'local'`) without an admin `req.user` and without `oauthSignIn` context; this also blocks `/api/users/first-register` and the "create first user" screen once deployed (ADR-004). First admins come from `ADMIN_GITHUB_LOGINS` / `ADMIN_EMAILS` (OAuth) or `pnpm seed:dev` locally.
-- **Password requirement**: a `beforeValidate` hook on create sets a random 32-byte password when none is given (OAuth and admin-created users). Admin create view hides the password fields for new users (to be verified in M2; fallback documented in `open-questions.md`).
-- **Deletion** (self or admin): `beforeDelete` anonymizes the user's content (ADR-011): `createdBy` → `null` on Posts/Resources/Plugins/Builds/Post Media (published entries stay; pending/rejected entries are deleted — see open question Q3).
+- **Self-registration** (ADR-020): the website `/sign-up` form (server action → Local API `create` with `overrideAccess: false`, no user — the same rules as an anonymous REST `POST /api/users`). A `beforeOperation` guard on `create` for anonymous requests keeps only `name`, `email`, `password` from the body (roles, provider IDs, `_verified` are dropped; field access also blocks them). Payload sends the activation email (`auth.verify`); the user cannot sign in until verified. Rate-limited.
+- **OAuth creates users** through the Local API with `req.context.oauthSignIn = true` (set in the plugin's `getUserInfo`) and `_verified: true`, `disableVerificationEmail: true`.
+- **Admin-created users** are created with `_verified: true`, a random password, and an invitation email (§10, ADR-002).
+- **No first-user registration screen**: the `beforeOperation` guard also rejects `/api/users/first-register` (it would bypass verification); first admins come from `ADMIN_GITHUB_LOGINS` / `ADMIN_EMAILS` (OAuth, or a verified password account whose email is listed) or `pnpm seed:dev` locally (ADR-004).
+- **Password requirement**: a `beforeValidate` hook on create sets a random 32-byte password when none is given (OAuth and admin-created users). Admin create view hides the password fields for new users (to be verified in M2; fallback in `open-questions.md` T1).
+- **Deletion** (self or admin): `beforeDelete` anonymizes **all** the user's content (ADR-011): `createdBy` → `null` on Posts/Resources/Plugins/Builds/Post Media, in every status; entries are shown as "Former member". Pending entries stay in the moderation queue; no author notifications are sent for anonymized entries. Old versions keep the ID of the deleted user (no personal data beyond the ID).
 
 ### 4.3 `sources`
 
@@ -170,6 +203,7 @@ Template collection kept for pages (alt, caption). S3 prefix `media/`. Read anyo
 | Field | Type | Notes |
 |---|---|---|
 | `title` | text, required, index | |
+| `slug` | `slugField()` from title, unique | Detail page `/resources/{slug}`. |
 | `url` | text (URL), required, unique | |
 | `description` | textarea, required | |
 | `type` | select `website` `blog` `docs` `video` `course` `tool` `community` `other`, required, index | |
@@ -186,6 +220,7 @@ Template collection kept for pages (alt, caption). S3 prefix `media/`. Read anyo
 | `origin` | select | hook | `imported` when created by sync, else `manual`. |
 | `createdBy` | rel → users | hook | Manual only; kept when sync merges. |
 | `name` | text, required | user (manual) / sync (imported) | |
+| `slug` | `slugField()`, unique | hook | Detail page `/plugins/{slug}`. From `fullName` (`owner-repo`) when known, else from `name`; never changed after creation (stable URLs). |
 | `fullName` | text, unique (sparse), index | sync; derived from `repositoryUrl` on save when it is a GitHub URL | `owner/repo`, lower-cased for matching. |
 | `description` | textarea | user (manual) / sync (imported) | |
 | `repositoryUrl` | text (URL) | user (manual) / sync (imported) | |
@@ -214,7 +249,7 @@ Template collection kept for pages (alt, caption). S3 prefix `media/`. Read anyo
 | Field | Type | Notes |
 |---|---|---|
 | `name` | text, required | |
-| `slug` | `slugField()` unique | Used as list anchor (`/builds#slug`); no detail page. |
+| `slug` | `slugField()` unique | Detail page `/builds/{slug}`. |
 | `description` | textarea, required | |
 | `repositoryUrl` | text (URL), required | |
 | `homepage` | text (URL) | |
@@ -257,7 +292,7 @@ Legend: ✔ allowed, ✘ denied, **own** = `createdBy == user.id`, **pub** = `_s
 | Header/Footer globals | read | read | read | update | ✔ |
 | Redirects | read (plugin default) | ✘ write | ✘ write | all | ✔ |
 | Sources | read | read | read | all | ✔ |
-| Users | ✘ | self | read (no emails), self update | all | ✔ |
+| Users | create = registration only | self | read (no emails), self update | all | ✔ |
 | Jobs / manual sync trigger | ✘ | ✘ | ✘ | ✔ | `CRON_SECRET` |
 
 Admin-panel visibility (`admin.hidden`): Users, Sources, Jobs, Redirects, Header, Footer, Pages hidden for regular users; Users/Sources/Jobs/Redirects/Header/Footer hidden for moderators. Regular users see Posts, Resources, Plugins, Builds, Post Media, and their account.
@@ -353,10 +388,13 @@ Queues: `default` (emails/notifications), `sync` (synchronizations).
 | Template | Trigger | Recipients | Content |
 |---|---|---|---|
 | `submissionToModerators` | T1, T3, T4 by regular user | users with role moderator/admin, `notifications.moderation = true`, email set, ≠ author | type, title, author, submission date, link to admin edit view, link to `/admin/moderation` |
-| `entryApproved` | T5 by someone other than the author | author with `notifications.ownEntries = true` | title, link to the entry (external URL, or `/news/{slug}` for community posts) |
+| `entryApproved` | T5 by someone other than the author | author with `notifications.ownEntries = true` | title, link to the entry's portal page (`/news/{slug}`, `/resources/{slug}`, `/plugins/{slug}`, `/builds/{slug}`) |
+| `verifyEmail` | self-registration (Payload `auth.verify`, custom `generateEmailHTML/Subject`) | the new user | "Activate your account" link `/admin/users/verify/{token}` (Payload's built-in verify view, then sign in) |
 | `entryRejected` | T6 by someone other than the author | author with `notifications.ownEntries = true` | title, reason, link to edit in admin |
 | `invitation` | admin creates a user without OAuth (afterChange, `operation === 'create'`, no provider IDs) | the new user | "An account was created for you…", set-password link `/admin/reset/{token}` (valid 7 days) |
 | `forgotPassword` | Payload `forgotPassword` (custom `generateEmailHTML/Subject`) | requester | reset link `/admin/reset/{token}` (valid 1 h) |
+
+The `verifyEmail` and `forgotPassword` emails are sent by Payload inside the request (built-in auth flows, not our jobs); they are small, and a failure is returned to the user, who can retry.
 
 De-duplication: notifications are queued only on a status **transition** (into `pending`, `published` via moderation, `rejected`). Retrying a `sendEmail` job never re-renders another recipient.
 
@@ -467,18 +505,38 @@ Plugin: `payload-oauth2` 1.0.21, two instances (ADR-001).
 
 Local dev: `NEXT_PUBLIC_SERVER_URL=https://plc.ddev.site:3000` (or the exposed HTTPS port chosen in M1) → callbacks e.g. `https://plc.ddev.site:3000/api/users/oauth/github/callback`.
 
-Flow:
-1. Sign-in buttons (website `/sign-in` and admin `beforeLogin`) link to the authorize endpoint with `?state=<return path>` (`/admin` or a website path; validated against an allow-list of relative paths in `successRedirect`). Buttons render only for enabled providers.
-2. Callback → plugin exchanges code (+ PKCE verifier) → our `getUserInfo(accessToken, req)` (`src/auth/oauth/{github,google}.ts`) fetches the profile, validates with `zod`, then calls the pure function `resolveOAuthAccount()`:
-   - find user by provider ID → **existing** (return `{ [subField], avatarUrl, githubLogin? }` only — never overwrite email/name).
-   - else, if the provider email is **verified**, find user by email → **link**: set the provider ID on that user, then return as existing.
-   - else, if no verified email → refuse sign-in ("Verify an email address with {provider} first"; redirect to `/sign-in?error=email_unverified`).
-   - else → **new user** data `{ email, name, avatarUrl, [subField], githubLogin? }`; sets `req.context.oauthSignIn = true`.
-3. The plugin finds the user by provider ID, creates or updates it, runs `beforeLogin`/`afterLogin` hooks, creates a Payload session, sets the `payload-token` cookie and redirects (`successRedirect`). Failures → `/sign-in?error=oauth`.
-4. `beforeLogin` hook (all strategies including local password): if `githubLogin ∈ ADMIN_GITHUB_LOGINS` or `email ∈ ADMIN_EMAILS` and the user lacks `admin` → add it (`overrideAccess`). Roles are never removed automatically.
-5. Password sign-in: website form → `POST /api/users/login` (built-in); admin uses the standard form. "Forgot password" → built-in endpoint, reset at `/admin/reset/{token}`.
+Sign-in methods (website and admin): GitHub, Google, email + password. Sign-up methods: GitHub, Google, and the website registration form (email + password with activation link). One account can have any combination of GitHub, Google and a password.
 
-Security notes: OAuth users get a random unusable password; "forgot password" sends the link only to the account email, which is provider-verified, so no takeover without mailbox access. Login CSRF is mitigated by PKCE (plugin does not verify `state`). Rate limiting on `/api/users/login`, `/forgot-password`, OAuth endpoints.
+### 12.1 OAuth sign-in / sign-up
+1. Sign-in buttons (website `/sign-in`, `/sign-up`, and admin `beforeLogin`) link to the authorize endpoint with `?state=<return path>` (`/admin` or a website path; validated against an allow-list of relative paths in `successRedirect`). Buttons render only for enabled providers.
+2. Callback → plugin exchanges code (+ PKCE verifier) → our `getUserInfo(accessToken, req)` (`src/auth/oauth/{github,google}.ts`) fetches the profile, validates with `zod`, then calls the pure function `resolveOAuthAccount()`:
+   - **connect intent** present (§12.3) → link the provider to the signed-in user.
+   - find user by provider ID → **existing** (return `{ [subField], avatarUrl, githubLogin? }` only — never overwrite email/name).
+   - else, if no verified provider email → refuse sign-in ("Verify an email address with {provider} first"; `/sign-in?error=email_unverified`) (ADR-005).
+   - else find user by email (case-insensitive) → **link**: set the provider ID on that user and return as existing. If that account is a self-registered, **not yet verified** password account, the provider has now proven ownership of the email: set `_verified: true`, clear the verification token, and **replace the password with a random one** — otherwise someone who pre-registered the victim's email would keep a working password (account pre-hijacking). The user can set a password later via "forgot password".
+   - else → **new user** `{ email, name, avatarUrl, [subField], githubLogin?, _verified: true }`; sets `req.context.oauthSignIn = true`.
+3. The plugin finds the user by provider ID, creates or updates it, runs `beforeLogin`/`afterLogin` hooks, creates a Payload session, sets the `payload-token` cookie and redirects (`successRedirect`). Failures → `/sign-in?error=oauth`.
+4. `beforeLogin` hook (all strategies including local password): if `githubLogin ∈ ADMIN_GITHUB_LOGINS` or `email ∈ ADMIN_EMAILS` (account verified) and the user lacks `admin` → add it (`overrideAccess`). Roles are never removed automatically.
+
+### 12.2 Email registration and password sign-in
+1. `/sign-up` (website): name, email, password (+ confirmation), privacy-policy acknowledgement, OAuth buttons. Server action → `payload.create({ collection: 'users', overrideAccess: false, data: { name, email, password } })` as an anonymous request (same rules as REST `POST /api/users`).
+2. Payload sends the **activation email** (`auth.verify`, custom template); the page shows "Check your inbox". If the email already exists, the response is the same generic message (no account enumeration); an email to an existing account is not sent in v1 (Q17).
+3. The link opens Payload's built-in verify view `/admin/users/verify/{token}` → `POST /api/users/verify/{token}` → `_verified: true` → the view redirects to the login screen. (Least code, same choice as Q13; a website `/verify-email` page is a later option.)
+4. Password sign-in: website `/sign-in` form → `POST /api/users/login` (built-in); unverified users get "Please activate your account" with a **resend** button. Payload 3.90.2 has no built-in resend operation, so `POST /api/users/resend-activation` (`{ email }`, rate-limited, always the same generic response) regenerates `_verificationToken` and sends the activation email again. Admin uses the standard login form, with a "Create an account" link to `/sign-up`.
+5. "Forgot password" → built-in endpoint, reset at `/admin/reset/{token}`. Payload's `resetPassword` does **not** set `_verified` (checked in 3.90.2), so an `afterOperation` hook on `resetPassword` marks the user verified — the reset link proves mailbox access. This also covers the invitation flow and replaces any password set by someone who pre-registered the email.
+6. Abuse protection: Payload rate limiting on `POST /api/users`, `/login`, `/forgot-password`; minimum password length 10 (custom `validate` on the password via `beforeValidate`), max length per Payload default. CAPTCHA is not in scope for v1 (Q19).
+
+### 12.3 Connect another provider while signed in (approved idea I1)
+- `/account` → "Connected accounts": GitHub / Google rows with **Connect** or **Disconnect**; "Set a password" / "Change password" links.
+- **Connect**: a POST (server action, CSRF-protected by Next.js) sets an HttpOnly, signed (`PAYLOAD_SECRET`), 10-minute `plc_connect` cookie containing the user ID and provider, then redirects to the provider's authorize endpoint with `state=/account`. In `getUserInfo`, if `req.user` (session cookie) matches the intent cookie: if the provider ID belongs to **another** user → refuse (`/account?error=provider_in_use`); else set the provider ID (and `githubLogin`) on the current user regardless of the provider email. The cookie is cleared after use. PKCE ensures the code was obtained by this browser.
+- **Disconnect**: removes the provider ID. Always allowed, because every account has a verified email and can recover through "forgot password"; the UI warns when it is the last OAuth provider and no password was set.
+- Matching by verified email still links automatically on normal sign-in (§12.1), so users with the same email on GitHub and Google end up with one account without doing anything.
+
+### 12.4 Security notes
+- OAuth users get a random unusable password; "forgot password" sends the link only to the account email, which is verified (provider or activation), so no takeover without mailbox access.
+- Account pre-hijacking via an unverified registration is neutralized as described in §12.1.
+- Login CSRF is mitigated by PKCE (the plugin does not verify `state`); connecting a provider additionally requires the signed intent cookie set by a POST.
+- Rate limiting on `/api/users` (create), `/api/users/login`, `/forgot-password`, OAuth endpoints.
 
 ---
 
@@ -494,19 +552,25 @@ Security notes: OAuth users get a random unusable password; "forgot password" se
 
 | Route | Source | Notes |
 |---|---|---|
-| `/` | page `home` (hero, SectionsOverview, CollectionList ×3) | Hero CTA "Sign in with GitHub/Google and contribute". |
+| `/` | page `home` (hero, SectionsOverview, CollectionList ×3) | Hero CTA "Join with GitHub, Google or email and contribute" (→ `/sign-up`; brief: "sign in (GitHub or Google)", extended by ADR-020). |
 | `/news` | Posts listing | search `q` (title, summary), `source`, `tag`, `page`; sort newest first. Cards: imported → external URL (new tab, `rel="noopener noreferrer"`, source name); community → `/news/{slug}` (author, no external label). |
 | `/news/[slug]` | community post | template post rendering; imported slugs 404. |
-| `/resources` | Resources | `q` (title, description), `type`, `tag`, `sort` (`updated`), `page`. |
-| `/plugins` | Plugins (not hidden) | `q` (name, description), `topic`, `sort` (`stars` default, `updated`), `page`. Card: name, description, created, last update, topics, stars, npm version, weekly downloads. |
-| `/builds` | Builds | `q`, `tag`, `version` (base Payload version), `sort` (`updated`), `page`. |
+| `/resources` | Resources | `q` (title, description), `type`, `tag`, `sort` (`updated`), `page`. Cards → `/resources/{slug}`. |
+| `/resources/[slug]` | Resource detail | Title, type, tags, full description, submitter ("Former member" when anonymized), dates, **prominent "Visit {host}" button** to the external URL (new tab, `rel="noopener noreferrer"`). |
+| `/plugins` | Plugins (not hidden) | `q` (name, description), `topic`, `sort` (`stars` default, `updated`), `page`. Card: name, description, created, last update, topics, stars, npm version, weekly downloads. Cards → `/plugins/{slug}`. |
+| `/plugins/[slug]` | Plugin detail | Name, owner avatar, description, topics, stars, forks, license, archived/fork badges, GitHub created / last pushed dates, npm package with `pnpm add {package}` copy box, latest version, weekly downloads, last publish date, homepage; **prominent "View repository" button** (and "View on npm"). Hidden plugins 404. |
+| `/builds` | Builds | `q`, `tag`, `version` (base Payload version), `sort` (`updated`), `page`. Cards → `/builds/{slug}`. |
+| `/builds/[slug]` | Build detail | Name, description, base Payload version, tags, npm install box, list of included changes (title → link, notes), homepage/docs; **prominent "View repository" button**. |
 | `/community`, `/about`, `/privacy` | pages | `[slug]` route from template. |
-| `/sign-in` | auth | GitHub/Google buttons (enabled only), email/password form, "Forgot password?" → `/admin/forgot`. |
-| `/account` | auth | Profile summary, linked providers, links to admin (my entries, notification settings at `/admin/account`), sign out, **delete account** (confirmation). |
+| `/sign-in` | auth | GitHub/Google buttons (enabled only), email/password form, "Forgot password?" → `/admin/forgot`, link to `/sign-up`, resend activation. |
+| `/sign-up` | auth | GitHub/Google buttons, registration form (name, email, password, confirmation), "check your inbox" state (§12.2). |
+| `/account` | auth | Profile summary, **connected accounts** (connect/disconnect GitHub and Google, §12.3), set/change password link, links to admin (my entries, notification settings at `/admin/account`), sign out, **delete account** (confirmation; explains that content is anonymized). |
 | `/submit/{posts,resources,plugins,builds}` | redirect | → `/admin/collections/{slug}/create` (sign-in first if anonymous). |
-| `/sitemap.xml`, `/robots.txt`, `/pages-sitemap.xml`, `/news-sitemap.xml` | next-sitemap + route handlers | |
+| `/sitemap.xml`, `/robots.txt`, `/pages-sitemap.xml`, `/news-sitemap.xml`, `/resources-sitemap.xml`, `/plugins-sitemap.xml`, `/builds-sitemap.xml` | next-sitemap + route handlers | |
 | `/api/health/live`, `/api/health/ready` | Next route handlers | live: no I/O; ready: `getPayload()` + MongoDB `ping`. |
 | `/admin/**` | Payload | + `/admin/moderation`. |
+
+Detail pages (resources, plugins, builds) are server components using `payload.find({ where: { slug }, draft: false, overrideAccess: false, limit: 1 })` with `generateStaticParams` + on-demand revalidation by cache tag (`afterChange` hooks), `generateMetadata` (title, description, canonical, OG image = default or owner avatar), and JSON-LD (`SoftwareSourceCode` for plugins and builds, `CreativeWork`/`WebPage` for resources). Moderators/owners preview drafts through the template's live preview route.
 
 Listing implementation: server components reading `searchParams` through `nuqs` server cache (`createSearchParamsCache`), filters as `<form method="get">`/links (works without JS), `payload.find({ where, sort, page, limit: 24, draft: false, overrideAccess: false })`. Distinct values for filters via `payload.findDistinct` (`tags`, `topics`, `basePayloadVersion`, `type`). Search = `or: [{ title: { like: q } }, { summary|description: { like: q } }]`.
 
