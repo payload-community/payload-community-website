@@ -26,4 +26,34 @@ export const messages = {
     body: 'An administrator created an account for you on the Payload CMS Community Portal. Set your password to sign in. The link is valid for 7 days; after that, use "Forgot password" on the sign-in page. You can also sign in with GitHub or Google using the same email address.',
     button: 'Set your password',
   },
+  submissionToModerators: {
+    subject: (type: string, title: string) => `New ${type.toLowerCase()} to review: ${title}`,
+    preview: 'A community member submitted an entry for review.',
+    heading: 'New submission to review',
+    body: 'A community member submitted an entry. Review it and approve or reject it on the moderation dashboard.',
+    button: 'Open the moderation dashboard',
+    editLink: 'Open the entry in the admin panel',
+    labels: { author: 'Author', submitted: 'Submitted', title: 'Title', type: 'Type' },
+    note: 'You receive these emails because you are a moderator. You can turn them off in your account settings.',
+  },
+  entryApproved: {
+    subject: (title: string) => `Your entry is published: ${title}`,
+    preview: 'A moderator approved your entry.',
+    heading: 'Your entry is published',
+    body: (type: string, title: string) =>
+      `A moderator approved your ${type.toLowerCase()} "${title}". It is now visible on the portal.`,
+    button: 'View it on the portal',
+  },
+  entryRejected: {
+    subject: (title: string) => `Your entry was not approved: ${title}`,
+    preview: 'A moderator did not approve your entry.',
+    heading: 'Your entry was not approved',
+    body: (type: string, title: string) =>
+      `A moderator did not approve your ${type.toLowerCase()} "${title}". You can edit it and submit it again.`,
+    reasonLabel: 'Reason',
+    noReason: 'No reason was given.',
+    button: 'Edit your entry',
+  },
+  ownEntriesNote:
+    'You receive these emails about your own entries. You can turn them off in your account settings.',
 } as const
