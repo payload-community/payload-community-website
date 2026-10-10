@@ -28,3 +28,6 @@ public/sitemap*.xml
 /playwright-report/
 /blob-report/
 /playwright/.cache/
+
+# Compiled Lingui catalogs (`pnpm i18n:compile` runs before dev, build, typecheck and E2E)
+src/locales/**/messages.ts

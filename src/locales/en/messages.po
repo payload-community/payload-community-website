@@ -1,0 +1,16 @@
+msgid ""
+msgstr ""
+"POT-Creation-Date: 2026-10-10 14:50+0400\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: @lingui/cli\n"
+"Language: en\n"
+
+#: src/app/(frontend)/not-found.tsx
+msgid "Go home"
+msgstr "Go home"
+
+#: src/app/(frontend)/not-found.tsx
+msgid "This page could not be found."
+msgstr "This page could not be found."

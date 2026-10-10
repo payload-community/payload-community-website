@@ -8,7 +8,7 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 ### Verification tasks (agreed approach; confirm during implementation)
 
-**T2. Lingui SWC plugin compatibility** (M4). If `@lingui/swc-plugin` 6.7.1 does not load with Next 16.3.3, pin the swc plugin version listed as compatible in Lingui's compatibility table.
+**T2. Lingui SWC plugin compatibility** (M4, decided as [ADR-027](decisions/0027-lingui-wiring.md), please confirm). 6.7.1 does not load with Next 16.3.3 (`swc_core` 73); `@lingui/swc-plugin` is pinned to 6.1.0, the newest release that compiles, with Lingui 6.9.0. `eslint-plugin-lingui` is added as a lint guardrail for unwrapped website strings.
 
 
 ## Resolved (2026-10-10 review)

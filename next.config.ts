@@ -32,6 +32,10 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: serverHostname ? [serverHostname] : [],
   // E2E runs a second dev server next to `pnpm dev`; each needs its own build directory.
   distDir: process.env.NEXT_DIST_DIR || '.next',
+  experimental: {
+    // @lingui/swc-plugin is pinned exactly: it must match the swc_core of Next's bundled SWC (ADR-027).
+    swcPlugins: [['@lingui/swc-plugin', {}]],
+  },
   // Temporarily required on Windows until Next.js fixes Turbopack Sass resolution.
   // See: https://github.com/vercel/next.js/issues/86431
   sassOptions: {

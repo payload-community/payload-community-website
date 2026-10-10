@@ -38,7 +38,7 @@ Footer: seeded links (Privacy policy, GitHub repository), "Cookie settings" (ope
 
 ## 15. i18n
 
-- Website: Lingui 6 (`@lingui/core`, `@lingui/react`, `@lingui/cli`, `@lingui/swc-plugin` via `experimental.swcPlugins`), locale `en`, catalogs `src/locales/{locale}/messages.po`, compiled at build. RSC: `setI18n`/`initLingui` per request (Lingui's Next.js App Router pattern); client components through `I18nProvider`. Scripts `i18n:extract` (`lingui extract --clean`), `i18n:compile`. CI check: extract produces no missing translations for `en`.
+- Website: Lingui 6.9.0 (`@lingui/core`, `@lingui/react`, `@lingui/cli`, `@lingui/format-po`) with `@lingui/swc-plugin` **6.1.0** via `experimental.swcPlugins` (the newest release compatible with Next 16.3.3, [ADR-027](../decisions/0027-lingui-wiring.md)), locale `en`, config `lingui.config.ts`. Catalogs `src/locales/{locale}/messages.po` (tracked); compiled `messages.ts` is gitignored and produced by `lingui compile` at the start of `dev`, `build`, `typecheck` and `test:e2e`. RSC: `initLingui()` from `src/lingui/server.ts` in every layout and page (one instance per locale, `setI18n`); client components through `LinguiClientProvider` (`src/lingui/ClientProvider.tsx`). Scripts `i18n:extract` (`lingui extract --clean`), `i18n:compile` (`--strict`), `i18n:check` (`lingui check sync --clean`, CI drift check). `eslint-plugin-lingui` reports unwrapped strings in website code (`warn`).
 - Admin panel: Payload `i18n` config with `supportedLanguages: { en }` and custom `translations.en.plc.*` keys for our admin components and error messages.
 - Emails: `src/email/messages.ts` (not Lingui yet; ready to be moved).
 
