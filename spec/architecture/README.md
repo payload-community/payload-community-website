@@ -72,7 +72,7 @@ One small container image (Next.js standalone output + one bundled `cli.mjs`), t
 
 | Template part | Action |
 |---|---|
-| `pages` collection + layout builder + heros + blocks (CallToAction, Content, MediaBlock, Archive, Code, Banner) | **Keep.** Used for Home, Community, About, Privacy. |
+| `pages` collection + layout builder + heros + blocks (CallToAction, Content, MediaBlock, Code, Banner) | **Keep.** Used for Home, Community, About, Privacy. The template's Archive block, cards and pagination are removed: our `CollectionList` and `SectionsOverview` blocks and the listing pages replace them. |
 | `FormBlock` + `@payloadcms/plugin-form-builder` + `src/blocks/Form/*` | **Remove** (nothing uses forms). [ADR-015](../decisions/0015-template-features-removed.md) |
 | `posts`, `categories` collections, `nestedDocsPlugin` (only used by categories) | **Replace** with brief's Posts + Post Media; remove Categories and nested-docs. |
 | `searchPlugin` + `/search` page | **Remove**; listings search with plain `where` queries on title/description. [ADR-015](../decisions/0015-template-features-removed.md) |

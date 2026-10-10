@@ -81,6 +81,7 @@ export const ImageMedia: React.FC<MediaProps> = (props) => {
   const sizes = sizeFromProps
     ? sizeFromProps
     : Object.entries(breakpoints)
+        // eslint-disable-next-line lingui/no-unlocalized-strings -- `sizes` media query, not text
         .map(([, value]) => `(max-width: ${value}px) ${value * 2}w`)
         .join(', ')
 
