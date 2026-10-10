@@ -1,3 +1,30 @@
 /.ddev
 .env
 .env.local
+
+# Only pnpm is used
+package-lock.json
+yarn.lock
+
+build
+dist
+node_modules
+.DS_Store
+.next
+.next-e2e
+next-env.d.ts
+.vercel
+/cli.mjs
+*.tsbuildinfo
+
+# Payload default media upload directory (uploads go to S3)
+public/media/
+
+public/robots.txt
+public/sitemap*.xml
+
+# Playwright
+/test-results/
+/playwright-report/
+/blob-report/
+/playwright/.cache/
