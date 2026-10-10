@@ -14,6 +14,8 @@ export interface LoginOptions {
  */
 export async function login({ page, user }: LoginOptions): Promise<void> {
   await page.goto('/admin/login')
+  // Submitting before hydration posts the form natively and stays on the login page.
+  await page.waitForLoadState('networkidle')
 
   await page.fill('#field-email', user.email)
   await page.fill('#field-password', user.password)
