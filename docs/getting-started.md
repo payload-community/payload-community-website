@@ -21,6 +21,8 @@ Inside the container:
 ```bash
 cp .env.example .env   # only if .env does not exist yet; then fill in the secrets
 pnpm install
+pnpm migrate           # database indexes (safe to run again)
+pnpm seed:dev          # base pages and navigation, sample data and accounts
 pnpm dev
 ```
 
@@ -64,16 +66,31 @@ Never commit `.env`. When you add a variable, add it to `.env.example` with a co
 
 Uploads (the `media` collection) are stored in Garage through `@payloadcms/storage-s3` under the `media/` key prefix. Payload saves the public URL (`${S3_PUBLIC_URL}/media/...`) and browsers load files directly from Garage's web endpoint. `next/image` is allowed to optimize images from `S3_PUBLIC_URL` (see `images.remotePatterns` in `next.config.ts`). In DDEV, `garage.plc.ddev.site` resolves to a private IP, which Next.js blocks by default, so `images.dangerouslyAllowLocalIP` is enabled in development only. A production build run locally (`pnpm build && pnpm start`) cannot optimize Garage images.
 
-## Seeding
+## Database, seeding and accounts
 
-The seed commands are added in milestone M2:
+- `pnpm migrate` applies the migrations in `src/migrations/` (currently the partial unique indexes for optional unique fields). Run it after pulling new migrations. Create one with `pnpm payload migrate:create <name>`.
+- `pnpm seed` creates the base content if it is missing: the "Payload blog" source, the Home, Community, About and Privacy policy pages, and the header and footer menus (only while they are empty). It never changes existing documents, so it is safe in production.
+- `pnpm seed:dev` runs `pnpm seed`, then adds sample accounts and entries in every moderation status. It refuses to run with `NODE_ENV=production`.
 
-- `pnpm seed`: idempotent production seed (sources, pages, navigation).
-- `pnpm seed:dev`: local sample data and test users. Never run in production.
+Sample accounts from `pnpm seed:dev` (all with the password `plc-dev-password`):
+
+| Email | Role |
+| --- | --- |
+| `admin@example.com` | Admin |
+| `moderator@example.com` | Moderator |
+| `user@example.com` | Regular user |
+
+Payload's "create first user" screen is disabled. Outside local development, the first admins are the people listed in `ADMIN_GITHUB_LOGINS` / `ADMIN_EMAILS`: they get the admin role when they sign in.
+
+Other accounts:
+
+- **Admin-created users** (Admin panel → Users → Create) get an email with a link to set their password, valid for 7 days. The email is sent by a background job within a minute.
+- **Self-registration** (`POST /api/users` for now; the website form comes in M4) sends an activation link. The account can sign in after activation; `POST /api/users/resend-activation` sends a new link.
+- All emails end up in Mailpit locally.
 
 ## Jobs
 
-Background jobs (post and plugin sync, notification emails) are added in milestone M5. In development they run automatically inside `pnpm dev`. `pnpm worker` runs a standalone worker, and `pnpm payload jobs:run --queue sync` runs queued sync jobs once.
+Background jobs send emails (invitations, activation resends; notifications from M3) and, from M5, run the post and plugin sync. In development they run automatically inside `pnpm dev` once a minute (`JOBS_AUTORUN`, default `true`). `pnpm worker` runs a standalone worker, and `pnpm payload jobs:run --queue sync` runs queued sync jobs once.
 
 ## Tests, lint and types
 
@@ -85,7 +102,7 @@ pnpm test:e2e      # Playwright: tests/e2e
 pnpm test          # both
 ```
 
-Tests never touch development data. `tests/helpers/testEnv.ts` switches them to the `plc_test` database and the `e2e` S3 key prefix. Playwright starts its own dev server on port 3100 (build directory `.next-e2e`), so it can run next to `pnpm dev`. Browsers are installed by the DDEV Playwright add-on. If Playwright reports a missing browser, run `pnpm exec playwright install chromium`.
+Tests never touch development data. `tests/helpers/testEnv.ts` switches them to the `plc_test` database and the `e2e` S3 key prefix. The integration tests and Playwright's global setup reset `plc_test` (empty collections, migrations, `seed`, the three sample accounts). Playwright starts its own dev server on port 3100 (build directory `.next-e2e`, jobs triggered by the tests), so it can run next to `pnpm dev`. The E2E email tests read Mailpit's API at `http://127.0.0.1:8025`. Browsers are installed by the DDEV Playwright add-on. If Playwright reports a missing browser, run `pnpm exec playwright install chromium`.
 
 After changing collections or globals, run `pnpm generate:types`. After changing admin components, also run `pnpm generate:importmap`. Commit the generated files.
 

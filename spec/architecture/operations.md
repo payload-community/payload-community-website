@@ -88,13 +88,14 @@ Multi-stage `Dockerfile` (Node 24 alpine, `corepack` pnpm, `pnpm install --froze
     - `node cli.mjs worker` → long-running jobs worker (§9).
     - `node cli.mjs self-test` → imports the config and every task without connecting to the DB; run as a `RUN` step in the Dockerfile so a package missing from the standalone trace fails the **build**, not the deployment. Packages only the CLI needs are added with `outputFileTracingIncludes` in `next.config.ts`.
   - No TypeScript sources, no Payload CLI, no full `node_modules`, no pnpm in the final stage. Target: well under 400 MB uncompressed (vs. roughly 1 GB+ with full production `node_modules`); measured and recorded in M6.
-- Locally the same entry point runs through `tsx` (`pnpm seed`, `pnpm seed:dev`, `pnpm worker`); the Payload CLI (`pnpm payload migrate:create`, `generate:types`) stays a dev tool.
+- Locally the same entry point runs through `tsx` (`pnpm migrate`, `pnpm seed`, `pnpm seed:dev`, `pnpm worker`; `seed-dev` is a local-only subcommand that refuses `NODE_ENV=production`); the Payload CLI (`pnpm payload migrate:create`, `generate:types`) stays a dev tool.
+- Bundling note for M6: `payload-oauth2` 1.0.21 publishes ESM with extensionless relative imports, which plain Node cannot resolve (Next.js, `tsx` and Vitest with `server.deps.inline` can). `esbuild` must bundle it into `cli.mjs` instead of leaving it external.
 - `ARG APP_VERSION` → `ENV APP_VERSION` (OTel `service.version`).
 - Default `CMD ["node", "server.js"]`; the worker and the migrate Job override the command.
 
 ### 18.2 Runtime configuration (env)
 Existing: `DATABASE_URI`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `CRON_SECRET`, `GITHUB_TOKEN`, `GITHUB_CLIENT_ID/SECRET`, `GOOGLE_CLIENT_ID/SECRET`, `ADMIN_GITHUB_LOGINS`, `ADMIN_EMAILS`, `S3_*`, `SMTP_*`, `EMAIL_FROM_*`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `OTEL_*`.
-Planned new (added to `.env` empty + `.env.example` when introduced): `JOBS_AUTORUN` (default `true`), `LOG_LEVEL` (default `info`), `S3_KEY_PREFIX` (empty; `e2e` in tests), `APP_VERSION` (image build arg), `DEPLOYMENT_ENVIRONMENT` (mapped into `OTEL_RESOURCE_ATTRIBUTES`).
+Added in M1/M2: `JOBS_AUTORUN` (default `true`), `LOG_LEVEL` (default `info`), `S3_KEY_PREFIX` (empty; `e2e` in tests). Planned (added to `.env` empty + `.env.example` when introduced): `APP_VERSION` (image build arg), `DEPLOYMENT_ENVIRONMENT` (mapped into `OTEL_RESOURCE_ATTRIBUTES`).
 
 `NEXT_PUBLIC_*` are inlined at build time: the image is built per environment, or (preferred) GA ID and server URL are read at runtime on the server and passed to client components as props ([ADR-013](../decisions/0013-next-public-env-at-runtime.md)).
 

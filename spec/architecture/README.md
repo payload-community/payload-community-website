@@ -34,7 +34,7 @@ The brief names the technologies; this table pins the concrete packages and thei
 | Payload plugins | `plugin-seo`, `plugin-redirects`, `storage-s3`, `email-nodemailer`, `live-preview-react`, `admin-bar` | 3.90.2 | |
 | File storage | Garage (S3-compatible) via `@payloadcms/storage-s3` | 3.90.2 | [§13](operations.md#13-storage) |
 | Auth | Payload local strategy + `payload-oauth2` (GitHub, Google) | 1.0.21 | [§12](auth.md#12-authentication-flow), [ADR-001](../decisions/0001-oauth-plugin-payload-oauth2.md) |
-| Email | SMTP via `@payloadcms/email-nodemailer`; templates `@react-email/components` | 3.90.2 / 1.x | Mailpit locally |
+| Email | SMTP via `@payloadcms/email-nodemailer`; templates `react-email` + `@react-email/render` ([ADR-025](../decisions/0025-react-email-package.md)) | 3.90.2 / 6.11.1 / 2.1.0 | Mailpit locally |
 | Jobs | Payload Jobs Queue (`jobs.tasks` + `schedule`) | 3.90.2 | worker Deployment |
 | UI | Tailwind CSS 4 + shadcn/ui (template) | | light/dark theme |
 | i18n | Lingui (`@lingui/core`, `react`, `cli`, `swc-plugin`) | 6.x | website only; admin uses Payload i18n |

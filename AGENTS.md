@@ -51,7 +51,7 @@ Available from M1 on (scripts defined in `package.json`):
 | `pnpm test:e2e` | Playwright against `plc_test` |
 | `pnpm generate:types` | Regenerate `src/payload-types.ts` |
 | `pnpm generate:importmap` | Regenerate the admin import map |
-| `pnpm payload migrate` / `pnpm payload migrate:create <name>` | Database migrations |
+| `pnpm migrate` / `pnpm payload migrate:create <name>` | Apply migrations (via `src/cli`) / create one |
 | `pnpm seed` | Idempotent production seed (sources, pages, navigation) |
 | `pnpm seed:dev` | Local sample data and users (never in production) |
 | `pnpm worker` | Run the jobs worker locally (`src/cli` via `tsx`; the image runs `node cli.mjs worker`) |

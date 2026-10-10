@@ -8,11 +8,8 @@ No open product questions.
 
 ### Verification tasks (agreed approach; confirm during implementation)
 
-**T1. Admin create view without password fields** (M2). Hide the password fields for new users and set a random password in `beforeValidate`. If the admin UI still requires them: a small custom field component that pre-fills a generated password and hides the inputs.
-
 **T2. Lingui SWC plugin compatibility** (M4). If `@lingui/swc-plugin` 6.7.1 does not load with Next 16.3.3, pin the swc plugin version listed as compatible in Lingui's compatibility table.
 
-**T6. Built-in verify view** (M2). Confirm that `/admin/users/verify/{token}` works for non-admin users and redirects to the login screen; otherwise add a small website `/verify-email` page calling `POST /api/users/verify/{token}`.
 
 ## Resolved (2026-10-10 review)
 
@@ -38,6 +35,8 @@ No open product questions.
 | Q17 | Sign-up with an already registered email | Generic "Check your inbox" answer; no email to the existing account in v1 (idea I15 kept for later). |
 | Q18 | Unverified accounts cleanup | Keep them for now; no cleanup job. |
 | Q19 | Bot protection on registration | No CAPTCHA in v1; rate limiting + email activation. |
+| T1 | Admin create view without password fields | Checked in M2: the create view always requires a password (`requirePassword` for new docs), so the fallback is used — a UI field pre-fills and hides the inputs; the server sets a random password ([auth §12.2](architecture/auth.md#122-email-registration-and-password-sign-in)). |
+| T6 | Built-in verify view | Checked in M2: works for logged-out users and redirects to the login screen with a success toast; no website page needed. |
 | T3 | Unique-when-set fields | Partial unique indexes created by a migration; `''` normalized to `null` ([ADR-024](decisions/0024-unique-optional-fields-partial-indexes.md)). |
 | T4 | GitHub 1,000-result search cap | No date slicing in v1; when the cap or `incomplete_results` is hit, skip hiding and warn. |
 | T5 | Image size | Standalone output + bundled `cli.mjs` for migrate/seed/worker; REST rejected for migrations; optional CronJob mode for jobs ([ADR-023](decisions/0023-small-image-with-bundled-cli-scripts.md), supersedes ADR-010). |
