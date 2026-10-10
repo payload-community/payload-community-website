@@ -6,17 +6,20 @@ import {
   lexicalEditor,
 } from '@payloadcms/richtext-lexical'
 
-import { anyone } from '../access/anyone'
-import { authenticated } from '../access/authenticated'
+import { anyone, isModerator, moderatorOnly } from '@/access'
 
 export const Media: CollectionConfig = {
   slug: 'media',
   folders: true,
   access: {
-    create: authenticated,
-    delete: authenticated,
+    create: moderatorOnly,
+    delete: moderatorOnly,
     read: anyone,
-    update: authenticated,
+    update: moderatorOnly,
+  },
+  admin: {
+    group: 'Media',
+    hidden: ({ user }) => !isModerator(user),
   },
   fields: [
     {

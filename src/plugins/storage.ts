@@ -28,6 +28,11 @@ export const storagePlugin = s3Storage({
       generateFileURL,
       prefix: keyPrefix('media'),
     },
+    'post-media': {
+      disablePayloadAccessControl: true,
+      generateFileURL,
+      prefix: keyPrefix('post-media'),
+    },
   },
   config: {
     credentials: {

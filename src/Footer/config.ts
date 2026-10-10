@@ -1,5 +1,7 @@
 import type { GlobalConfig } from 'payload'
 
+import { isAdmin } from '@/access'
+
 import { link } from '@/fields/link'
 import { revalidateFooter } from './hooks/revalidateFooter'
 
@@ -7,6 +9,11 @@ export const Footer: GlobalConfig = {
   slug: 'footer',
   access: {
     read: () => true,
+    update: ({ req: { user } }) => isAdmin(user),
+  },
+  admin: {
+    group: 'Website',
+    hidden: ({ user }) => !isAdmin(user),
   },
   fields: [
     {
@@ -17,7 +24,7 @@ export const Footer: GlobalConfig = {
           appearances: false,
         }),
       ],
-      maxRows: 6,
+      maxRows: 10,
       admin: {
         initCollapsed: true,
         components: {

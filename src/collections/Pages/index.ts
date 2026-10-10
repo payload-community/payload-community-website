@@ -1,11 +1,11 @@
 import type { CollectionConfig } from 'payload'
 
-import { authenticated } from '../../access/authenticated'
-import { authenticatedOrPublished } from '../../access/authenticatedOrPublished'
+import { adminOnly, isAdmin, isModerator, publishedOnly } from '@/access'
 import { Archive } from '../../blocks/ArchiveBlock/config'
 import { CallToAction } from '../../blocks/CallToAction/config'
 import { Content } from '../../blocks/Content/config'
-import { FormBlock } from '../../blocks/Form/config'
+import { CollectionList } from '../../blocks/CollectionList/config'
+import { SectionsOverview } from '../../blocks/SectionsOverview/config'
 import { MediaBlock } from '../../blocks/MediaBlock/config'
 import { hero } from '@/heros/config'
 import { slugField } from 'payload'
@@ -24,10 +24,12 @@ import {
 export const Pages: CollectionConfig<'pages'> = {
   slug: 'pages',
   access: {
-    create: authenticated,
-    delete: authenticated,
-    read: authenticatedOrPublished,
-    update: authenticated,
+    create: adminOnly,
+    delete: adminOnly,
+    read: ({ req: { user } }) => (isModerator(user) ? true : publishedOnly),
+    // Moderators edit the Community page only.
+    update: ({ req: { user } }) =>
+      isAdmin(user) ? true : isModerator(user) ? { slug: { equals: 'community' } } : false,
   },
   // This config controls what's populated by default when a page is referenced
   // https://payloadcms.com/docs/queries/select#defaultpopulate-collection-config-property
@@ -37,6 +39,8 @@ export const Pages: CollectionConfig<'pages'> = {
     slug: true,
   },
   admin: {
+    group: 'Website',
+    hidden: ({ user }) => !isModerator(user),
     defaultColumns: ['title', 'slug', 'updatedAt'],
     livePreview: {
       url: ({ data, req }) =>
@@ -72,7 +76,7 @@ export const Pages: CollectionConfig<'pages'> = {
             {
               name: 'layout',
               type: 'blocks',
-              blocks: [CallToAction, Content, MediaBlock, Archive, FormBlock],
+              blocks: [CallToAction, Content, MediaBlock, Archive, SectionsOverview, CollectionList],
               required: true,
               admin: {
                 initCollapsed: true,
