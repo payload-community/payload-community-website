@@ -19,6 +19,10 @@ msgstr "{forks, plural, one {# fork} other {# forks}}"
 msgid "{stars, plural, one {# GitHub star} other {# GitHub stars}}"
 msgstr "{stars, plural, one {# GitHub star} other {# GitHub stars}}"
 
+#: src/website/listing/components.tsx
+msgid "{total, plural, one {# result} other {# results}}"
+msgstr "{total, plural, one {# result} other {# results}}"
+
 #. Compact weekly npm downloads, e.g. '1.2K/week'
 #: src/website/cards.tsx
 msgid "{weeklyDownloads}/week"
@@ -39,10 +43,40 @@ msgstr "Accept analytics"
 msgid "Account menu for {displayName}"
 msgstr "Account menu for {displayName}"
 
+#. Filter option: posts from all sources
+#: src/website/listing/copy.ts
+msgid "All sources"
+msgstr "All sources"
+
+#. Filter option: no tag filter
+#: src/website/listing/copy.ts
+msgid "All tags"
+msgstr "All tags"
+
+#. Filter option: no GitHub topic filter
+#: src/website/listing/copy.ts
+msgid "All topics"
+msgstr "All topics"
+
+#. Filter option: resources of every type
+#: src/website/listing/copy.ts
+msgid "All types"
+msgstr "All types"
+
+#. Filter option: builds based on any Payload version
+#: src/website/listing/copy.ts
+msgid "All versions"
+msgstr "All versions"
+
 #. Cookie settings section
 #: src/website/consent/ConsentProvider.tsx
 msgid "Analytics"
 msgstr "Analytics"
+
+#. Submit button of the filter form on listing pages
+#: src/website/listing/components.tsx
+msgid "Apply"
+msgstr "Apply"
 
 #. Color theme option: follow the system setting
 #: src/providers/Theme/ThemeSelector/index.tsx
@@ -65,7 +99,9 @@ msgid "build"
 msgstr "build"
 
 #. Admin bar: collection name
+#. Page title: listing of custom Payload builds
 #: src/components/AdminBar/index.tsx
+#: src/website/listing/copy.ts
 msgid "Builds"
 msgstr "Builds"
 
@@ -78,6 +114,11 @@ msgstr "by {authorName}"
 #: src/website/cards.tsx
 msgid "by a former member"
 msgstr "by a former member"
+
+#. Link that removes all search filters on a listing page
+#: src/website/listing/components.tsx
+msgid "Clear"
+msgstr "Clear"
 
 #. Accessible label of the close button of the cookie settings dialog
 #: src/website/consent/ConsentProvider.tsx
@@ -140,6 +181,15 @@ msgstr "Dashboard"
 msgid "Docs"
 msgstr "Docs"
 
+#: src/website/listing/copy.ts
+msgid "Docs, courses, videos, tools and other resources for learning and building with Payload."
+msgstr "Docs, courses, videos, tools and other resources for learning and building with Payload."
+
+#. Accessible name of the filter form on listing pages
+#: src/website/listing/components.tsx
+msgid "Filters"
+msgstr "Filters"
+
 #: src/app/(frontend)/not-found.tsx
 msgid "Go home"
 msgstr "Go home"
@@ -164,6 +214,11 @@ msgstr "Main"
 msgid "Moderation queue"
 msgstr "Moderation queue"
 
+#. Sort option: most GitHub stars first
+#: src/website/listing/copy.ts
+msgid "Most stars"
+msgstr "Most stars"
+
 #. Account menu item: the user's account page on the website
 #: src/Header/AccountMenu.tsx
 msgid "My account"
@@ -178,6 +233,29 @@ msgstr "My entries"
 #: src/website/consent/ConsentProvider.tsx
 msgid "Necessary"
 msgstr "Necessary"
+
+#. Sort option: most recently added first
+#: src/website/listing/copy.ts
+msgid "Newest"
+msgstr "Newest"
+
+#. Page title: listing of news posts
+#: src/website/listing/copy.ts
+msgid "News"
+msgstr "News"
+
+#. Pagination link to the next page
+#: src/website/listing/components.tsx
+msgid "Next"
+msgstr "Next"
+
+#: src/website/listing/components.tsx
+msgid "Nothing here yet."
+msgstr "Nothing here yet."
+
+#: src/website/listing/components.tsx
+msgid "Nothing matches these filters. Try a different search or clear the filters."
+msgstr "Nothing matches these filters. Try a different search or clear the filters."
 
 #. Card footer of an imported news post: the site it comes from
 #: src/website/cards.tsx
@@ -199,10 +277,24 @@ msgstr "Other"
 msgid "page"
 msgstr "page"
 
+#. Accessible name of a pagination link
+#: src/website/listing/components.tsx
+msgid "Page {item}"
+msgstr "Page {item}"
+
 #. Admin bar: collection name
 #: src/components/AdminBar/index.tsx
 msgid "Pages"
 msgstr "Pages"
+
+#. Accessible name of the page navigation below a listing
+#: src/website/listing/components.tsx
+msgid "Pagination"
+msgstr "Pagination"
+
+#: src/website/listing/copy.ts
+msgid "Payload builds that bundle unreleased fixes and features on top of an official release."
+msgstr "Payload builds that bundle unreleased fixes and features on top of an official release."
 
 #. First line of the site wordmark in the header and footer
 #: src/components/Logo/Logo.tsx
@@ -218,13 +310,24 @@ msgstr "Payload CMS Community Portal is a community project. It is not affiliate
 msgid "Payload CMS Community Portal, home"
 msgstr "Payload CMS Community Portal, home"
 
+#: src/website/listing/copy.ts
+msgid "Payload plugins found on GitHub and npm, with stars, versions and weekly downloads."
+msgstr "Payload plugins found on GitHub and npm, with stars, versions and weekly downloads."
+
+#. Filter label: the Payload version a build is based on
+#: src/website/listing/copy.ts
+msgid "Payload version"
+msgstr "Payload version"
+
 #. Admin bar: used in "New plugin" / "Edit plugin"
 #: src/components/AdminBar/index.tsx
 msgid "plugin"
 msgstr "plugin"
 
 #. Admin bar: collection name
+#. Page title: listing of Payload plugins
 #: src/components/AdminBar/index.tsx
+#: src/website/listing/copy.ts
 msgid "Plugins"
 msgstr "Plugins"
 
@@ -237,6 +340,20 @@ msgstr "post"
 #: src/components/AdminBar/index.tsx
 msgid "Posts"
 msgstr "Posts"
+
+#: src/website/listing/copy.ts
+msgid "Posts from the Payload blog and other sources, plus articles written by the community."
+msgstr "Posts from the Payload blog and other sources, plus articles written by the community."
+
+#. Pagination link to the previous page
+#: src/website/listing/components.tsx
+msgid "Previous"
+msgstr "Previous"
+
+#. Sort option: most recently updated first
+#: src/website/listing/copy.ts
+msgid "Recently updated"
+msgstr "Recently updated"
 
 #. Cookie banner button
 #: src/website/consent/ConsentProvider.tsx
@@ -259,7 +376,9 @@ msgid "resource"
 msgstr "resource"
 
 #. Admin bar: collection name
+#. Page title: listing of learning resources
 #: src/components/AdminBar/index.tsx
+#: src/website/listing/copy.ts
 msgid "Resources"
 msgstr "Resources"
 
@@ -267,6 +386,26 @@ msgstr "Resources"
 #: src/website/consent/ConsentProvider.tsx
 msgid "Save settings"
 msgstr "Save settings"
+
+#. Search field label on the builds listing
+#: src/website/listing/copy.ts
+msgid "Search builds"
+msgstr "Search builds"
+
+#. Search field label on the news listing
+#: src/website/listing/copy.ts
+msgid "Search news"
+msgstr "Search news"
+
+#. Search field label on the plugins listing
+#: src/website/listing/copy.ts
+msgid "Search plugins"
+msgstr "Search plugins"
+
+#. Search field label on the resources listing
+#: src/website/listing/copy.ts
+msgid "Search resources"
+msgstr "Search resources"
 
 #: src/providers/Theme/ThemeSelector/index.tsx
 msgid "Select a color theme"
@@ -287,6 +426,36 @@ msgstr "Sign in"
 msgid "Sign out"
 msgstr "Sign out"
 
+#. Label of the sort order select on listings
+#: src/website/listing/copy.ts
+msgid "Sort by"
+msgstr "Sort by"
+
+#. Filter label: the site a news post comes from
+#: src/website/listing/copy.ts
+msgid "Source"
+msgstr "Source"
+
+#. Button on the builds listing
+#: src/website/listing/copy.ts
+msgid "Submit a build"
+msgstr "Submit a build"
+
+#. Button on the plugins listing
+#: src/website/listing/copy.ts
+msgid "Submit a plugin"
+msgstr "Submit a plugin"
+
+#. Button on the resources listing
+#: src/website/listing/copy.ts
+msgid "Submit a resource"
+msgstr "Submit a resource"
+
+#. Filter label
+#: src/website/listing/copy.ts
+msgid "Tag"
+msgstr "Tag"
+
 #. Accessible name of the list of tags on a card
 #: src/website/cards.tsx
 msgid "Tags"
@@ -305,6 +474,16 @@ msgstr "This page could not be found."
 #: src/website/labels.ts
 msgid "Tool"
 msgstr "Tool"
+
+#. Filter label: GitHub repository topic
+#: src/website/listing/copy.ts
+msgid "Topic"
+msgstr "Topic"
+
+#. Filter label: kind of resource (docs, video, …)
+#: src/website/listing/copy.ts
+msgid "Type"
+msgstr "Type"
 
 #. Plugin card: when the plugin's code was last updated
 #: src/website/cards.tsx
@@ -331,3 +510,8 @@ msgstr "We would like to use Google Analytics to understand how the site is used
 #: src/website/labels.ts
 msgid "Website"
 msgstr "Website"
+
+#. Button on the news listing
+#: src/website/listing/copy.ts
+msgid "Write a post"
+msgstr "Write a post"

@@ -27,7 +27,11 @@ export function CopyButton({ code, label }: { code: string; label?: string }) {
             ? t({ comment: 'Copy button state after the code was copied', message: 'Copied!' })
             : t({ comment: 'Button that copies a code snippet to the clipboard', message: 'Copy' })}
         </span>
-        {copied ? <Check aria-hidden className="size-4" /> : <Copy aria-hidden className="size-4" />}
+        {copied ? (
+          <Check aria-hidden className="size-4" />
+        ) : (
+          <Copy aria-hidden className="size-4" />
+        )}
       </Button>
     </div>
   )

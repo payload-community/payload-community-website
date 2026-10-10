@@ -8,6 +8,8 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 **Q22. Runtime client config and consent wiring** (M4, decided as [ADR-028](decisions/0028-website-chrome-runtime-config-and-consent.md), please confirm). Instead of a dynamic layout (ADR-013), client components read the GA ID from `GET /site-config.json` so pages stay static; Consent Mode v2 defaults are pushed by the consent provider right before GA loads (no inline head script); the header uses a text wordmark instead of Payload's logo; the admin bar is shown to moderators and admins only.
 
+**Q23. Listing details not in the brief** (M4, least-effort choices, please confirm). Resources and builds can also be sorted by `newest` (creation date) besides `updated`; filtered/searched listing views are `noindex, follow` with the plain listing as canonical; pages past the last one return 404; each listing shows a "Submit …" button to `/submit/{collection}`; the post `source` filter uses the source ID (sources have no slug) and lists only sources with visible posts.
+
 ### Verification tasks (agreed approach; confirm during implementation)
 
 **T2. Lingui SWC plugin compatibility** (M4, decided as [ADR-027](decisions/0027-lingui-wiring.md), please confirm). 6.7.1 does not load with Next 16.3.3 (`swc_core` 73); `@lingui/swc-plugin` is pinned to 6.1.0, the newest release that compiles, with Lingui 6.9.0. `eslint-plugin-lingui` is added as a lint guardrail for unwrapped website strings.

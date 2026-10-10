@@ -6,7 +6,10 @@ export const getPayloadClient = (): Promise<Payload> => getPayload({ config: con
 /** Public website reads: published versions only, through access control as an anonymous visitor. */
 export const PUBLIC_READ = { draft: false, overrideAccess: false } as const
 
-export type WebsiteCollection = Extract<CollectionSlug, 'builds' | 'plugins' | 'posts' | 'resources'>
+export type WebsiteCollection = Extract<
+  CollectionSlug,
+  'builds' | 'plugins' | 'posts' | 'resources'
+>
 
 /** Sort options of the CollectionList block mapped to fields. */
 export const COLLECTION_LIST_SORT_FIELDS: Record<

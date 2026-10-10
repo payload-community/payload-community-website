@@ -220,9 +220,7 @@ export const PluginCard: React.FC<{ plugin: Plugin }> = ({ plugin }) => {
   return (
     <CardShell testId="plugin-card">
       <CardTitle href={`/plugins/${plugin.slug}`}>{plugin.name}</CardTitle>
-      {plugin.fullName && (
-        <p className="-mt-2 text-sm text-muted-foreground">{plugin.fullName}</p>
-      )}
+      {plugin.fullName && <p className="-mt-2 text-sm text-muted-foreground">{plugin.fullName}</p>}
       <p className="line-clamp-3 text-sm">{plugin.description}</p>
       <TagList tags={plugin.topics} />
       <Meta>

@@ -57,6 +57,8 @@ const eslintConfig = [
           ignoreNames: [
             { regex: { pattern: 'className$', flags: 'i' } },
             '__html',
+            '@context',
+            '@type',
             'Cache-Control',
             'controls',
             'data-testid',
