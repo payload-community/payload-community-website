@@ -18,6 +18,8 @@ const websiteIgnores = [
   'src/components/BeforeLogin/**',
   'src/Footer/RowLabel.tsx',
   'src/Header/RowLabel.tsx',
+  // Route handlers return machine-readable responses (robots.txt, sitemaps, JSON).
+  'src/app/(frontend)/**/route.{ts,tsx}',
 ]
 
 const eslintConfig = [
@@ -59,6 +61,7 @@ const eslintConfig = [
             '__html',
             '@context',
             '@type',
+            'query-input',
             'Cache-Control',
             'controls',
             'data-testid',

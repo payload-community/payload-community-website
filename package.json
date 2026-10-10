@@ -5,7 +5,7 @@
   "license": "MIT",
   "type": "module",
   "scripts": {
-    "build": "pnpm i18n:compile && cross-env NODE_OPTIONS=--no-deprecation next build && next-sitemap --config next-sitemap.config.cjs",
+    "build": "pnpm i18n:compile && cross-env NODE_OPTIONS=--no-deprecation next build",
     "cli": "cross-env NODE_OPTIONS=--no-deprecation tsx src/cli/index.ts",
     "dev": "pnpm i18n:compile && cross-env NODE_OPTIONS=--no-deprecation next dev",
     "dev:prod": "cross-env NODE_OPTIONS=--no-deprecation rm -rf .next && pnpm build && pnpm start",

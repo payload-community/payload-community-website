@@ -16,6 +16,7 @@ import { draftMode } from 'next/headers'
 
 import './globals.css'
 import { getServerSideURL } from '@/utilities/getURL'
+import { SITE_DESCRIPTION, SITE_NAME } from '@/website/metadata'
 
 export default async function RootLayout({ children }: { children: React.ReactNode }) {
   const { isEnabled } = await draftMode()
@@ -49,11 +50,14 @@ export default async function RootLayout({ children }: { children: React.ReactNo
   )
 }
 
-export const metadata: Metadata = {
-  metadataBase: new URL(getServerSideURL()),
-  openGraph: mergeOpenGraph(),
-  twitter: {
-    card: 'summary_large_image',
-    creator: '@payloadcms',
-  },
+export function generateMetadata(): Metadata {
+  const i18n = initLingui()
+  const description = i18n._(SITE_DESCRIPTION)
+  return {
+    description,
+    metadataBase: new URL(getServerSideURL()),
+    openGraph: mergeOpenGraph({ description }),
+    title: SITE_NAME,
+    twitter: { card: 'summary_large_image' },
+  }
 }

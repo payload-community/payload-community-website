@@ -10,6 +10,8 @@ import { RenderBlocks } from '@/blocks/RenderBlocks'
 import { RenderHero } from '@/heros/RenderHero'
 import { initLingui } from '@/lingui/server'
 import { generateMeta } from '@/utilities/generateMeta'
+import { JsonLd } from '@/website/JsonLd'
+import { absoluteUrl, SITE_NAME } from '@/website/metadata'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
 
@@ -70,11 +72,30 @@ export default async function Page({ params: paramsPromise }: Args) {
 
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} />
+      {slug === 'home' && (
+        <JsonLd
+          data={{
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: SITE_NAME,
+            potentialAction: {
+              '@type': 'SearchAction',
+              'query-input': 'required name=search_term_string',
+              target: {
+                '@type': 'EntryPoint',
+                urlTemplate: absoluteUrl('/news?q={search_term_string}'),
+              },
+            },
+            url: absoluteUrl('/'),
+          }}
+        />
+      )}
     </article>
   )
 }
 
 export async function generateMetadata({ params: paramsPromise }: Args): Promise<Metadata> {
+  initLingui()
   const { slug = 'home' } = await paramsPromise
   // Decode to support slugs with special characters
   const decodedSlug = decodeURIComponent(slug)
@@ -82,7 +103,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
     slug: decodedSlug,
   })
 
-  return generateMeta({ doc: page })
+  return generateMeta(page)
 }
 
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {

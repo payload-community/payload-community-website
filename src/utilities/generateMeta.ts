@@ -1,49 +1,20 @@
 import type { Metadata } from 'next'
 
-import type { Media, Page, Post, Config } from '../payload-types'
+import { pageMetadata, SITE_NAME } from '@/website/metadata'
 
-import { mergeOpenGraph } from './mergeOpenGraph'
-import { getServerSideURL } from './getURL'
+import type { Media, Page } from '../payload-types'
 
-const getImageURL = (image?: Media | Config['db']['defaultIDType'] | null) => {
-  const serverUrl = getServerSideURL()
+const imageUrl = (image: Media | string | null | undefined): string | null =>
+  image && typeof image === 'object' ? (image.sizes?.og?.url ?? image.url ?? null) : null
 
-  let url = serverUrl + '/website-template-OG.webp'
-
-  if (image && typeof image === 'object' && 'url' in image) {
-    const ogUrl = image.sizes?.og?.url
-
-    url = ogUrl ? serverUrl + ogUrl : serverUrl + image.url
-  }
-
-  return url
-}
-
-export const generateMeta = async (args: {
-  doc: Partial<Page> | Partial<Post> | null
-}): Promise<Metadata> => {
-  const { doc } = args
-
-  const ogImage = getImageURL(doc?.meta?.image)
-
-  const title = doc?.meta?.title
-    ? doc?.meta?.title + ' | Payload CMS Community Portal'
-    : 'Payload CMS Community Portal'
-
-  return {
-    description: doc?.meta?.description,
-    openGraph: mergeOpenGraph({
-      description: doc?.meta?.description || '',
-      images: ogImage
-        ? [
-            {
-              url: ogImage,
-            },
-          ]
-        : undefined,
-      title,
-      url: Array.isArray(doc?.slug) ? doc?.slug.join('/') : '/',
-    }),
-    title,
-  }
+/** Metadata for CMS pages (SEO plugin fields); the home page is titled with the site name alone. */
+export const generateMeta = (doc: Partial<Page> | null): Metadata => {
+  const isHome = doc?.slug === 'home'
+  return pageMetadata({
+    absoluteTitle: isHome,
+    description: doc?.meta?.description ?? '',
+    image: imageUrl(doc?.meta?.image),
+    path: !doc?.slug || isHome ? '/' : `/${doc.slug}`,
+    title: isHome ? SITE_NAME : doc?.meta?.title || doc?.title || SITE_NAME,
+  })
 }

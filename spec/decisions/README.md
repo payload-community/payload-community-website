@@ -63,3 +63,4 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [027](0027-lingui-wiring.md) | Lingui wiring on Next.js 16 (SWC plugin pin, compiled catalogs, lint guardrail) | Proposed | 2026-10-10 |
 | [028](0028-website-chrome-runtime-config-and-consent.md) | Website header, footer, runtime client config and consent | Proposed | 2026-10-10 |
 | [029](0029-website-page-caching-and-revalidation.md) | Website page caching and revalidation (ISR fallback, guarded on-demand paths) | Proposed | 2026-10-10 |
+| [030](0030-runtime-sitemaps-robots-and-default-og-image.md) | Runtime sitemaps, robots.txt and default social image | Proposed | 2026-10-10 |

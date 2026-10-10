@@ -43,7 +43,6 @@
     "redirects.js",
     "next-env.d.ts",
     "next.config.js",
-    "next-sitemap.config.cjs",
     ".next/dev/types/**/*.ts",
     ".next-e2e/types/**/*.ts",
     ".next-e2e/dev/types/**/*.ts"

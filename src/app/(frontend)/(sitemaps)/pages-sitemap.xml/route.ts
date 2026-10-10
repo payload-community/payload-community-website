@@ -1,68 +1,42 @@
-import { getServerSideSitemap } from 'next-sitemap'
-import { getPayload } from 'payload'
-import config from '@payload-config'
 import { unstable_cache } from 'next/cache'
+import { getServerSideSitemap } from 'next-sitemap'
+
+import { getServerSideURL } from '@/utilities/getURL'
+import { LISTING_PATHS } from '@/website/listing/params'
+import { getPayloadClient, PUBLIC_READ } from '@/website/queries'
 
 const getPagesSitemap = unstable_cache(
   async () => {
-    const payload = await getPayload({ config })
-    const SITE_URL =
-      process.env.NEXT_PUBLIC_SERVER_URL ||
-      process.env.VERCEL_PROJECT_PRODUCTION_URL ||
-      'https://example.com'
-
-    const results = await payload.find({
+    const payload = await getPayloadClient()
+    const base = getServerSideURL()
+    const { docs } = await payload.find({
+      ...PUBLIC_READ,
       collection: 'pages',
-      overrideAccess: false,
-      draft: false,
       depth: 0,
       limit: 1000,
       pagination: false,
-      where: {
-        _status: {
-          equals: 'published',
-        },
-      },
-      select: {
-        slug: true,
-        updatedAt: true,
-      },
+      select: { slug: true, updatedAt: true },
     })
 
-    const dateFallback = new Date().toISOString()
+    const now = new Date().toISOString()
+    const listings = Object.values(LISTING_PATHS).map((path) => ({
+      changefreq: 'daily' as const,
+      lastmod: now,
+      loc: `${base}${path}`,
+    }))
+    const pages = docs
+      .filter((page) => Boolean(page.slug))
+      .map((page) => ({
+        lastmod: page.updatedAt,
+        loc: page.slug === 'home' ? `${base}/` : `${base}/${page.slug}`,
+      }))
 
-    const defaultSitemap = [
-      {
-        loc: `${SITE_URL}/search`,
-        lastmod: dateFallback,
-      },
-      {
-        loc: `${SITE_URL}/posts`,
-        lastmod: dateFallback,
-      },
-    ]
-
-    const sitemap = results.docs
-      ? results.docs
-          .filter((page) => Boolean(page?.slug))
-          .map((page) => {
-            return {
-              loc: page?.slug === 'home' ? `${SITE_URL}/` : `${SITE_URL}/${page?.slug}`,
-              lastmod: page.updatedAt || dateFallback,
-            }
-          })
-      : []
-
-    return [...defaultSitemap, ...sitemap]
+    return [...pages, ...listings]
   },
   ['pages-sitemap'],
-  {
-    tags: ['pages-sitemap'],
-  },
+  { revalidate: 3600, tags: ['pages-sitemap'] },
 )
 
 export async function GET() {
-  const sitemap = await getPagesSitemap()
-
-  return getServerSideSitemap(sitemap)
+  return getServerSideSitemap(await getPagesSitemap())
 }

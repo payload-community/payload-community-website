@@ -485,6 +485,10 @@ msgstr "Newest"
 msgid "News"
 msgstr "News"
 
+#: src/website/metadata.ts
+msgid "News, plugins, resources and builds for Payload CMS, collected by the community."
+msgstr "News, plugins, resources and builds for Payload CMS, collected by the community."
+
 #. Pagination link to the next page
 #: src/website/listing/components.tsx
 msgid "Next"
