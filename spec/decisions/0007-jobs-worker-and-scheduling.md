@@ -3,6 +3,7 @@
 - Status: Accepted
 - Proposed: 2026-10-09
 - Accepted: 2026-10-10
+- Amended by [ADR-023](0023-small-image-with-bundled-cli-scripts.md): the worker runs `node cli.mjs worker` (Payload autoRun inside a bundled script) instead of the Payload CLI; behaviour is the same.
 
 - Payload Jobs Queue with task `schedule` crons; queues `sync` and `default`.
 - `jobs.autoRun` is enabled by `JOBS_AUTORUN` (default `true` for DDEV); web pods set `false`.

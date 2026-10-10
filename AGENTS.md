@@ -54,6 +54,7 @@ Available from M1 on (scripts defined in `package.json`):
 | `pnpm payload migrate` / `pnpm payload migrate:create <name>` | Database migrations |
 | `pnpm seed` | Idempotent production seed (sources, pages, navigation) |
 | `pnpm seed:dev` | Local sample data and users (never in production) |
+| `pnpm worker` | Run the jobs worker locally (`src/cli` via `tsx`; the image runs `node cli.mjs worker`) |
 | `pnpm i18n:extract` / `pnpm i18n:compile` | Lingui catalogs |
 | `pnpm payload jobs:run --queue sync` | Run queued sync jobs once |
 | `helm lint deploy/helm/payload-cms-community-portal` | Chart validation |
@@ -75,6 +76,8 @@ src/
   email/         react-email templates and messages
   otel/          OpenTelemetry SDK, metrics, span helpers
   seed/          production and dev seeds
+  cli/           entry point bundled into cli.mjs (migrate, seed, worker, self-test)
+  migrations/    Payload migrations (incl. partial unique indexes)
   app/           Next.js routes: (frontend) website, (payload) admin + API, api/health
   locales/       Lingui catalogs
 tests/           e2e (Playwright), unit (Vitest), fixtures

@@ -4,28 +4,15 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 ## Open
 
-**Q17. Sign-up with an email that already has an account.** To avoid revealing which emails are registered, `/sign-up` always answers "Check your inbox".
-*Default:* no email is sent to the existing account in v1. *Alternative:* send "You already have an account — sign in or reset your password" to that address (better UX, one more template).
+No open product questions.
 
-**Q18. Unverified accounts cleanup.** Self-registered accounts that never activate stay in the database.
-*Default:* keep them for now. *Alternative:* a daily job deletes unverified accounts older than 7 days.
+### Verification tasks (agreed approach; confirm during implementation)
 
-**Q19. Bot protection on registration.** Rate limiting + email activation only.
-*Default:* no CAPTCHA in v1. *Alternative:* Cloudflare Turnstile or hCaptcha on `/sign-up` (third-party script → consent/CSP implications).
+**T1. Admin create view without password fields** (M2). Hide the password fields for new users and set a random password in `beforeValidate`. If the admin UI still requires them: a small custom field component that pre-fills a generated password and hides the inputs.
 
-### Technical (verify during implementation)
+**T2. Lingui SWC plugin compatibility** (M4). If `@lingui/swc-plugin` 6.7.1 does not load with Next 16.3.3, pin the swc plugin version listed as compatible in Lingui's compatibility table.
 
-**T1. Admin create view without password fields.** Payload's create view for auth collections shows password fields. We plan to hide them and set a random password in `beforeValidate` (M2). If the admin UI still requires them, fallback: a small custom field component that pre-fills a generated password and hides the inputs.
-
-**T2. Lingui SWC plugin compatibility.** `@lingui/swc-plugin` must match the SWC version bundled with Next.js. If 6.7.1 does not load with Next 16.3.3, fallback: pin the swc plugin version listed as compatible in Lingui's compatibility table. Verified in M4.
-
-**T3. Unique sparse indexes in MongoDB.** `posts.url`, `plugins.fullName`, `post-media.originalUrl`, `users.githubId/googleId` must be unique only when set. Verify the mongoose adapter creates sparse/partial indexes for non-required unique fields; otherwise store `undefined` (not `null`) or add a migration with a partial index.
-
-**T4. GitHub search cap.** Date-sliced queries are implemented only if `total_count > 1000`; today the topic has far fewer repositories.
-
-**T5. Image size for the one-image design** ([ADR-010](decisions/0010-single-image-for-all-roles.md)). Expect ~600–900 MB; acceptable?
-
-**T6. Built-in verify view.** Confirm that `/admin/users/verify/{token}` works for non-admin users and redirects to the login screen; otherwise add a small website `/verify-email` page calling `POST /api/users/verify/{token}`.
+**T6. Built-in verify view** (M2). Confirm that `/admin/users/verify/{token}` works for non-admin users and redirects to the login screen; otherwise add a small website `/verify-email` page calling `POST /api/users/verify/{token}`.
 
 ## Resolved (2026-10-10 review)
 
@@ -48,6 +35,12 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 | Q15 | Privacy policy | Generated default page from the seed ([ADR-022](decisions/0022-privacy-policy-content.md)). |
 | Q16 | Production email DNS | SPF/DKIM/DMARC listed in `docs/deployment.md` once the provider is chosen. |
 | Q20 | Public file delivery | Garage's own web endpoint on its own public host; `S3_PUBLIC_URL` points to it; no separate CDN ([ADR-006](decisions/0006-storage-s3-garage-public-endpoint.md)). |
+| Q17 | Sign-up with an already registered email | Generic "Check your inbox" answer; no email to the existing account in v1 (idea I15 kept for later). |
+| Q18 | Unverified accounts cleanup | Keep them for now; no cleanup job. |
+| Q19 | Bot protection on registration | No CAPTCHA in v1; rate limiting + email activation. |
+| T3 | Unique-when-set fields | Partial unique indexes created by a migration; `''` normalized to `null` ([ADR-024](decisions/0024-unique-optional-fields-partial-indexes.md)). |
+| T4 | GitHub 1,000-result search cap | No date slicing in v1; when the cap or `incomplete_results` is hit, skip hiding and warn. |
+| T5 | Image size | Standalone output + bundled `cli.mjs` for migrate/seed/worker; REST rejected for migrations; optional CronJob mode for jobs ([ADR-023](decisions/0023-small-image-with-bundled-cli-scripts.md), supersedes ADR-010). |
 | – | Spec layout | `spec/architecture/` split by topic, one file per ADR in `spec/decisions/`, `spec/README.md` index. |
 
 ## Proposed changes to the brief / bootstrap prompt
@@ -55,7 +48,7 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 - **P1.** Brief, Posts: add "Imported posts without a public URL (e.g. uncategorized or future-dated) are skipped."
 - **P2.** Brief, Users: state that OAuth sign-up requires a verified provider email (Q1).
 - **P3.** Bootstrap prompt, Post sync: the public URL pattern is `https://payloadcms.com/posts/{category.slug}/{slug}` (verified), not `/posts/blog/{slug}` for every post.
-- **P4.** Bootstrap prompt, worker: the exact command for 3.90.2 is `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues`.
+- **P4.** Bootstrap prompt, worker and migrate Job: the image does not ship the Payload CLI; the worker runs `node cli.mjs worker` (equivalent to `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues`) and the hook Job runs `node cli.mjs migrate && node cli.mjs seed` ([ADR-023](decisions/0023-small-image-with-bundled-cli-scripts.md)).
 - **P5.** Brief, Moderation: mention moderation statuses are per version (an edit can be `rejected` while the published version stays live).
 - **P6.** Brief, Listing pages: replace "Cards link directly to the external site. There are no detail pages for external entries." with "Resources, Plugins and Builds have detail pages with a prominent link to the external site; imported posts link to the original article." ([ADR-019](decisions/0019-detail-pages.md))
 - **P7.** Brief, Authentication: replace "OAuth … is the only way to sign up" and "There is no public sign-up with email and password" with "Users can also sign up with email and password; the account is activated through an emailed link." Bootstrap prompt §5 "No public sign-up with a password" and the matching E2E test ("There is no public sign-up") change accordingly: test that registration works only after activation. ([ADR-020](decisions/0020-email-registration-with-activation.md))

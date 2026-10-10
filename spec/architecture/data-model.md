@@ -8,6 +8,13 @@ Part of the [architecture](README.md). Section numbers are global across the arc
 
 All collections have `createdAt` / `updatedAt`. Admin groups: **Content** (Posts, Resources, Plugins, Builds), **Media** (Media, Post Media), **Website** (Pages, Header, Footer, Redirects), **Synchronization** (Sources), **Administration** (Users, Jobs).
 
+**Unique-when-set fields** (`users.githubId`, `users.googleId`, `posts.url`, `post-media.originalUrl`, `plugins.fullName`) — [ADR-024](../decisions/0024-unique-optional-fields-partial-indexes.md):
+- The field config has `index: true` but **not** `unique: true`. Payload's `unique` on an optional field creates a *sparse* unique index (checked in `@payloadcms/db-mongodb` 3.90.2 `buildSchema`), and MongoDB sparse indexes still index explicit `null`, so two documents with a cleared value would collide.
+- A Payload migration (`src/migrations/*_unique_optional_fields.ts`) creates partial unique indexes: `createIndex({ <field>: 1 }, { name: 'uniq_<field>', unique: true, partialFilterExpression: { <field>: { $type: 'string' } } })`. Missing and `null` values are excluded.
+- A shared field hook `emptyToNull` (in `beforeValidate`) turns `''` and whitespace into `null`, so an empty string never reaches the index.
+- Duplicates are rejected by MongoDB with E11000, which the adapter's `handleError` already maps to Payload's "Value must be unique" error on the right field — so the admin UI and REST show a normal validation error. Versions collections never get these indexes (drafts can hold any value).
+- `users.email` stays a normal required `unique: true` field.
+
 ### 4.1 Shared: moderation fields (Posts, Resources, Plugins, Builds)
 
 All four collections have `versions: { drafts: { validate: false }, maxPerDoc: 25 }` (no autosave, no scheduled publish) and this group in the sidebar:
@@ -34,9 +41,9 @@ Plus a custom sidebar UI field `moderationActions` (Approve / Reject / Unpublish
 | `_verified` | built-in (auth `verify`) | `true` for OAuth users (provider-verified email) and admin-created users; self-registered users get `true` after clicking the activation link. |
 | `name` | text | Self + admin can update. From provider on first sign-in; not overwritten later if edited. |
 | `avatarUrl` | text | Read-only; refreshed from provider on each OAuth sign-in. |
-| `githubId` | text, unique (sparse), index | Read-only; set by OAuth. |
+| `githubId` | text, index, unique when set ([ADR-024](../decisions/0024-unique-optional-fields-partial-indexes.md)) | Read-only; set by OAuth. |
 | `githubLogin` | text | Read-only; refreshed on each GitHub sign-in. |
-| `googleId` | text, unique (sparse), index | Read-only; set by OAuth. |
+| `googleId` | text, index, unique when set ([ADR-024](../decisions/0024-unique-optional-fields-partial-indexes.md)) | Read-only; set by OAuth. |
 | `roles` | select hasMany `admin`, `moderator` | Field access create/update/read-others: admin. |
 | `notifications.moderation` | checkbox, default `true` | Shown only to moderators/admins. |
 | `notifications.ownEntries` | checkbox, default `true` | Approved/rejected emails. |
@@ -93,7 +100,7 @@ Access: read anyone (no secrets; needed for source names on cards), create/updat
 | `summary` | textarea | both | Imported: plain text from Lexical `excerpt`. |
 | `content` | richText (Lexical) | community | Required for community posts (`admin.condition`). |
 | `image` | upload → post-media | both | |
-| `url` | text (URL), unique (sparse), index | imported | De-dup key. Empty for community posts. |
+| `url` | text (URL), index, unique when set ([ADR-024](../decisions/0024-unique-optional-fields-partial-indexes.md)) | imported | De-dup key. Empty for community posts. |
 | `externalId` | text, index | imported | Source document ID. |
 | `tags` | text `hasMany`, index | both | Imported: source `category.name` (e.g. "Releases", "Guides", "Blog"). |
 | `meta` | SEO group | community | |
@@ -106,7 +113,7 @@ Sync-owned fields (`source`, `author`, `url`, `externalId`, and every field of a
 |---|---|---|
 | file | upload (`storage-s3`, prefix `post-media/`) | image/* only; `imageSizes` thumbnail/card/og |
 | `alt` | text, required | |
-| `originalUrl` | text, unique (sparse), index | Set by post sync for de-duplication. |
+| `originalUrl` | text, index, unique when set ([ADR-024](../decisions/0024-unique-optional-fields-partial-indexes.md)) | Set by post sync for de-duplication. |
 | `createdBy` | relationship → users | Hook. |
 
 Access: read anyone; create signed-in; update/delete owner, moderator, admin. Not versioned/moderated (images are only visible through a published post).
@@ -138,7 +145,7 @@ Template collection kept for pages (alt, caption). S3 prefix `media/`. Read anyo
 | `createdBy` | rel → users | hook | Manual only; kept when sync merges. |
 | `name` | text, required | user (manual) / sync (imported) | |
 | `slug` | `slugField()`, unique | hook | Detail page `/plugins/{slug}`. From `fullName` (`owner-repo`) when known, else from `name`; never changed after creation (stable URLs). |
-| `fullName` | text, unique (sparse), index | sync; derived from `repositoryUrl` on save when it is a GitHub URL | `owner/repo`, lower-cased for matching. |
+| `fullName` | text, index, unique when set ([ADR-024](../decisions/0024-unique-optional-fields-partial-indexes.md)) | sync; derived from `repositoryUrl` on save when it is a GitHub URL | `owner/repo`, lower-cased for matching. |
 | `description` | textarea | user (manual) / sync (imported) | |
 | `repositoryUrl` | text (URL) | user (manual) / sync (imported) | |
 | `homepage` | text (URL) | user (manual) / sync (imported) | |

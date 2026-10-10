@@ -48,7 +48,7 @@ Upsert: find post by `url`; create when missing; update only when a mapped field
 
 All calls use `@octokit/rest` with `GITHUB_TOKEN`, `@octokit/plugin-throttling` + `@octokit/plugin-retry` (rate limits) — validated with `zod`.
 
-1. **Search**: `GET /search/repositories?q=topic:payload-plugin+fork:true&sort=updated&per_page=100&page=n` (`octokit.paginate`). If `total_count > 1000` (search cap), split the query by creation date ranges (`created:<YYYY-MM-DD` / `created:>=…`) until each slice is under 1,000. (Today ≈ a few hundred results; slicing is implemented but rarely used.)
+1. **Search**: `GET /search/repositories?q=topic:payload-plugin+fork:true&sort=updated&per_page=100&page=n` (`octokit.paginate`). GitHub returns at most 1,000 results per search; no date slicing in v1 (T4, decided 2026-10-10 — today the topic has far fewer repositories). If `total_count > 1000` or `incomplete_results` is true, the run imports what it got, **skips hiding** (step 5), logs a warning and records `partial` in the job summary so the cap is noticed before it matters.
 2. **Filter**: keep `fork == false`, or `fork == true && stargazers_count > 2`.
 3. **npm enrichment** for each kept repo (concurrency 4 via `p-limit`):
    - `GET /repos/{owner}/{repo}/contents/package.json` (root only). Missing file, invalid JSON, `private: true`, missing `name`, or `workspaces` present with no publishable root package → npm fields empty (monorepo case).
@@ -56,7 +56,7 @@ All calls use `@octokit/rest` with `GITHUB_TOKEN`, `@octokit/plugin-throttling` 
    - `GET https://api.npmjs.org/downloads/point/last-week/{name}` → `downloads` (`npmWeeklyDownloads`).
    - Optimization: skip npm calls when `pushed_at` and the package name are unchanged and the last npm refresh is < 24 h old.
 4. **Upsert by `fullName`** (lower-case). Existing manual plugin with the same `fullName` → update only sync-owned fields, keep `origin`, `createdBy`, user fields. Existing imported → update all mapped fields; un-hide.
-5. **Hide**: imported plugins not in the result set (and not failed to fetch) → `hidden: true` (never deleted). Skip hiding if the search itself was incomplete (error / cap) to avoid mass-hiding.
+5. **Hide**: imported plugins not in the result set (and not failed to fetch) → `hidden: true` (never deleted). Skip hiding if the search itself was incomplete (error, `incomplete_results`, or over the 1,000-result cap) to avoid mass-hiding.
 6. **Manual plugins** not in the search: refresh GitHub data via `GET /repos/{owner}/{repo}` when `repositoryUrl` is on GitHub (404 → keep data, log); refresh npm data when `npmPackage` is set. Never hidden.
 7. Log one summary line `{created, updated, hidden, unhidden, skipped, failed}`; metrics per result.
 

@@ -57,14 +57,14 @@ The brief names the technologies; this table pins the concrete packages and thei
    │                              ├──▶ MongoDB (external or in-cluster)
    │                              ├──▶ S3 (Garage) — uploads via S3 API
    │                              └──▶ OTLP endpoint (Alloy / Grafana Cloud)
-   │                         worker Deployment (1 pod, Recreate) — `payload jobs:run --cron`
+   │                         worker Deployment (1 pod, Recreate) — `node cli.mjs worker`
    │                              ├──▶ MongoDB, S3, SMTP, GitHub API, npm API, source sites
    │                         migrate/seed Job (Helm pre-install/pre-upgrade hook)
    └──TLS──▶ Garage public web endpoint (own host, e.g. files.example.org → Garage web :3902;
              S3_PUBLIC_URL) — files are served by Garage directly, never proxied through the app
 ```
 
-One container image, three roles: **web** (`node server.js`), **worker** (`payload jobs:run …`), **migrate** (`payload migrate && pnpm seed`).
+One small container image (Next.js standalone output + one bundled `cli.mjs`), three roles: **web** (`node server.js`), **worker** (`node cli.mjs worker`), **migrate** (`node cli.mjs migrate && node cli.mjs seed`). See [ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md).
 
 ---
 
@@ -105,6 +105,8 @@ src/
   email/             templates/*.tsx, messages.ts, render.ts
   otel/              sdk.ts, metrics.ts, withSpan.ts
   seed/              index.ts (prod), dev.ts, data/
+  cli/               index.ts → bundled to cli.mjs (migrate, seed, worker, self-test) — ADR-023
+  migrations/        Payload migrations, index.ts (explicit list used by `cli.mjs migrate`)
   app/(frontend)/    website routes
   app/(payload)/     admin + API (template)
   app/api/health/    live, ready

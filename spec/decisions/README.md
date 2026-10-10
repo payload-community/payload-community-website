@@ -43,7 +43,7 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [007](0007-jobs-worker-and-scheduling.md) | Jobs and scheduling in Kubernetes | Accepted | 2026-10-10 |
 | [008](0008-submission-limit-without-locking.md) | Submission limit: hook-based, no locking | Accepted | 2026-10-10 |
 | [009](0009-migrations-and-seeding-job.md) | Migrations and seeding | Accepted | 2026-10-10 |
-| [010](0010-single-image-for-all-roles.md) | One image for web, worker and migrate | Accepted | 2026-10-10 |
+| [010](0010-single-image-for-all-roles.md) | One image for web, worker and migrate | Superseded by 023 | 2026-10-10 |
 | [011](0011-account-deletion-anonymizes-content.md) | Account deletion anonymizes all content | Accepted | 2026-10-10 |
 | [012](0012-sync-updates-with-pending-drafts.md) | Sync updates on documents with a pending draft | Accepted | 2026-10-10 |
 | [013](0013-next-public-env-at-runtime.md) | `NEXT_PUBLIC_*` at runtime | Accepted | 2026-10-10 |
@@ -56,3 +56,5 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [020](0020-email-registration-with-activation.md) | Email registration with activation link (extends the brief) | Accepted | 2026-10-10 |
 | [021](0021-connect-providers-while-signed-in.md) | Connect providers while signed in (approved idea I1) | Accepted | 2026-10-10 |
 | [022](0022-privacy-policy-content.md) | Privacy policy content | Accepted | 2026-10-10 |
+| [023](0023-small-image-with-bundled-cli-scripts.md) | Small image: Next.js standalone output plus a bundled CLI script | Accepted | 2026-10-10 |
+| [024](0024-unique-optional-fields-partial-indexes.md) | Unique-when-set fields use partial unique indexes | Accepted | 2026-10-10 |

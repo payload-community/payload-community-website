@@ -1,6 +1,6 @@
 # ADR-010: One image for web, worker and migrate
 
-- Status: Accepted
+- Status: Superseded by [ADR-023](0023-small-image-with-bundled-cli-scripts.md) (2026-10-10)
 - Proposed: 2026-10-09
 - Accepted: 2026-10-10
 

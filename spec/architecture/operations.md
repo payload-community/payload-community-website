@@ -20,7 +20,8 @@ Queues: `default` (emails/notifications), `sync` (synchronizations).
 - Every task handler is wrapped in `withSpan('job <slug>')` and logs a single structured summary line.
 - Jobs are queued from `afterChange` hooks with `payload.jobs.queue` (never inline email sending); a failed queue call is logged and never fails the save.
 - `jobs.autoRun`: `process.env.JOBS_AUTORUN !== 'false'` ⇒ `[{ cron: '* * * * *', allQueues: true, limit: 20 }]` else `[]`. `jobs.shouldAutoRun` mirrors the flag. Scheduling (`schedule` on tasks) is handled by the same cron (`handleSchedules`).
-- **Kubernetes**: web pods `JOBS_AUTORUN=false`; worker pod (1 replica, `Recreate`) runs `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues --limit 20` (verified in `payload/dist/bin/index.js` 3.90.2: `--cron` is a global flag, `--handle-schedules` and `--all-queues` are supported by `jobs:run`). Payload's schedule handling records the next scheduled job in the DB, so even an accidental second worker would not double-queue a schedule slot.
+- **Kubernetes**: web pods `JOBS_AUTORUN=false`; worker pod (1 replica, `Recreate`) runs `node cli.mjs worker` from the same image ([ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md)): it calls `getPayload({ config, cron: true })` with `JOBS_AUTORUN=true`, so Payload's own autoRun cron handles schedules and runs all queues every minute — the same behaviour as `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues`, without shipping the Payload CLI. Payload's schedule handling records the next scheduled job in the DB, so even an accidental second worker would not double-queue a schedule slot. SIGTERM → `payload.destroy()` (stops crons, closes the DB) before exit.
+- **Fallback without a worker** (documented, not the default): a Kubernetes CronJob running `curl -X GET http://<web-service>/api/payload-jobs/run?allQueues=true&limit=20` with `Authorization: Bearer $CRON_SECRET` every minute (`concurrencyPolicy: Forbid`). The built-in endpoint also calls `handleSchedules` (verified in `payload/dist/queues/endpoints/run.js`). Downsides: long syncs run inside an HTTP request on a web pod (use the internal Service, not the Ingress, to avoid proxy timeouts) and are interrupted by web rollouts (Payload retries them).
 - **Manual triggers**: root endpoint `POST /api/sync/:task` (`task ∈ posts | plugins`): admin user **or** `Authorization: Bearer $CRON_SECRET`; queues the task on the `sync` queue (worker or autoRun picks it up within a minute). Admin buttons on the Sources list and Plugins list (`beforeListTable`, admins only). `jobs.access.{run,queue,cancel}` = admin or `CRON_SECRET`.
 
 ---
@@ -79,11 +80,17 @@ De-duplication: notifications are queued only on a status **transition** (into `
 
 ### 18.1 Image
 Multi-stage `Dockerfile` (Node 24 alpine, `corepack` pnpm, `pnpm install --frozen-lockfile`, `next build` with `output: 'standalone'`):
-- `runner` stage, user `node` (uid 1000), `NODE_ENV=production`.
-- `/app` = standalone server (`server.js`, `.next/static`, `public`).
-- `/app/cli` = what the worker and migrate Job need: production `node_modules` (pruned), `src/` (Payload config, collections, jobs, seed, migrations), `package.json`, `tsconfig.json`; commands run via `pnpm --dir /app/cli payload …`. (Bigger image, one artifact — [ADR-010](../decisions/0010-single-image-for-all-roles.md).)
+- `runner` stage, user `node` (uid 1000), `NODE_ENV=production`, based on `node:24-alpine`; contains **only** the Next.js standalone output plus one bundled script ([ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md)):
+  - `/app` = standalone server (`server.js`, traced `node_modules`, `.next/static`, `public`).
+  - `/app/cli.mjs` = `src/cli/index.ts` bundled with `esbuild` at build time (our code — Payload config, collections, jobs, seed, migrations — is bundled; npm packages stay external and resolve from the standalone `node_modules`). Subcommands:
+    - `node cli.mjs migrate` → `getPayload({ config })` → `payload.db.migrate({ migrations })` (explicit list from `src/migrations/index.ts`, so no migration-directory scan at runtime).
+    - `node cli.mjs seed` → idempotent production seed.
+    - `node cli.mjs worker` → long-running jobs worker (§9).
+    - `node cli.mjs self-test` → imports the config and every task without connecting to the DB; run as a `RUN` step in the Dockerfile so a package missing from the standalone trace fails the **build**, not the deployment. Packages only the CLI needs are added with `outputFileTracingIncludes` in `next.config.ts`.
+  - No TypeScript sources, no Payload CLI, no full `node_modules`, no pnpm in the final stage. Target: well under 400 MB uncompressed (vs. roughly 1 GB+ with full production `node_modules`); measured and recorded in M6.
+- Locally the same entry point runs through `tsx` (`pnpm seed`, `pnpm seed:dev`, `pnpm worker`); the Payload CLI (`pnpm payload migrate:create`, `generate:types`) stays a dev tool.
 - `ARG APP_VERSION` → `ENV APP_VERSION` (OTel `service.version`).
-- Default `CMD ["node", "server.js"]`.
+- Default `CMD ["node", "server.js"]`; the worker and the migrate Job override the command.
 
 ### 18.2 Runtime configuration (env)
 Existing: `DATABASE_URI`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `CRON_SECRET`, `GITHUB_TOKEN`, `GITHUB_CLIENT_ID/SECRET`, `GOOGLE_CLIENT_ID/SECRET`, `ADMIN_GITHUB_LOGINS`, `ADMIN_EMAILS`, `S3_*`, `SMTP_*`, `EMAIL_FROM_*`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `OTEL_*`.
@@ -106,8 +113,9 @@ templates/
   secret.yaml                 # only if secret.create=true (local testing)
   serviceaccount.yaml
   deployment-web.yaml         # replicas, probes (/api/health/live, /api/health/ready), JOBS_AUTORUN=false
-  deployment-worker.yaml      # replicas: 1, strategy Recreate, command: payload jobs:run --cron …
-  job-migrate.yaml            # helm.sh/hook: pre-install,pre-upgrade; hook-delete-policy: before-hook-creation,hook-succeeded; payload migrate && pnpm seed
+  deployment-worker.yaml      # replicas: 1, strategy Recreate, command: node cli.mjs worker (worker.enabled=true)
+  cronjob-jobs.yaml           # optional alternative to the worker (worker.mode=cronjob): curl /api/payload-jobs/run every minute
+  job-migrate.yaml            # helm.sh/hook: pre-install,pre-upgrade; hook-delete-policy: before-hook-creation,hook-succeeded; node cli.mjs migrate && node cli.mjs seed
   service.yaml
   ingress.yaml                # hosts, TLS, annotations
   hpa.yaml                    # optional (autoscaling.enabled)
