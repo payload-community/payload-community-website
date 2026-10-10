@@ -1,6 +1,6 @@
 # AGENTS.md — Payload CMS Community Portal
 
-Guidance for AI agents and developers working in this repository. Read `spec/BRIEF.md` (what to build), `spec/architecture.md` (how it is built) and `spec/decisions.md` (why) before changing anything.
+Guidance for AI agents and developers working in this repository. Read `spec/README.md` first, then `spec/BRIEF.md` (what to build), `spec/architecture/` (how it is built) and `spec/decisions/` (why) before changing anything.
 
 ## Environment
 
@@ -17,11 +17,11 @@ Guidance for AI agents and developers working in this repository. Read `spec/BRI
 ## Engineering rules
 
 1. **Minimize custom code**: use Payload's Local API, REST/GraphQL, hooks, access control, official plugins (`plugin-seo`, `plugin-redirects`, `storage-s3`, …) and template building blocks before writing your own.
-2. **Prefer popular, maintained npm libraries** over custom implementations. Before adding one, check weekly downloads, last publish date and compatibility with our Payload, Next.js and React versions; record the choice in `spec/decisions.md`.
-3. **Specs in `spec/`, developer docs in `docs/`.** Do not edit `spec/BRIEF.md` or `spec/bootstrap-prompt.md`; propose changes in `spec/open-questions.md`.
+2. **Prefer popular, maintained npm libraries** over custom implementations. Before adding one, check weekly downloads, last publish date and compatibility with our Payload, Next.js and React versions; record the choice in a new ADR in `spec/decisions/`.
+3. **Specs in `spec/`, developer docs in `docs/`.** Do not edit `spec/BRIEF.md` or `spec/bootstrap-prompt.md`; propose changes in `spec/open-questions.md`. Keep `spec/architecture/` in sync with the code in the same commit. Follow the conventions in `spec/README.md` and `spec/decisions/README.md` (kebab-case names, `NNNN-title.md` ADRs, accepted ADRs are superseded, not rewritten).
 4. **TypeScript strict mode.** After every schema change run `pnpm generate:types` (and `pnpm generate:importmap` when admin components change) and commit the results. Lint and typecheck must pass.
 5. **Small, focused commits** with conventional messages (`feat:`, `fix:`, `chore:`, `docs:`, `test:`), at least one per milestone step. Commit only files you changed.
-6. **Do not invent requirements silently.** When the brief is ambiguous, choose the least-effort reversible option, record it in `spec/decisions.md`, and list it in `spec/open-questions.md`.
+6. **Do not invent requirements silently.** When the brief is ambiguous, choose the least-effort reversible option, record it in `spec/decisions/`, and list it in `spec/open-questions.md`.
 7. **Ideas are welcome** in `spec/ideas.md` (value, effort, risks) but are **not implemented** until approved.
 
 ## Project-specific conventions
@@ -61,8 +61,10 @@ Available from M1 on (scripts defined in `package.json`):
 ## Layout
 
 ```
-spec/            BRIEF.md (read-only), bootstrap-prompt.md (read-only), architecture.md, decisions.md, open-questions.md, ideas.md
-docs/            getting-started.md, moderation.md, deployment.md, …
+spec/            README.md (index), BRIEF.md (read-only), bootstrap-prompt.md (read-only), open-questions.md, ideas.md
+  architecture/  README.md (stack, overview, layout), access-control, data-model, moderation, auth, sync, frontend, operations
+  decisions/     README.md (index + template), NNNN-short-title.md (one ADR per file)
+docs/            README.md (index), getting-started.md, development.md, moderation.md, deployment.md, observability.md, runbooks/
 src/
   access/        role and access helpers
   auth/oauth/    GitHub/Google user info + account linking (pure, unit-tested)

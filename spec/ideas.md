@@ -2,7 +2,7 @@
 
 | # | Idea | Value | Effort | Risks |
 |---|---|---|---|---|
-| I1 | ✅ **Approved 2026-10-10, now ADR-021.** Connect another provider from the account page while signed in. | Fixes Q2 cleanly. | M | Account-linking security. |
+| I1 | ✅ **Approved 2026-10-10, now [ADR-021](decisions/0021-connect-providers-while-signed-in.md).** Connect another provider from the account page while signed in. | Fixes Q2 cleanly. | M | Account-linking security. |
 | I2 | **RSS/Atom adapter** for more news sources (dev.to tag, community blogs). | More news without manual posting. | S–M — new adapter behind the existing interface (`rss-parser`). | Feed quality; image hotlinking rules. |
 | I3 | **Plugin compatibility badge**: read `peerDependencies.payload` from the npm manifest and show "Payload 3.x / 2.x". | Helps users pick plugins. | S — extra field in the npm step. | Monorepos, missing peer deps. |
 | I4 | **Weekly digest email** (new plugins, posts, builds) with opt-in. | Engagement. | M — scheduled job + template + preference. | Deliverability, unsubscribe compliance. |
