@@ -97,6 +97,7 @@ One small container image (Next.js standalone output + one bundled `cli.mjs`), t
 src/
   access/            roles & access helpers
   auth/oauth/        github.ts, google.ts, resolveOAuthAccount.ts (pure, unit-tested)
+  auth/              connectIntent.ts (signed cookie for connecting a provider from /account)
   collections/       Users, Sources, Posts, PostMedia, Media, Resources, Plugins, Builds, Pages
   moderation/        config.ts (MAX_PENDING_SUBMISSIONS), hooks, endpoint, admin components
   jobs/              tasks (syncPosts, syncPlugins, notifyModerators, notifyAuthor, sendInvitation, sendEmail)
@@ -108,10 +109,12 @@ src/
   cli/               index.ts → bundled to cli.mjs (migrate, seed, worker, self-test) — ADR-023
   migrations/        Payload migrations, index.ts (explicit list used by `cli.mjs migrate`)
   app/(frontend)/    website routes
+  website/           website data access, listings, detail and auth components, consent, metadata, sitemaps
+  lingui/            server.ts (initLingui), ClientProvider.tsx
   app/(payload)/     admin + API (template)
   app/api/health/    live, ready
   locales/en/        Lingui catalog
-tests/e2e/, tests/unit/, tests/fixtures/
+tests/e2e/, tests/int/, tests/unit/, tests/helpers/ (test env, database reset, website fixtures, Mailpit), tests/fixtures/
 deploy/helm/payload-cms-community-portal/, deploy/grafana/
 docs/, spec/
 ```
