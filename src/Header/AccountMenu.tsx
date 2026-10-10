@@ -44,6 +44,7 @@ const useCurrentUser = (): [MeUser | null | undefined, () => void] => {
 export const AccountMenu: React.FC = () => {
   const { t } = useLingui()
   const router = useRouter()
+  const pathname = usePathname()
   const [user, reload] = useCurrentUser()
 
   if (user === undefined) return <div aria-hidden className="h-9 w-20" />
@@ -51,7 +52,13 @@ export const AccountMenu: React.FC = () => {
   if (!user) {
     return (
       <Button asChild size="sm">
-        <Link href="/sign-in">
+        <Link
+          href={
+            pathname === '/' || pathname.startsWith('/sign-')
+              ? '/sign-in'
+              : `/sign-in?next=${encodeURIComponent(pathname)}`
+          }
+        >
           <Trans comment="Header button that opens the sign-in page">Sign in</Trans>
         </Link>
       </Button>

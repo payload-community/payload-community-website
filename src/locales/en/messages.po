@@ -48,6 +48,10 @@ msgstr "Account menu for {displayName}"
 msgid "Added"
 msgstr "Added"
 
+#: src/app/(frontend)/account/page.tsx
+msgid "After disconnecting, sign in with your email and password. If you never set a password, use \"Forgot password?\" on the sign-in page."
+msgstr "After disconnecting, sign in with your email and password. If you never set a password, use \"Forgot password?\" on the sign-in page."
+
 #. Back link on a build page
 #: src/app/(frontend)/builds/[slug]/page.tsx
 msgid "All builds"
@@ -92,6 +96,14 @@ msgstr "All types"
 #: src/website/listing/copy.ts
 msgid "All versions"
 msgstr "All versions"
+
+#: src/app/(frontend)/sign-up/page.tsx
+msgid "Already have an account? <0>Sign in</0>"
+msgstr "Already have an account? <0>Sign in</0>"
+
+#: src/website/auth/messages.ts
+msgid "An account with this email is already connected to a different GitHub or Google account. Sign in with that account or with your password."
+msgstr "An account with this email is already connected to a different GitHub or Google account. Sign in with that account or with your password."
 
 #. Cookie settings section
 #: src/website/consent/ConsentProvider.tsx
@@ -156,6 +168,10 @@ msgstr "by {authorName}"
 msgid "by a former member"
 msgstr "by a former member"
 
+#: src/website/auth/SignUpForm.tsx
+msgid "Check your inbox"
+msgstr "Check your inbox"
+
 #. Link that removes all search filters on a listing page
 #: src/website/listing/components.tsx
 msgid "Clear"
@@ -175,6 +191,31 @@ msgstr "Community"
 #: src/components/Logo/Logo.tsx
 msgid "Community Portal"
 msgstr "Community Portal"
+
+#. Button: link a GitHub/Google account, e.g. 'Connect GitHub'
+#: src/app/(frontend)/account/page.tsx
+msgid "Connect {providerName}"
+msgstr "Connect {providerName}"
+
+#. Status of a linked GitHub/Google account
+#: src/app/(frontend)/account/page.tsx
+msgid "Connected"
+msgstr "Connected"
+
+#. Account page section: linked GitHub/Google accounts
+#: src/app/(frontend)/account/page.tsx
+msgid "Connected accounts"
+msgstr "Connected accounts"
+
+#. Connected GitHub account, e.g. 'Connected as octocat'
+#: src/app/(frontend)/account/page.tsx
+msgid "Connected as {githubLogin}"
+msgstr "Connected as {githubLogin}"
+
+#. Sign-in button, e.g. 'Continue with GitHub'
+#: src/website/auth/components.tsx
+msgid "Continue with {name}"
+msgstr "Continue with {name}"
 
 #. Cookie settings dialog title
 #. Footer link that reopens the cookie settings dialog
@@ -207,6 +248,16 @@ msgstr "Copy the install command for {packageName}"
 msgid "Course"
 msgstr "Course"
 
+#. Submit button of the sign-up form
+#: src/website/auth/SignUpForm.tsx
+msgid "Create account"
+msgstr "Create account"
+
+#. Page title of the registration page
+#: src/app/(frontend)/sign-up/page.tsx
+msgid "Create an account"
+msgstr "Create an account"
+
 #. Plugin card: when the plugin was created
 #: src/website/cards.tsx
 msgid "Created {created}"
@@ -217,6 +268,15 @@ msgstr "Created {created}"
 msgid "Created on GitHub"
 msgstr "Created on GitHub"
 
+#. Sign-up button while the request runs
+#: src/website/auth/SignUpForm.tsx
+msgid "Creating account…"
+msgstr "Creating account…"
+
+#: src/website/auth/SignUpForm.tsx
+msgid "Creating the account did not work. Please try again later."
+msgstr "Creating the account did not work. Please try again later."
+
 #. Color theme option
 #: src/providers/Theme/ThemeSelector/index.tsx
 msgid "Dark"
@@ -226,6 +286,25 @@ msgstr "Dark"
 #: src/components/AdminBar/index.tsx
 msgid "Dashboard"
 msgstr "Dashboard"
+
+#. Account page section heading
+#: src/app/(frontend)/account/page.tsx
+msgid "Delete account"
+msgstr "Delete account"
+
+#. Button that permanently deletes the user's account
+#: src/app/(frontend)/account/page.tsx
+msgid "Delete my account"
+msgstr "Delete my account"
+
+#: src/app/(frontend)/account/page.tsx
+msgid "Deleting your account cannot be undone. Your published news, resources, plugins and builds stay on the site and are shown as submitted by a former member."
+msgstr "Deleting your account cannot be undone. Your published news, resources, plugins and builds stay on the site and are shown as submitted by a former member."
+
+#. Button: unlink a GitHub/Google account, e.g. 'Disconnect GitHub'
+#: src/app/(frontend)/account/page.tsx
+msgid "Disconnect {providerName}"
+msgstr "Disconnect {providerName}"
 
 #. Resource type: documentation
 #: src/website/labels.ts
@@ -241,10 +320,33 @@ msgstr "Docs, courses, videos, tools and other resources for learning and buildi
 msgid "Draft preview: this version is not published."
 msgstr "Draft preview: this version is not published."
 
+#. Form field label
+#. Form field label
+#: src/website/auth/SignInForm.tsx
+#: src/website/auth/SignUpForm.tsx
+msgid "Email"
+msgstr "Email"
+
+#: src/website/auth/SignUpForm.tsx
+msgid "Enter a valid email address."
+msgstr "Enter a valid email address."
+
+#: src/website/auth/SignUpForm.tsx
+msgid "Enter your email address."
+msgstr "Enter your email address."
+
+#: src/website/auth/SignUpForm.tsx
+msgid "Enter your name."
+msgstr "Enter your name."
+
 #. Accessible name of the filter form on listing pages
 #: src/website/listing/components.tsx
 msgid "Filters"
 msgstr "Filters"
+
+#: src/website/auth/SignInForm.tsx
+msgid "Forgot password?"
+msgstr "Forgot password?"
 
 #. Badge: the repository is a fork of another repository
 #: src/app/(frontend)/plugins/[slug]/page.tsx
@@ -275,10 +377,30 @@ msgstr "Google Analytics measures visits and page views. Your IP address is proc
 msgid "Homepage"
 msgstr "Homepage"
 
+#: src/website/auth/SignUpForm.tsx
+msgid "I have read the <0>privacy policy</0>."
+msgstr "I have read the <0>privacy policy</0>."
+
+#: src/app/(frontend)/account/page.tsx
+msgid "I understand that my account will be deleted permanently."
+msgstr "I understand that my account will be deleted permanently."
+
+#: src/website/auth/SignInForm.tsx
+msgid "If an account with this email is waiting for activation, we sent a new activation link."
+msgstr "If an account with this email is waiting for activation, we sent a new activation link."
+
 #. Build page section heading: pull requests or patches included in the build
 #: src/website/detail-labels.ts
 msgid "Included changes"
 msgstr "Included changes"
+
+#: src/app/(frontend)/sign-up/page.tsx
+msgid "Join the community to submit news, resources, plugins and builds. Moderators review every submission before it is published."
+msgstr "Join the community to submit news, resources, plugins and builds. Moderators review every submission before it is published."
+
+#: src/app/(frontend)/sign-up/page.tsx
+msgid "Join with GitHub, Google or email to submit news, resources, plugins and builds."
+msgstr "Join with GitHub, Google or email to submit news, resources, plugins and builds."
 
 #. Plugin page fact: last code push on GitHub
 #: src/website/detail-labels.ts
@@ -326,19 +448,32 @@ msgid "Most stars"
 msgstr "Most stars"
 
 #. Account menu item: the user's account page on the website
+#. Page title of the account settings page
+#: src/app/(frontend)/account/page.tsx
 #: src/Header/AccountMenu.tsx
 msgid "My account"
 msgstr "My account"
 
 #. Account menu item: opens the admin panel where users manage their submitted entries
+#. Link to the admin panel listing the user's own entries
+#: src/app/(frontend)/account/page.tsx
 #: src/Header/AccountMenu.tsx
 msgid "My entries"
 msgstr "My entries"
+
+#. Form field label: the person's display name
+#: src/website/auth/SignUpForm.tsx
+msgid "Name"
+msgstr "Name"
 
 #. Cookie settings section
 #: src/website/consent/ConsentProvider.tsx
 msgid "Necessary"
 msgstr "Necessary"
+
+#: src/app/(frontend)/sign-in/page.tsx
+msgid "New here? <0>Create an account</0>"
+msgstr "New here? <0>Create an account</0>"
 
 #. Sort option: most recently added first
 #: src/website/listing/copy.ts
@@ -354,6 +489,11 @@ msgstr "News"
 #: src/website/listing/components.tsx
 msgid "Next"
 msgstr "Next"
+
+#. Status of a GitHub/Google account that is not linked
+#: src/app/(frontend)/account/page.tsx
+msgid "Not connected"
+msgstr "Not connected"
 
 #: src/website/listing/components.tsx
 msgid "Nothing here yet."
@@ -377,6 +517,11 @@ msgstr "on {sourceName}"
 #: src/Header/Nav/index.tsx
 msgid "Open navigation menu"
 msgstr "Open navigation menu"
+
+#. Separator between GitHub/Google buttons and the email form
+#: src/website/auth/components.tsx
+msgid "or use email"
+msgstr "or use email"
 
 #. Resource type
 #: src/website/labels.ts
@@ -402,6 +547,15 @@ msgstr "Pages"
 #: src/website/listing/components.tsx
 msgid "Pagination"
 msgstr "Pagination"
+
+#. Account page section heading
+#. Form field label
+#. Form field label
+#: src/app/(frontend)/account/page.tsx
+#: src/website/auth/SignInForm.tsx
+#: src/website/auth/SignUpForm.tsx
+msgid "Password"
+msgstr "Password"
 
 #: src/website/listing/copy.ts
 msgid "Payload builds that bundle unreleased fixes and features on top of an official release."
@@ -429,6 +583,14 @@ msgstr "Payload plugins found on GitHub and npm, with stars, versions and weekly
 #: src/website/listing/copy.ts
 msgid "Payload version"
 msgstr "Payload version"
+
+#: src/website/auth/SignInForm.tsx
+msgid "Please activate your account with the link we emailed you."
+msgstr "Please activate your account with the link we emailed you."
+
+#: src/website/auth/SignUpForm.tsx
+msgid "Please confirm that you have read the privacy policy."
+msgstr "Please confirm that you have read the privacy policy."
 
 #. Admin bar: used in "New plugin" / "Edit plugin"
 #: src/components/AdminBar/index.tsx
@@ -461,6 +623,11 @@ msgstr "Posts from the Payload blog and other sources, plus articles written by 
 msgid "Previous"
 msgstr "Previous"
 
+#. Link to profile and email notification settings in the admin panel
+#: src/app/(frontend)/account/page.tsx
+msgid "Profile and notifications"
+msgstr "Profile and notifications"
+
 #. Sort option: most recently updated first
 #: src/website/listing/copy.ts
 msgid "Recently updated"
@@ -475,6 +642,11 @@ msgstr "Reject"
 #: src/website/consent/ConsentProvider.tsx
 msgid "Reject all"
 msgstr "Reject all"
+
+#. Form field label: type the password a second time
+#: src/website/auth/SignUpForm.tsx
+msgid "Repeat password"
+msgstr "Repeat password"
 
 #. Plugin page section heading: GitHub repository facts
 #: src/website/detail-labels.ts
@@ -527,20 +699,64 @@ msgstr "Search resources"
 msgid "Select a color theme"
 msgstr "Select a color theme"
 
+#. Button that sends the account activation email again
+#: src/website/auth/SignInForm.tsx
+msgid "Send a new activation link"
+msgstr "Send a new activation link"
+
+#. Account page section heading: end the session
+#: src/app/(frontend)/account/page.tsx
+msgid "Session"
+msgstr "Session"
+
+#: src/app/(frontend)/account/page.tsx
+msgid "Set a password to sign in with your email address, or change the one you have."
+msgstr "Set a password to sign in with your email address, or change the one you have."
+
+#. Link to the password form in the admin panel
+#: src/app/(frontend)/account/page.tsx
+msgid "Set or change password"
+msgstr "Set or change password"
+
 #. Cookie banner button that opens the detailed cookie settings
 #: src/website/consent/ConsentProvider.tsx
 msgid "Settings"
 msgstr "Settings"
 
 #. Header button that opens the sign-in page
+#. Page title of the sign-in page
+#. Submit button of the sign-in form
+#: src/app/(frontend)/sign-in/page.tsx
 #: src/Header/AccountMenu.tsx
+#: src/website/auth/SignInForm.tsx
 msgid "Sign in"
 msgstr "Sign in"
 
+#: src/app/(frontend)/sign-in/page.tsx
+msgid "Sign in to submit news, resources, plugins and builds."
+msgstr "Sign in to submit news, resources, plugins and builds."
+
+#: src/app/(frontend)/sign-in/page.tsx
+msgid "Sign in with GitHub, Google or your email address."
+msgstr "Sign in with GitHub, Google or your email address."
+
 #. Account menu item that signs the user out
+#. Button that ends the session
 #: src/Header/AccountMenu.tsx
+#: src/website/auth/SignOutButton.tsx
 msgid "Sign out"
 msgstr "Sign out"
+
+#. GitHub/Google sign-in failed for an unknown reason
+#: src/website/auth/messages.ts
+#: src/website/auth/SignInForm.tsx
+msgid "Signing in did not work. Please try again."
+msgstr "Signing in did not work. Please try again."
+
+#. Sign-in button while the request runs
+#: src/website/auth/SignInForm.tsx
+msgid "Signing in…"
+msgstr "Signing in…"
 
 #. Label of the sort order select on listings
 #: src/website/listing/copy.ts
@@ -551,6 +767,10 @@ msgstr "Sort by"
 #: src/website/listing/copy.ts
 msgid "Source"
 msgstr "Source"
+
+#: src/app/(frontend)/account/page.tsx
+msgid "Submissions are created and edited in the admin panel. Moderators review them before they are published."
+msgstr "Submissions are created and edited in the admin panel. Moderators review them before they are published."
 
 #. Button on the builds listing
 #: src/website/listing/copy.ts
@@ -587,14 +807,46 @@ msgstr "Tag"
 msgid "Tags"
 msgstr "Tags"
 
+#: src/website/auth/messages.ts
+msgid "The account was connected."
+msgstr "The account was connected."
+
+#: src/website/auth/messages.ts
+msgid "The account was disconnected."
+msgstr "The account was disconnected."
+
+#: src/website/auth/SignInForm.tsx
+msgid "The email or password is incorrect. After 5 failed attempts the account is locked for 10 minutes."
+msgstr "The email or password is incorrect. After 5 failed attempts the account is locked for 10 minutes."
+
+#: src/website/auth/SignUpForm.tsx
+msgid "The passwords do not match."
+msgstr "The passwords do not match."
+
 #. Placeholder of the color theme selector
 #: src/providers/Theme/ThemeSelector/index.tsx
 msgid "Theme"
 msgstr "Theme"
 
+#: src/website/auth/SignUpForm.tsx
+msgid "This email address is too long."
+msgstr "This email address is too long."
+
+#: src/website/auth/messages.ts
+msgid "This GitHub or Google account is already connected to another account on this site."
+msgstr "This GitHub or Google account is already connected to another account on this site."
+
 #: src/app/(frontend)/not-found.tsx
 msgid "This page could not be found."
 msgstr "This page could not be found."
+
+#: src/website/auth/SignUpForm.tsx
+msgid "This password is too long."
+msgstr "This password is too long."
+
+#: src/website/auth/messages.ts
+msgid "Tick the confirmation box to delete your account."
+msgstr "Tick the confirmation box to delete your account."
 
 #. Resource type
 #: src/website/labels.ts
@@ -622,6 +874,14 @@ msgstr "Updated {updated}"
 msgid "Updated <0>{updated}</0>"
 msgstr "Updated <0>{updated}</0>"
 
+#: src/website/auth/SignUpForm.tsx
+msgid "Use at least {MIN_PASSWORD_LENGTH} characters."
+msgstr "Use at least {MIN_PASSWORD_LENGTH} characters."
+
+#: src/website/auth/SignUpForm.tsx
+msgid "Use at most 100 characters."
+msgstr "Use at most 100 characters."
+
 #. Resource type
 #: src/website/labels.ts
 msgid "Video"
@@ -644,6 +904,10 @@ msgstr "View repository"
 msgid "Visit {host}"
 msgstr "Visit {host}"
 
+#: src/website/auth/SignUpForm.tsx
+msgid "We sent an activation link to your email address. Open it to activate your account, then sign in."
+msgstr "We sent an activation link to your email address. Open it to activate your account, then sign in."
+
 #. Cookie banner text; the link opens the privacy policy
 #: src/website/consent/ConsentProvider.tsx
 msgid "We would like to use Google Analytics to understand how the site is used. It is only loaded if you agree. <a href=\"/privacy\">Privacy policy</a>"
@@ -663,3 +927,20 @@ msgstr "Weekly downloads"
 #: src/website/listing/copy.ts
 msgid "Write a post"
 msgstr "Write a post"
+
+#: src/website/auth/messages.ts
+msgid "Your account was deleted."
+msgstr "Your account was deleted."
+
+#. Account page section heading
+#: src/app/(frontend)/account/page.tsx
+msgid "Your content"
+msgstr "Your content"
+
+#: src/website/auth/messages.ts
+msgid "Your GitHub or Google account has no verified email address. Verify it there first, or sign up with email."
+msgstr "Your GitHub or Google account has no verified email address. Verify it there first, or sign up with email."
+
+#: src/app/(frontend)/account/page.tsx
+msgid "Your profile, connected accounts and account settings."
+msgstr "Your profile, connected accounts and account settings."

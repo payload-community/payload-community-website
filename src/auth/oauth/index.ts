@@ -1,8 +1,10 @@
-import type { PayloadRequest, Plugin, Where } from 'payload'
+import { parseCookies, type PayloadRequest, type Plugin, type Where } from 'payload'
 import { OAuth2Plugin } from 'payload-oauth2'
 
 import { randomPassword } from '@/collections/Users/hooks/beforeOperation'
 import { getServerSideURL } from '@/utilities/getURL'
+
+import { CONNECT_COOKIE, CONNECT_RETURN_PATH, connectUserIdFor } from '../connectIntent'
 
 import { fetchProfile } from './providers'
 import {
@@ -25,7 +27,11 @@ export const safeReturnPath = (state: string | null | undefined): string =>
 
 export const failurePath = (state: string | null | undefined, error: unknown): string => {
   const returnPath = safeReturnPath(state)
-  const base = returnPath.startsWith('/admin') ? '/admin/login' : '/sign-in'
+  const base = returnPath.startsWith('/admin')
+    ? '/admin/login'
+    : returnPath.startsWith(CONNECT_RETURN_PATH)
+      ? CONNECT_RETURN_PATH
+      : '/sign-in'
   const reason = error instanceof OAuthSignInError ? error.reason : 'oauth'
   return `${base}?error=${reason}`
 }
@@ -52,7 +58,15 @@ const createGetUserInfo =
       return (docs[0] as KnownUser | undefined) ?? null
     }
 
+    const connectUserId = connectUserIdFor({
+      cookie: parseCookies(req.headers).get(CONNECT_COOKIE),
+      provider,
+      secret: payload.secret,
+      userId: req.user?.id,
+    })
+
     const resolution = await resolveOAuthAccount({
+      connectUserId,
       lookup: {
         findByEmail: (email) => findOne({ email: { equals: email } }),
         findByProviderId: (p, id) => findOne({ [SUB_FIELDS[p]]: { equals: id } }),
@@ -85,7 +99,12 @@ const createGetUserInfo =
           req,
         })
         payload.logger.info(
-          { claimUnverified: resolution.claimUnverified, provider, userId: resolution.userId },
+          {
+            claimUnverified: resolution.claimUnverified,
+            connect: Boolean(connectUserId),
+            provider,
+            userId: resolution.userId,
+          },
           'Linked OAuth provider to existing account',
         )
         return providerData

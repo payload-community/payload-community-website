@@ -12,6 +12,8 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 **Q24. Page caching** (M4, decided as [ADR-029](decisions/0029-website-page-caching-and-revalidation.md), please confirm). Instead of cache tags only, detail pages use `revalidate = 300` plus on-demand `revalidatePath` from the moderation hooks, because the jobs worker and other replicas cannot reach a replica's Next.js cache. Sync updates and changes on other replicas appear within 5 minutes.
 
+**Q25. Account page details** (M4, least-effort choices, please confirm). Whether a user ever set their own password is not tracked, so `/account` shows one "Set or change password" link (Payload's `/admin/account`) and the disconnect warning appears whenever the last provider is removed. Connecting a provider uses a form POST to a route handler instead of a server action (see §12.3). Deleting the account needs a confirmation checkbox, then signs out and shows "Your account was deleted" on `/sign-in`.
+
 ### Verification tasks (agreed approach; confirm during implementation)
 
 **T2. Lingui SWC plugin compatibility** (M4, decided as [ADR-027](decisions/0027-lingui-wiring.md), please confirm). 6.7.1 does not load with Next 16.3.3 (`swc_core` 73); `@lingui/swc-plugin` is pinned to 6.1.0, the newest release that compiles, with Lingui 6.9.0. `eslint-plugin-lingui` is added as a lint guardrail for unwrapped website strings.

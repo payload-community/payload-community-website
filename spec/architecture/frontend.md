@@ -18,9 +18,10 @@ Part of the [architecture](README.md). Section numbers are global across the arc
 | `/builds` | Builds | `q` (name, description), `tag`, `version` (base Payload version), `sort` (`updated`, `newest`), `page`. Cards → `/builds/{slug}`. |
 | `/builds/[slug]` | Build detail | Name, description, base Payload version, tags, npm install box, list of included changes (title → link, notes), homepage/docs; **prominent "View repository" button**. |
 | `/community`, `/about`, `/privacy` | pages | `[slug]` route from template. |
-| `/sign-in` | auth | GitHub/Google buttons (enabled only), email/password form, "Forgot password?" → `/admin/forgot`, link to `/sign-up`, resend activation. |
+| `/sign-in` | auth | GitHub/Google buttons (enabled only), email/password form, "Forgot password?" → `/admin/forgot`, link to `/sign-up`, resend activation. `?next=` (relative path, default `/`; the header's "Sign in" passes the current page); signed-in visitors are redirected. `noindex`. |
 | `/sign-up` | auth | GitHub/Google buttons, registration form (name, email, password, confirmation), "check your inbox" state ([§12.2](auth.md#122-email-registration-and-password-sign-in)). |
 | `/account` | auth | Profile summary, **connected accounts** (connect/disconnect GitHub and Google, [§12.3](auth.md#123-connect-another-provider-while-signed-in-approved-idea-i1)), set/change password link, links to admin (my entries, notification settings at `/admin/account`), sign out, **delete account** (confirmation; explains that content is anonymized). |
+| `/account/connect` (POST), `/account/connected` | route handlers | Start the connect flow (signed intent cookie → provider) and clean up after it ([§12.3](auth.md#123-connect-another-provider-while-signed-in-approved-idea-i1)). |
 | `/submit/{posts,resources,plugins,builds}` | redirect | → `/admin/collections/{slug}/create` (sign-in first if anonymous). |
 | `/sitemap.xml`, `/robots.txt`, `/pages-sitemap.xml`, `/news-sitemap.xml`, `/resources-sitemap.xml`, `/plugins-sitemap.xml`, `/builds-sitemap.xml` | next-sitemap + route handlers | |
 | `/api/health/live`, `/api/health/ready` | Next route handlers | live: no I/O; ready: `getPayload()` + MongoDB `ping`. |
