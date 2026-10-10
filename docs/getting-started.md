@@ -102,7 +102,7 @@ pnpm test:e2e      # Playwright: tests/e2e
 pnpm test          # both
 ```
 
-Tests never touch development data. `tests/helpers/testEnv.ts` switches them to the `plc_test` database and the `e2e` S3 key prefix. The integration tests and Playwright's global setup reset `plc_test` (empty collections, migrations, `seed`, the three sample accounts). Playwright starts its own dev server on port 3100 (build directory `.next-e2e`, jobs triggered by the tests), so it can run next to `pnpm dev`. The E2E email tests read Mailpit's API at `http://127.0.0.1:8025`. Browsers are installed by the DDEV Playwright add-on. If Playwright reports a missing browser, run `pnpm exec playwright install chromium`.
+Tests never touch development data. `tests/helpers/testEnv.ts` switches them to the `plc_test` database and the `e2e` S3 key prefix. The integration tests and Playwright's global setup reset `plc_test` (empty collections, migrations, `seed`, the three sample accounts and a few published website entries from `tests/helpers/websiteFixtures.ts`). The test server gets a dummy Google Analytics ID so the cookie banner appears; tests intercept requests to Google. Playwright starts its own dev server on port 3100 (build directory `.next-e2e`, jobs triggered by the tests), so it can run next to `pnpm dev`. The E2E email tests read Mailpit's API at `http://127.0.0.1:8025`. Browsers are installed by the DDEV Playwright add-on. If Playwright reports a missing browser, run `pnpm exec playwright install chromium`.
 
 After changing collections or globals, run `pnpm generate:types`. After changing admin components, also run `pnpm generate:importmap`. Commit the generated files.
 

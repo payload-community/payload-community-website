@@ -5,6 +5,7 @@ import { migrations } from '../../src/migrations'
 import { seed, SEED_CONTEXT } from '../../src/seed'
 import { DEV_PASSWORD, DEV_USERS } from '../../src/seed/dev'
 import { TEST_DATABASE_NAME } from './testEnv'
+import { createWebsiteFixtures } from './websiteFixtures'
 
 export const TEST_PASSWORD = DEV_PASSWORD
 
@@ -36,11 +37,15 @@ export async function resetTestDatabase(payload: Payload): Promise<void> {
   await payload.db.migrate({ migrations: migrations as unknown as Migration[] })
   await seed(payload)
 
+  const userIds: string[] = []
   for (const user of DEV_USERS) {
-    await payload.create({
+    const created = await payload.create({
       collection: 'users',
       context: SEED_CONTEXT,
       data: { ...user, _verified: true, password: TEST_PASSWORD, roles: [...user.roles] },
     })
+    userIds.push(String(created.id))
   }
+
+  await createWebsiteFixtures(payload, userIds[0])
 }
