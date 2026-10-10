@@ -1,6 +1,6 @@
 import type { Field } from 'payload'
 
-import { noOne } from '@/access'
+import { moderatorFieldOnly, noOne } from '@/access'
 
 import { MODERATION_STATUSES } from './config'
 
@@ -11,6 +11,14 @@ const label = (value: string) => value[0].toUpperCase() + value.slice(1)
  * panel; hooks, moderation actions, sync jobs and seeds write them.
  */
 export const moderationFields = (origins: readonly string[]): Field[] => [
+  {
+    name: 'moderationActions',
+    type: 'ui',
+    admin: {
+      components: { Field: '@/moderation/components/ModerationActions#ModerationActions' },
+      position: 'sidebar',
+    },
+  },
   {
     name: 'moderation',
     type: 'group',
@@ -30,7 +38,12 @@ export const moderationFields = (origins: readonly string[]): Field[] => [
         type: 'textarea',
         admin: { condition: (_data, sibling) => sibling?.status === 'rejected' },
       },
-      { name: 'moderatedBy', type: 'relationship', relationTo: 'users' },
+      {
+        name: 'moderatedBy',
+        type: 'relationship',
+        access: { read: moderatorFieldOnly },
+        relationTo: 'users',
+      },
       { name: 'moderatedAt', type: 'date' },
       { name: 'submittedAt', type: 'date', index: true },
     ],

@@ -19,6 +19,7 @@ import { Footer } from './Footer/config'
 import { Header } from './Header/config'
 import { i18n } from './i18n'
 import { jobs } from './jobs'
+import { moderationEndpoint } from './moderation/endpoint'
 import { plugins } from './plugins'
 import { getServerSideURL } from './utilities/getURL'
 
@@ -28,7 +29,15 @@ const dirname = path.dirname(filename)
 export default buildConfig({
   admin: {
     components: {
+      afterNavLinks: ['@/moderation/components/ModerationNavLink#ModerationNavLink'],
+      beforeDashboard: ['@/moderation/components/ModerationWidget#ModerationWidget'],
       beforeLogin: ['@/components/BeforeLogin'],
+      views: {
+        moderation: {
+          Component: '@/moderation/components/ModerationView#ModerationView',
+          path: '/moderation',
+        },
+      },
     },
     importMap: {
       baseDir: path.resolve(dirname),
@@ -52,6 +61,7 @@ export default buildConfig({
   collections: [Posts, Resources, Plugins, Builds, PostMedia, Media, Pages, Sources, Users],
   cors: [getServerSideURL()].filter(Boolean),
   email: emailAdapter,
+  endpoints: [moderationEndpoint],
   globals: [Header, Footer],
   i18n,
   jobs,

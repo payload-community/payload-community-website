@@ -1,8 +1,7 @@
 import type { MongooseAdapter } from '@payloadcms/db-mongodb'
 import type { CollectionBeforeDeleteHook, CollectionSlug } from 'payload'
 
-export const MODERATED_COLLECTIONS = ['posts', 'resources', 'plugins', 'builds'] as const satisfies
-  readonly CollectionSlug[]
+import { MODERATED_COLLECTIONS } from '@/moderation/config'
 
 const OWNED_COLLECTIONS = [...MODERATED_COLLECTIONS, 'post-media'] as const satisfies
   readonly CollectionSlug[]
