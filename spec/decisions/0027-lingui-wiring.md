@@ -1,7 +1,8 @@
 # ADR-027: Lingui wiring on Next.js 16 (SWC plugin pin, compiled catalogs, lint guardrail)
 
-- Status: Proposed
+- Status: Accepted
 - Proposed: 2026-10-10
+- Accepted: 2026-10-11
 
 ## Context
 

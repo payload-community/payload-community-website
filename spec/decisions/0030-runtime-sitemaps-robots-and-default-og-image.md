@@ -1,7 +1,8 @@
 # ADR-030: Runtime sitemaps, robots.txt and default social image
 
-- Status: Proposed
+- Status: Accepted
 - Proposed: 2026-10-10
+- Accepted: 2026-10-11
 
 ## Context
 

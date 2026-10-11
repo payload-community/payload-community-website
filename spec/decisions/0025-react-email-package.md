@@ -1,7 +1,8 @@
 # ADR-025: Email templates use `react-email` 6 instead of `@react-email/components`
 
-- Status: Proposed
+- Status: Accepted
 - Proposed: 2026-10-10
+- Accepted: 2026-10-11
 - Amends: [ADR-016](0016-libraries.md) (email templates row)
 
 ## Context

@@ -4,20 +4,18 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 ## Open
 
-**Q21. Moderation controls in the admin panel** (M3, decided as [ADR-026](decisions/0026-moderation-admin-controls.md), please confirm). Regular users only get *Save Draft*; Payload's *Unpublish* control is hidden (unpublishing is a moderation action) and its REST equivalent counts as `unpublish`; a moderator's *Publish changes* on someone else's unpublished entry counts as an approval and emails the author.
+None.
 
-**Q22. Runtime client config and consent wiring** (M4, decided as [ADR-028](decisions/0028-website-chrome-runtime-config-and-consent.md), please confirm). Instead of a dynamic layout (ADR-013), client components read the GA ID from `GET /site-config.json` so pages stay static; Consent Mode v2 defaults are pushed by the consent provider right before GA loads (no inline head script); the header uses a text wordmark instead of Payload's logo; the admin bar is shown to moderators and admins only.
+## Resolved (2026-10-11 review)
 
-**Q23. Listing details not in the brief** (M4, least-effort choices, please confirm). Resources and builds can also be sorted by `newest` (creation date) besides `updated`; filtered/searched listing views are `noindex, follow` with the plain listing as canonical; pages past the last one return 404; each listing shows a "Submit …" button to `/submit/{collection}`; the post `source` filter uses the source ID (sources have no slug) and lists only sources with visible posts.
-
-**Q24. Page caching** (M4, decided as [ADR-029](decisions/0029-website-page-caching-and-revalidation.md), please confirm). Instead of cache tags only, detail pages use `revalidate = 300` plus on-demand `revalidatePath` from the moderation hooks, because the jobs worker and other replicas cannot reach a replica's Next.js cache. Sync updates and changes on other replicas appear within 5 minutes.
-
-**Q25. Account page details** (M4, least-effort choices, please confirm). Whether a user ever set their own password is not tracked, so `/account` shows one "Set or change password" link (Payload's `/admin/account`) and the disconnect warning appears whenever the last provider is removed. Connecting a provider uses a form POST to a route handler instead of a server action (see §12.3). Deleting the account needs a confirmation checkbox, then signs out and shows "Your account was deleted" on `/sign-in`.
-
-### Verification tasks (agreed approach; confirm during implementation)
-
-**T2. Lingui SWC plugin compatibility** (M4, decided as [ADR-027](decisions/0027-lingui-wiring.md), please confirm). 6.7.1 does not load with Next 16.3.3 (`swc_core` 73); `@lingui/swc-plugin` is pinned to 6.1.0, the newest release that compiles, with Lingui 6.9.0. `eslint-plugin-lingui` is added as a lint guardrail for unwrapped website strings.
-
+| # | Question | Resolution |
+|---|---|---|
+| Q21 | Moderation controls in the admin panel | As proposed, plus: authors can unpublish their own entries; re-publishing still goes through review ([ADR-026](decisions/0026-moderation-admin-controls.md), revised). |
+| Q22 | Runtime client config and consent wiring | Confirmed ([ADR-028](decisions/0028-website-chrome-runtime-config-and-consent.md)). |
+| Q23 | Listing details not in the brief | Agreed: `newest` sort for resources and builds, `noindex` filtered views, 404 past the last page, "Submit …" buttons, source filter by ID. |
+| Q24 | Page caching | Agreed ([ADR-029](decisions/0029-website-page-caching-and-revalidation.md)). |
+| Q25 | Account page details | Agreed: one "Set or change password" link, connect via form POST, delete with a confirmation checkbox. |
+| T2 | Lingui SWC plugin compatibility | Agreed: `@lingui/swc-plugin` 6.1.0 with Lingui 6.9.0 until Next.js supports a newer plugin ([ADR-027](decisions/0027-lingui-wiring.md)). |
 
 ## Resolved (2026-10-10 review)
 
@@ -62,3 +60,4 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 - **P8.** Brief, Users: add "Signed-in users can connect and disconnect GitHub and Google on their account page." ([ADR-021](decisions/0021-connect-providers-while-signed-in.md))
 - **P9.** Brief, Users and Roles: deleted users' content is anonymized in every status ([ADR-011](decisions/0011-account-deletion-anonymizes-content.md)).
 - **P10.** Bootstrap prompt §3 rules 2 and 6, §4 M0, §5 and §6: replace `spec/architecture.md` with `spec/architecture/` and `spec/decisions.md` / `decisions.md` with `spec/decisions/` (one file per ADR).
+- **P11.** Brief, Moderation: add "Authors can unpublish their own entries; publishing them again requires a moderator's review." and in the status note, "changeable only by Moderators and Admins" → "…, except that authors can unpublish their own entries" ([ADR-026](decisions/0026-moderation-admin-controls.md)).

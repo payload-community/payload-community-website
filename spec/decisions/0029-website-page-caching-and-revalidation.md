@@ -1,7 +1,8 @@
 # ADR-029: Website page caching and revalidation
 
-- Status: Proposed
+- Status: Accepted
 - Proposed: 2026-10-10
+- Accepted: 2026-10-11
 
 ## Context
 
