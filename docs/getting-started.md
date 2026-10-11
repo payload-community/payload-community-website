@@ -21,6 +21,7 @@ Inside the container:
 ```bash
 cp .env.example .env   # only if .env does not exist yet; then fill in the secrets
 pnpm install
+npx skills experimental_install   # optional: AI agent skills listed in skills-lock.json
 pnpm migrate           # database indexes (safe to run again)
 pnpm seed:dev          # base pages and navigation, sample data and accounts
 pnpm dev
