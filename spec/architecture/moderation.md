@@ -30,6 +30,7 @@ The factory also sets `admin.preview` (draft preview through `/next/preview`; no
 | T5 | Mod/Admin | approve / re-publish | `pending` / `rejected` / `unpublished` | `published` | `update({ draft: false, _status: 'published' })` publishes the latest draft | author "approved" (if not own) |
 | T6 | Mod/Admin | reject (reason optional) | `pending` | `rejected` | `update({ draft: true })` → published main doc (if any) stays live | author "rejected" (if not own) |
 | T7 | Mod/Admin | unpublish | `published` (or latest draft over a published doc) | `unpublished` | `update({ draft: false, _status: 'draft' })` → main doc hidden | – |
+| T7a | Author (own entry) | unpublish | same as T7 | `unpublished` | same as T7; `moderatedBy` = the author | – |
 | T8 | Mod/Admin | create / edit + Publish | any | `published` | normal publish | – |
 | T9 | Mod/Admin | edit + Save draft | any | unchanged (new: `pending`) | draft | – |
 | T10 | Owner / Mod / Admin | delete | any | – | delete document and versions | – |
@@ -37,6 +38,7 @@ The factory also sets `admin.preview` (draft preview through `/next/preview`; no
 
 Notes:
 - Moderators change status only through **moderation actions** (T5–T7), available on the dashboard and in the edit-view sidebar. The status select itself is read-only in the UI.
+- Authors can **unpublish their own entries** (T7a, [ADR-026](../decisions/0026-moderation-admin-controls.md)) from the edit-view sidebar; it is the only moderation action open to them. To publish the entry again they save it, which resubmits it for review (T4). Moderators see it in the *Unpublished* tab (the entry's `moderatedBy` is the author) and can re-publish it.
 - Approving publishes the **latest** draft (what the moderator reviewed via the versions diff view).
 - A rejected edit of a published entry keeps the published version live; the author sees `rejected` + reason in their list (admin lists show latest versions).
 - T7 on an entry with a newer pending draft: the draft becomes the hidden main document with status `unpublished` (pending changes are dropped from the queue). Documented for moderators.
@@ -58,7 +60,7 @@ Notes:
 
 ## 8. Moderation dashboard and actions
 
-- **Endpoint**: `POST /api/moderation/:collection/:id/:action` (root Payload endpoint), `action ∈ approve | reject | unpublish | republish`, body `{ reason? }`. Access: moderator/admin (`req.user`), CSRF via Payload's cookie + `Origin` check (`csrf` config). Performs the Local API call from [§6.3](#63-transitions) with `req` (user context) and `context.moderationAction = action`.
+- **Endpoint**: `POST /api/moderation/:collection/:id/:action` (root Payload endpoint), `action ∈ approve | reject | unpublish | republish`, body `{ reason? }`. Access: moderator/admin for every action; regular users only `unpublish` on entries they created (`createdBy`), otherwise 403. CSRF via Payload's cookie + `Origin` check (`csrf` config). Performs the Local API call from [§6.3](#63-transitions) with `req` (user context) and `context.moderationAction = action`.
 - **Admin view** `/admin/moderation` (`admin.components.views.moderation`, server component, `@payloadcms/ui` `Gutter`, `Button`, `Pill`, tables). Tabs (`?tab=pending|rejected|unpublished`, search params): one merged list of the four collections via `payload.find({ draft: true, where: status })` per collection, merged and sorted by `moderation.submittedAt` (pending oldest first) — paged 50 per tab. Columns: type, title, author, submitted, link to edit view and versions (diff) view; actions approve / reject (small client form with reason) / re-publish.
 - Nav link via `admin.components.afterNavLinks`, rendered only for moderators/admins; the view itself checks the role server-side and returns 404/redirect for others.
 - **Dashboard widget** (`beforeDashboard`): pending count per type + link to the dashboard (moderators/admins only).
@@ -73,13 +75,14 @@ Notes:
 | `beforeOperation` (`enforceDrafts`), `beforeChange` (`applyModerationState`), `afterChange` (`notifyTransitions`) | `src/moderation/workflow.ts`, wired in `src/moderation/collection.ts` |
 | Submission limit | `src/moderation/limit.ts` (`countPendingSubmissions`: `find({ draft: true, limit: 1 })` per collection — `count` has no `draft` option in 3.90.2) |
 | Recipients and email jobs | `src/moderation/notifications.ts` |
-| Endpoint | `src/moderation/endpoint.ts` (zod-validated params and body; 401 anonymous, 403 non-moderator, 404 unknown entry, 409 action not allowed from the current status) |
+| Endpoint | `src/moderation/endpoint.ts` (zod-validated params and body; 401 anonymous, 403 non-moderator (except an author's `unpublish`), 404 unknown entry, 409 action not allowed from the current status) |
 | Queue queries | `src/moderation/queue.ts` |
 | Admin components | `src/moderation/components/` (`ModerationView`, `ModerationNavLink`, `ModerationWidget`, `ModerationActions`, `ActionButtons`, `PendingSlotsBanner` / `PendingSlotsNotice`, `ModeratedButtons`) |
 
 Refinements of the sections above ([ADR-026](../decisions/0026-moderation-admin-controls.md)):
 
 - Regular users see only **Save Draft**; Payload's *Publish* and *Unpublish* buttons are not rendered for them. Payload's *Unpublish* is hidden for moderators too, and a moderator's main-document write with `_status: 'draft'` (REST/bulk unpublish) is treated as the `unpublish` action.
+- Authors get our own *Unpublish* button in the *Moderation* sidebar field on their published entries (T7a). `enforceDrafts` lets the main-document write through only when the endpoint set `context.moderationAction = 'unpublish'` (REST clients cannot set the context); `applyModerationState` checks that the user is the author.
 - `approve` is accepted from `pending`, `rejected` and `unpublished` (same as `republish`); the UI shows *Approve* for pending entries and *Re-publish* for the others.
 - T8 on someone else's entry whose latest status was not `published` sets `moderatedBy`/`moderatedAt` and sends `entryApproved`.
 - Values sent for `moderation.*` by users are ignored rather than rejected: field access is `create/update: noOne`, and the `beforeChange` hook recomputes the group from the latest version.

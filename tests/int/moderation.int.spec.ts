@@ -204,6 +204,38 @@ describe('pre-moderation workflow', () => {
     expect(republished.moderation.status).toBe('published')
     expect((await queuedEmails()).map((e) => e.template)).toEqual(['entryApproved'])
   })
+
+  it('lets the author unpublish their own entry', async () => {
+    const unpublished = await moderate(entryId, 'unpublish', undefined, users.user)
+    expect(unpublished._status).toBe('draft')
+    expect(unpublished.moderation.status).toBe('unpublished')
+    expect(unpublished.moderation.moderatedBy).toMatchObject({ id: users.user.id })
+    expect((await published(entryId)).totalDocs).toBe(0)
+    expect(await queuedEmails()).toEqual([])
+  })
+
+  it('resubmits an entry the author unpublished as pending', async () => {
+    const resubmitted = await payload.update({
+      collection: 'resources',
+      data: { title: 'Back again' },
+      id: entryId,
+      ...asUser(users.user),
+    })
+    expect(resubmitted._status).toBe('draft')
+    expect(resubmitted.moderation.status).toBe('pending')
+    expect((await published(entryId)).totalDocs).toBe(0)
+  })
+
+  it('refuses unpublishing entries of other users', async () => {
+    const other = await payload.create({
+      collection: 'resources',
+      data: { ...resourceData(), _status: 'published' } as never,
+      ...asUser(users.moderator),
+    })
+    expect(other.moderation.status).toBe('published')
+    await expect(moderate(other.id, 'unpublish', undefined, users.user)).rejects.toMatchObject({ status: 403 })
+    expect((await published(other.id)).totalDocs).toBe(1)
+  })
 })
 
 describe('submission limit', () => {

@@ -4,7 +4,7 @@ import { z } from 'zod'
 import { isModerator } from '@/access'
 
 import { ACTION_FROM, MODERATED_COLLECTIONS, MODERATION_ACTIONS, type ModerationStatus } from './config'
-import type { ModerationContext } from './workflow'
+import { isAuthor, type ModerationContext } from './workflow'
 
 const paramsSchema = z.object({
   action: z.enum(MODERATION_ACTIONS),
@@ -19,14 +19,18 @@ const error = (message: string, status: number) => Response.json({ errors: [{ me
 /**
  * `POST /api/moderation/:collection/:id/:action` (spec §8). Runs the Local API write for the
  * action with `context.moderationAction`; the shared hooks set the status and queue the emails.
+ * Moderators may run every action; authors may only unpublish their own entries.
  */
 export const moderationEndpoint: Endpoint = {
   handler: async (req) => {
     if (!req.user) return error(req.t('error:unauthorized'), 401)
-    if (!isModerator(req.user)) return error(req.t('error:notAllowedToPerformAction'), 403)
+    const moderator = isModerator(req.user)
 
     const params = paramsSchema.safeParse(req.routeParams)
     if (!params.success) return error(req.t('error:notFound'), 404)
+    if (!moderator && params.data.action !== 'unpublish') {
+      return error(req.t('error:notAllowedToPerformAction'), 403)
+    }
     const body = bodySchema.safeParse(await req.json?.().catch(() => ({})))
     if (!body.success) return error(body.error.issues[0]?.message ?? 'Invalid body', 400)
 
@@ -43,6 +47,9 @@ export const moderationEndpoint: Endpoint = {
       req,
     })
     if (!latest) return error(req.t('error:notFound'), 404)
+    if (!moderator && !isAuthor(latest, req.user)) {
+      return error(req.t('error:notAllowedToPerformAction'), 403)
+    }
 
     const status = latest.moderation?.status as ModerationStatus | undefined
     let allowed = Boolean(status && ACTION_FROM[action].includes(status))

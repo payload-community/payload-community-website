@@ -54,6 +54,8 @@ export const plcTranslations = {
       moderationActionFailed: 'The moderation action failed.',
       moderationNoActions: 'No moderation action is available for this status.',
       moderationUnsavedChanges: 'Save or discard your changes before moderating.',
+      authorUnpublishHint:
+        'Unpublishing removes the entry from the website. To publish it again, save it: a moderator reviews it first.',
     },
   },
 }

@@ -29,7 +29,7 @@ All four collections have `versions: { drafts: { validate: false }, maxPerDoc: 2
 | `createdBy` | relationship → users, `index: true` | Set on create by a hook (`req.user`), read-only. Empty for imported entries. |
 | `origin` | select | Set on create by a hook, read-only (values per collection). |
 
-Plus a custom sidebar UI field `moderationActions` (Approve / Reject / Unpublish / Re-publish buttons, `src/moderation/components/ModerationActions.tsx`) visible only to moderators; it calls the moderation endpoint ([§8](moderation.md#8-moderation-dashboard-and-actions)) and is disabled while the form has unsaved changes.
+Plus a custom sidebar UI field `moderationActions` (Approve / Reject / Unpublish / Re-publish buttons, `src/moderation/components/ModerationActions.tsx`) visible to moderators, and to the author of a published entry with only *Unpublish*; it calls the moderation endpoint ([§8](moderation.md#8-moderation-dashboard-and-actions)) and is disabled while the form has unsaved changes.
 
 ### 4.2 `users` (auth)
 

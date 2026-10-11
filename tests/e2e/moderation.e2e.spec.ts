@@ -3,6 +3,7 @@ import { expect, test, type APIRequestContext, type Page } from '@playwright/tes
 import { login } from '../helpers/login'
 import { waitForEmail } from '../helpers/mailpit'
 import { testUsers } from '../helpers/testDatabase'
+import { fixtures } from '../helpers/websiteFixtures'
 
 const runJobs = async (request: APIRequestContext) => {
   const adminLogin = await request.post('/api/users/login', { data: testUsers.admin })
@@ -71,5 +72,51 @@ test.describe('Pre-moderation', () => {
       `/api/resources?where[title][equals]=${encodeURIComponent(title)}&depth=0`,
     )
     expect((await published.json()).totalDocs).toBe(1)
+  })
+
+  test('authors can unpublish their own entries, but nobody else’s', async ({
+    baseURL,
+    page,
+    playwright,
+    request,
+  }) => {
+    const title = `E2E author unpublish ${Date.now()}`
+    const tokenOf = async (user: { email: string; password: string }) =>
+      (await (await request.post('/api/users/login', { data: user })).json()).token as string
+    const auth = (token: string) => ({ Authorization: `JWT ${token}` })
+    const userToken = await tokenOf(testUsers.user)
+
+    const created = await request.post('/api/resources', {
+      data: { description: 'Unpublished by its author.', title, type: 'docs', url: `https://example.com/${Date.now()}` },
+      headers: auth(userToken),
+    })
+    expect(created.ok()).toBe(true)
+    const { doc } = await created.json()
+    const approve = await request.post(`/api/moderation/resources/${doc.id}/approve`, {
+      headers: auth(await tokenOf(testUsers.moderator)),
+    })
+    expect(approve.ok()).toBe(true)
+
+    const others = await request.get(`/api/resources?where[slug][equals]=${fixtures.resource.slug}&depth=0`)
+    const otherId = (await others.json()).docs[0].id
+    for (const action of ['unpublish', 'approve']) {
+      const refused = await request.post(`/api/moderation/resources/${otherId}/${action}`, {
+        headers: auth(userToken),
+      })
+      expect(refused.status(), action).toBe(403)
+    }
+
+    await login({ page, user: testUsers.user })
+    await page.goto(`/admin/collections/resources/${doc.id}`)
+    await page.waitForLoadState('networkidle')
+    const actions = page.locator('.plc-moderation-actions')
+    await actions.getByRole('button', { name: 'Unpublish' }).click()
+    // The edit view reloads; authors see no actions on an unpublished entry.
+    await expect(actions).toHaveCount(0)
+
+    const anonymous = await playwright.request.newContext({ baseURL })
+    const visible = await anonymous.get(`/api/resources?where[id][equals]=${doc.id}&depth=0`)
+    expect((await visible.json()).totalDocs).toBe(0)
+    await anonymous.dispose()
   })
 })

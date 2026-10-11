@@ -31,18 +31,32 @@ const idOf = (value: unknown): number | string | null => {
   return typeof value === 'string' || typeof value === 'number' ? value : null
 }
 
+/** True when `user` submitted the entry (imported entries have no author). */
+export const isAuthor = (
+  doc: { createdBy?: unknown } | null | undefined,
+  user: { id: number | string } | null | undefined,
+): boolean => {
+  const authorId = idOf(doc?.createdBy)
+  return Boolean(user && authorId !== null && String(authorId) === String(user.id))
+}
+
 /**
  * Regular users can only write drafts (spec §6.2): publishing through admin, REST or GraphQL is
- * impossible for them. A moderator's main-document write with `_status: 'draft'` is Payload's
- * Unpublish control; it is treated as the `unpublish` moderation action.
+ * impossible for them. The exception is the `unpublish` action on their own entries, which only
+ * the moderation endpoint sets; `applyModerationState` checks the authorship. A moderator's
+ * main-document write with `_status: 'draft'` is Payload's Unpublish control; it is treated as the
+ * `unpublish` moderation action.
  */
 export const enforceDrafts: CollectionBeforeOperationHook = ({ args, operation, req }) => {
   if (operation !== 'create' && operation !== 'update') return args
   if (isSystem(req) || !req.user) return args
 
-  if (!isModerator(req.user)) return { ...args, data: { ...args.data, _status: 'draft' }, draft: true }
-
   const context = req.context as ModerationContext
+  if (!isModerator(req.user)) {
+    if (operation === 'update' && context.moderationAction === 'unpublish') return args
+    return { ...args, data: { ...args.data, _status: 'draft' }, draft: true }
+  }
+
   const status = (args.data as { _status?: string } | undefined)?._status
   if (operation === 'update' && !args.draft && status === 'draft' && !context.moderationAction) {
     context.moderationAction = 'unpublish'
@@ -71,7 +85,8 @@ export const applyModerationState: CollectionBeforeChangeHook = async ({
   const withModeration = (moderation: ModerationGroup) => ({ ...data, moderation })
 
   if (action) {
-    if (!isModerator(user)) throw new Forbidden(req.t)
+    const authorUnpublish = action === 'unpublish' && operation === 'update' && isAuthor(originalDoc, user)
+    if (!isModerator(user) && !authorUnpublish) throw new Forbidden(req.t)
     const decided = { ...previous, moderatedAt: now, moderatedBy: user!.id }
     if (action === 'reject') {
       return withModeration({ ...decided, rejectionReason: moderationReason || null, status: 'rejected' })
@@ -128,7 +143,7 @@ export const notifyTransitions: CollectionAfterChangeHook = async ({
   if (!to || from === to) return doc
 
   const authorId = idOf(doc.createdBy)
-  const ownEntry = authorId !== null && String(authorId) === String(user.id)
+  const ownEntry = isAuthor(doc, user)
   let event: ModerationEvent | null = null
 
   if (to === 'pending' && !isModerator(user)) event = { type: 'submitted' }

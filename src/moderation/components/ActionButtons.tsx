@@ -39,11 +39,13 @@ type Props = {
   id: number | string
   /** Called after a successful action; defaults to refreshing the server components. */
   onDone?: () => void
+  /** Restricts the buttons, e.g. to `unpublish` for authors. */
+  only?: ModerationAction[]
   status: ModerationStatus
 }
 
 /** Approve / reject (with reason) / re-publish / unpublish buttons calling the moderation endpoint. */
-export function ActionButtons({ collection, disabled, hasPublishedDoc, id, onDone, status }: Props) {
+export function ActionButtons({ collection, disabled, hasPublishedDoc, id, onDone, only, status }: Props) {
   const {
     config: {
       routes: { api },
@@ -55,8 +57,9 @@ export function ActionButtons({ collection, disabled, hasPublishedDoc, id, onDon
   const [rejecting, setRejecting] = useState(false)
   const [reason, setReason] = useState('')
 
-  const actions = [...VISIBLE[status]]
+  let actions = [...VISIBLE[status]]
   if (hasPublishedDoc && !actions.includes('unpublish') && status !== 'unpublished') actions.push('unpublish')
+  if (only) actions = actions.filter((action) => only.includes(action))
 
   const run = async (action: ModerationAction) => {
     setBusy(true)

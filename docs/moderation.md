@@ -18,7 +18,7 @@ Statuses (shown in the sidebar of each entry, under *Moderation*):
 | Pending | Waiting for review. |
 | Published | Approved and visible on the portal. |
 | Rejected | Not approved. If an older version was published, that version stays live. |
-| Unpublished | Hidden from the portal by a moderator. |
+| Unpublished | Hidden from the portal by a moderator or by its author. |
 
 The status belongs to the **latest version**. For example, a published resource whose edit you rejected shows *Rejected* in the lists, but its published version is still on the portal.
 
@@ -30,7 +30,7 @@ The queue has three tabs:
 
 - **Pending**: entries waiting for review, oldest first.
 - **Rejected**: rejected entries with the reason you gave, most recent first.
-- **Unpublished**: entries you hid from the portal.
+- **Unpublished**: entries hidden from the portal, by a moderator or by the author. *Moderated By* in the entry's sidebar shows who did it.
 
 Each row links to the entry (**Edit**) and to its **Versions**. Use *Versions* to compare an edit with the published version before approving it.
 
@@ -52,6 +52,7 @@ Notes:
 - You can also edit an entry yourself and click **Publish changes**. If the entry belongs to someone else and was not published yet, this counts as an approval and the author gets the "published" email.
 - **Save Draft** keeps the current status. A new entry you save as a draft appears in the pending queue (without emails).
 - No email is sent when you act on your own entries.
+- **Authors can unpublish their own entries** with the *Unpublish* button in the *Moderation* sidebar of the edit view. To publish an entry again, they save it, which sends it back to the pending queue. Re-publish an author-unpublished entry only if the author asks for it.
 - **Imported entries** (synchronized posts and plugins) can only be edited by admins. Moderators can still unpublish them.
 - **Deleting** an entry removes it and all its versions. Authors can delete their own entries.
 
@@ -66,4 +67,4 @@ Turn emails off on your account page (**Account → Notifications**): *Moderatio
 
 ## For developers
 
-The workflow is specified in [`spec/architecture/moderation.md`](../spec/architecture/moderation.md). The code lives in `src/moderation/`. Moderation actions are also available over REST: `POST /api/moderation/{collection}/{id}/{approve|reject|unpublish|republish}` with an optional `{ "reason": "…" }` body (moderators and admins only).
+The workflow is specified in [`spec/architecture/moderation.md`](../spec/architecture/moderation.md). The code lives in `src/moderation/`. Moderation actions are also available over REST: `POST /api/moderation/{collection}/{id}/{approve|reject|unpublish|republish}` with an optional `{ "reason": "…" }` body (moderators and admins; authors may only `unpublish` their own entries).
