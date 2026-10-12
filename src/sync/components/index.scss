@@ -1,0 +1,13 @@
+.plc-sync-now {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--base);
+  justify-content: flex-end;
+  margin-bottom: var(--base);
+
+  &__hint {
+    color: var(--theme-elevation-500);
+    font-size: 0.85rem;
+  }
+}

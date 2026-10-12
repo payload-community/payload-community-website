@@ -52,6 +52,7 @@ export const Plugins = moderatedCollection(
   {
     slug: 'plugins',
     admin: {
+      components: { beforeListTable: ['@/sync/components/SyncNow#SyncPluginsNow'] },
       defaultColumns: ['name', 'fullName', 'stars', 'origin', 'hidden', 'moderation.status'],
       useAsTitle: 'name',
     },

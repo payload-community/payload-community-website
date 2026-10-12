@@ -13,6 +13,7 @@ export const Sources: CollectionConfig<'sources'> = {
     update: adminOnly,
   },
   admin: {
+    components: { beforeListTable: ['@/sync/components/SyncNow#SyncPostsNow'] },
     defaultColumns: ['name', 'type', 'enabled', 'lastSyncedAt', 'lastSyncStatus'],
     group: 'Synchronization',
     hidden: ({ user }) => !isAdmin(user),

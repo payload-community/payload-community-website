@@ -56,6 +56,13 @@ export const plcTranslations = {
       moderationUnsavedChanges: 'Save or discard your changes before moderating.',
       authorUnpublishHint:
         'Unpublishing removes the entry from the website. To publish it again, save it: a moderator reviews it first.',
+
+      syncNow: 'Sync now',
+      syncPostsHint: 'Posts from enabled sources sync every 6 hours.',
+      syncPluginsHint: 'Plugins sync from GitHub and npm daily at 03:00 UTC.',
+      syncQueued: 'Sync queued. It runs within a minute; reload the list to see the results.',
+      syncAlreadyQueued: 'A sync is already queued or running.',
+      syncFailed: 'Could not queue the sync.',
     },
   },
 }

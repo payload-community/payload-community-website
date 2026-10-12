@@ -20,6 +20,7 @@ import { Header } from './Header/config'
 import { i18n } from './i18n'
 import { jobs } from './jobs'
 import { moderationEndpoint } from './moderation/endpoint'
+import { syncEndpoint } from './sync/endpoint'
 import { plugins } from './plugins'
 import { getServerSideURL } from './utilities/getURL'
 
@@ -61,7 +62,7 @@ export default buildConfig({
   collections: [Posts, Resources, Plugins, Builds, PostMedia, Media, Pages, Sources, Users],
   cors: [getServerSideURL()].filter(Boolean),
   email: emailAdapter,
-  endpoints: [moderationEndpoint],
+  endpoints: [moderationEndpoint, syncEndpoint],
   globals: [Header, Footer],
   i18n,
   jobs,

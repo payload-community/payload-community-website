@@ -22,8 +22,10 @@ import { PendingSlotsBanner as PendingSlotsBanner_36dd24590b4ee9315e672179511d01
 import { PendingSlotsNotice as PendingSlotsNotice_36dd24590b4ee9315e672179511d01e6 } from '@/moderation/components/PendingSlotsBanner'
 import { ModeratedPublishButton as ModeratedPublishButton_41a40f606f49dcb77705d67c8b385214 } from '@/moderation/components/ModeratedButtons'
 import { ModeratedUnpublishButton as ModeratedUnpublishButton_41a40f606f49dcb77705d67c8b385214 } from '@/moderation/components/ModeratedButtons'
+import { SyncPluginsNow as SyncPluginsNow_52ba43e42982b15760d5cc1a9d5ad3bd } from '@/sync/components/SyncNow'
 import { FolderTableCell as FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
 import { FolderField as FolderField_f9c02e79a4aed9a3924487c0cd4cafb1 } from '@payloadcms/next/rsc'
+import { SyncPostsNow as SyncPostsNow_52ba43e42982b15760d5cc1a9d5ad3bd } from '@/sync/components/SyncNow'
 import { HidePasswordOnCreate as HidePasswordOnCreate_1dba91cd72371ae0cc5974f7c00ff398 } from '@/collections/Users/HidePasswordOnCreate'
 import { FolderTypeField as FolderTypeField_2b8867833a34864a02ddf429b0728a40 } from '@payloadcms/next/client'
 import { RowLabel as RowLabel_ec255a65fa6fa8d1faeb09cf35284224 } from '@/Header/RowLabel'
@@ -61,8 +63,10 @@ export const importMap = {
   "@/moderation/components/PendingSlotsBanner#PendingSlotsNotice": PendingSlotsNotice_36dd24590b4ee9315e672179511d01e6,
   "@/moderation/components/ModeratedButtons#ModeratedPublishButton": ModeratedPublishButton_41a40f606f49dcb77705d67c8b385214,
   "@/moderation/components/ModeratedButtons#ModeratedUnpublishButton": ModeratedUnpublishButton_41a40f606f49dcb77705d67c8b385214,
+  "@/sync/components/SyncNow#SyncPluginsNow": SyncPluginsNow_52ba43e42982b15760d5cc1a9d5ad3bd,
   "@payloadcms/next/rsc#FolderTableCell": FolderTableCell_f9c02e79a4aed9a3924487c0cd4cafb1,
   "@payloadcms/next/rsc#FolderField": FolderField_f9c02e79a4aed9a3924487c0cd4cafb1,
+  "@/sync/components/SyncNow#SyncPostsNow": SyncPostsNow_52ba43e42982b15760d5cc1a9d5ad3bd,
   "@/collections/Users/HidePasswordOnCreate#HidePasswordOnCreate": HidePasswordOnCreate_1dba91cd72371ae0cc5974f7c00ff398,
   "@payloadcms/next/client#FolderTypeField": FolderTypeField_2b8867833a34864a02ddf429b0728a40,
   "@/Header/RowLabel#RowLabel": RowLabel_ec255a65fa6fa8d1faeb09cf35284224,
