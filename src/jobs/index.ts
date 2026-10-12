@@ -2,15 +2,13 @@ import type { JobsConfig } from 'payload'
 
 import { isAdmin } from '@/access'
 
+import { isCronRequest } from './access'
 import { sendEmailTask } from './sendEmail'
 import { sendInvitationTask } from './sendInvitation'
+import { syncPluginsTask } from './syncPlugins'
+import { syncPostsTask } from './syncPosts'
 
 const autoRun = process.env.JOBS_AUTORUN !== 'false'
-
-const isCronRequest = (headers: Headers): boolean => {
-  const secret = process.env.CRON_SECRET
-  return Boolean(secret) && headers.get('authorization') === `Bearer ${secret}`
-}
 
 export const jobs: JobsConfig = {
   access: {
@@ -35,5 +33,5 @@ export const jobs: JobsConfig = {
     },
   }),
   shouldAutoRun: () => autoRun,
-  tasks: [sendEmailTask, sendInvitationTask],
+  tasks: [sendEmailTask, sendInvitationTask, syncPostsTask, syncPluginsTask],
 }

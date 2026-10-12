@@ -18,3 +18,4 @@
 | I14 | **Meilisearch/Atlas Search** if `like` queries get slow. | Better search relevance. | M–L. | New infrastructure. |
 | I15 | **"You already have an account" email** on sign-up with a registered address (Q17). | Clearer UX without enumeration. | S. | – |
 | I16 | **Website-styled auth pages** (`/reset-password`, `/verify-email`) instead of the admin views. | Consistent look for regular users. | S–M. | – |
+| I17 | **Bulk npm downloads lookup**: one `api.npmjs.org/downloads/point/last-week/a,b,…` call per 128 unscoped packages instead of one per package. | Plugin sync runs without npm 429s (today ~6 of ~250 download counts per run stay stale) and faster. | S. | Scoped packages are not supported in bulk and still need single calls. |

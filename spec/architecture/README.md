@@ -100,9 +100,10 @@ src/
   auth/              connectIntent.ts (signed cookie for connecting a provider from /account)
   collections/       Users, Sources, Posts, PostMedia, Media, Resources, Plugins, Builds, Pages
   moderation/        config.ts (MAX_PENDING_SUBMISSIONS), hooks, endpoint, admin components
-  jobs/              tasks (syncPosts, syncPlugins, notifyModerators, notifyAuthor, sendInvitation, sendEmail)
-  sync/posts/        types.ts, adapters/payloadRest.ts, mapper.ts
-  sync/plugins/      github.ts, npm.ts, mapper.ts, filter.ts
+  jobs/              tasks (syncPosts, syncPlugins, sendInvitation, sendEmail), access.ts (CRON_SECRET check)
+  sync/              write.ts (sync writes and drafts), endpoint.ts (POST /api/sync/:task), components/ (Sync now buttons)
+  sync/posts/        types.ts, adapters/ (index.ts registry, payloadRest.ts), images.ts, index.ts (syncPosts)
+  sync/plugins/      github.ts, npm.ts, mapper.ts, index.ts (syncPlugins)
   email/             templates/*.tsx, messages.ts, render.ts
   otel/              sdk.ts, metrics.ts, withSpan.ts
   seed/              index.ts (prod), dev.ts, data/

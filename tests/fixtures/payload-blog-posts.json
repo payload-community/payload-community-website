@@ -1,0 +1,202 @@
+{
+  "docs": [
+    {
+      "id": "6ab5672e5178ba9e8b5c70fe",
+      "title": "New in Payload: Next.js Compatibility, Uploads, and MCP Fixes",
+      "slug": "new-in-payload-nextjs-compatibility-uploads-and-mcp-fixes",
+      "publishedOn": "2026-09-23T18:08:46.000Z",
+      "authorType": "team",
+      "authors": [
+        {
+          "firstName": "Payload",
+          "lastName": "Team"
+        }
+      ],
+      "category": {
+        "name": "Releases",
+        "slug": "releases"
+      },
+      "excerpt": {
+        "root": {
+          "children": [
+            {
+              "children": [
+                {
+                  "detail": 0,
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "text": "Payload 3.90.2 fixes Next.js trailing slash support, prevents unnecessary upload handler rerenders, and resolves an MCP endpoint crash under TypeScript 6.",
+                  "type": "text",
+                  "version": 1
+                }
+              ],
+              "direction": null,
+              "format": "",
+              "indent": 0,
+              "type": "heading",
+              "version": 1,
+              "tag": "h3"
+            }
+          ],
+          "direction": null,
+          "format": "",
+          "indent": 0,
+          "type": "root",
+          "version": 1
+        }
+      },
+      "image": {
+        "alt": "New in Payload: Release v3.90.2",
+        "url": "https://l4wlsi8vxy8hre4v.public.blob.vercel-storage.com/release-og-v3.90.2-1.png"
+      },
+      "meta": {
+        "image": {
+          "alt": "New in Payload: Release v3.90.2",
+          "url": "https://l4wlsi8vxy8hre4v.public.blob.vercel-storage.com/release-og-v3.90.2-1.png"
+        }
+      },
+      "featuredMedia": "upload"
+    },
+    {
+      "id": "6814d62df248f3a9a57e970c",
+      "title": "Setting up Auth and Role-Based Access Control in Next.js + Payload",
+      "slug": "setting-up-auth-and-role-based-access-control-in-nextjs-payload",
+      "publishedOn": "2025-04-22T04:00:00.000Z",
+      "authorType": "guest",
+      "guestAuthor": "Nick Vogel",
+      "category": {
+        "name": "Guides",
+        "slug": "guides"
+      },
+      "excerpt": {
+        "root": {
+          "children": [
+            {
+              "children": [
+                {
+                  "detail": 0,
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "text": "In this guide, you’ll learn how to configure basic authentication in Payload, define roles (admin, editor, user, and anyone), and apply role-based access across your collections and frontend.",
+                  "type": "text",
+                  "version": 1
+                }
+              ],
+              "direction": "ltr",
+              "format": "",
+              "indent": 0,
+              "type": "largeBody",
+              "version": 1
+            }
+          ],
+          "direction": "ltr",
+          "format": "",
+          "indent": 0,
+          "type": "root",
+          "version": 1
+        }
+      },
+      "thumbnail": {
+        "alt": "Setting up Auth and Role-based Access control in Payload",
+        "url": "https://l4wlsi8vxy8hre4v.public.blob.vercel-storage.com/auth-rbac-payload-vogel.png"
+      },
+      "meta": {
+        "image": null
+      },
+      "featuredMedia": "videoUrl"
+    },
+    {
+      "id": "6aa2f41763d0ba1d0ceeb5ee",
+      "title": "We Finally Documented Payload’s UI Components",
+      "slug": "we-finally-documented-payloads-ui-components",
+      "publishedOn": "2026-09-10T18:00:00.000Z",
+      "authorType": "team",
+      "authors": [
+        {
+          "firstName": "Sean",
+          "lastName": "Zubrickas"
+        }
+      ],
+      "category": {
+        "name": "Blog",
+        "slug": "blog"
+      },
+      "excerpt": {
+        "root": {
+          "children": [
+            {
+              "children": [
+                {
+                  "detail": 0,
+                  "format": 0,
+                  "mode": "normal",
+                  "style": "",
+                  "text": "Payload’s UI component library has always been available to developers building on top of the Admin Panel. Now, for the first time, you can actually explore those components, see them in action, and understand how to use and customize them—all from the Payload Docs.",
+                  "type": "text",
+                  "version": 1
+                }
+              ],
+              "direction": null,
+              "format": "",
+              "indent": 0,
+              "type": "heading",
+              "version": 1,
+              "tag": "h3"
+            }
+          ],
+          "direction": null,
+          "format": "",
+          "indent": 0,
+          "type": "root",
+          "version": 1
+        }
+      },
+      "image": null,
+      "thumbnail": {
+        "alt": "Payload UI Components Blog Post ",
+        "url": "https://l4wlsi8vxy8hre4v.public.blob.vercel-storage.com/ui-components-blog-post.jpg"
+      },
+      "meta": {
+        "image": {
+          "alt": "Payload UI Components Blog Post ",
+          "url": "https://l4wlsi8vxy8hre4v.public.blob.vercel-storage.com/ui-components-blog-post.jpg"
+        }
+      },
+      "featuredMedia": "videoUrl"
+    },
+    {
+      "id": "6514705c679a6536704d82be",
+      "title": "draft",
+      "slug": "draft",
+      "publishedOn": "2038-11-02T04:00:00.000Z",
+      "authorType": "team",
+      "authors": [
+        {
+          "firstName": "Nate",
+          "lastName": "Caminata"
+        }
+      ],
+      "excerpt": [
+        {
+          "children": [
+            {
+              "text": "jklkjklj"
+            }
+          ]
+        }
+      ],
+      "image": {
+        "alt": "Payload E-Commerce: 3",
+        "url": "https://l4wlsi8vxy8hre4v.public.blob.vercel-storage.com/payload-ecommerce-3.png"
+      },
+      "meta": {
+        "image": null
+      },
+      "featuredMedia": "upload"
+    }
+  ],
+  "hasNextPage": false,
+  "totalDocs": 4
+}

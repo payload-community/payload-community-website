@@ -64,3 +64,4 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [028](0028-website-chrome-runtime-config-and-consent.md) | Website header, footer, runtime client config and consent | Accepted | 2026-10-10 |
 | [029](0029-website-page-caching-and-revalidation.md) | Website page caching and revalidation (ISR fallback, guarded on-demand paths) | Accepted | 2026-10-10 |
 | [030](0030-runtime-sitemaps-robots-and-default-og-image.md) | Runtime sitemaps, robots.txt and default social image | Accepted | 2026-10-10 |
+| [031](0031-sync-implementation-details.md) | Sync implementation details (mapping fallbacks, freshness window, retries, trigger deduplication) | Proposed | 2026-10-11 |

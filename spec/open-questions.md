@@ -4,7 +4,7 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 ## Open
 
-None.
+**Q26. Sync implementation details** (M5, decided as [ADR-031](decisions/0031-sync-implementation-details.md), please confirm). Guest posts use `guestAuthor`, video posts use their thumbnail; the post sync stops at the first page without a new post, so edits to older posts can lag; a failed image download keeps the post (and its previous image); imported plugins without a GitHub description show the repository name, and invalid homepages are dropped; manual reruns within 12 h of a full refresh only update GitHub counters (instead of the 24 h npm window); jobs retry only when everything failed (all sources, or the GitHub search); "Sync now" reuses an already queued or running job; npm download counts that stay rate-limited after retries keep their previous value (run status `partial`).
 
 ## Resolved (2026-10-11 review)
 
