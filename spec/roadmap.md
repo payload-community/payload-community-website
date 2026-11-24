@@ -16,7 +16,7 @@ Rules from [`AGENTS.md`](../AGENTS.md) apply unchanged (pnpm only, pinned Payloa
 | Tests | 117 Vitest (unit + integration on `plc_test`), 22 Playwright E2E; all pass |
 | Runs | From source: `pnpm build && pnpm start` (web) plus `pnpm worker` (jobs), or `pnpm dev` |
 | Production artifacts | None yet: no Dockerfile, Helm chart, OpenTelemetry, health endpoints or security headers (M6) |
-| Open decisions | Q26 (sync details, ADR-031 proposed), Q27 (license holder) in [`open-questions.md`](open-questions.md) |
+| Open decisions | None (Q26 and Q27 resolved 2026-11-24, [`open-questions.md`](open-questions.md)) |
 
 **An alpha deployment that is reachable from the internet must not happen before the M6 items marked "before public deployment" are done** (security headers, ingress rate limits, health probes).
 
@@ -124,8 +124,8 @@ To add:
 ## Carry-over items (any milestone)
 
 - [ ] **Manual check before tagging a release**: full OAuth round trip with real GitHub and Google apps, and signing in with both providers using the same verified email leads to one user (bootstrap §6; only the linking logic is automated).
-- [ ] **Q26 / ADR-031**: owner confirmation of the sync implementation details; then mark ADR-031 accepted.
-- [ ] **Q27**: copyright holder in `LICENSE.md` (still the Website template's "Payload CMS, Inc."), before a public release.
+- [x] **Q26 / ADR-031**: accepted 2026-11-24.
+- [x] **Q27**: `LICENSE.md` names Payload Community (2026-11-24).
 - [ ] **Lingui**: bump to 6.9.1 once it clears pnpm's release-age cutoff; try Next 16.4.0 with `@lingui/swc-plugin` 6.7.1 on a branch ([ADR-014](decisions/0014-versions.md), [ADR-027](decisions/0027-lingui-wiring.md)).
 - [ ] **Plugin sync**: about 6 npm download counts per full run stay stale after retries (status `partial`); idea [I17](ideas.md) (bulk downloads API) would fix it if approved.
 - [ ] **Post sync**: edits to older blog posts are only picked up when they share a page with a new post (ADR-031 §2); revisit if the owner wants periodic full re-syncs.
@@ -135,5 +135,5 @@ To add:
 
 1. `pnpm lint`, `pnpm typecheck`, `pnpm i18n:extract` (no missing strings, no catalog diff), `pnpm test`, `pnpm build`.
 2. Manual OAuth check above (until it is automated or accepted as known risk).
-3. `CHANGELOG.md` entry, `package.json` version, annotated tag `vX.Y.Z[-pre]`.
+3. `CHANGELOG.md` entry, `package.json` version; the owner creates and pushes the annotated tag `vX.Y.Z[-pre]`.
 4. From M6 on: `helm lint` / `helm template` with both values files, image built and its size recorded.

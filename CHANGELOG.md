@@ -21,6 +21,7 @@ First alpha: the bootstrap milestones M0–M5. It runs from source (`pnpm build 
 - **Manual sync triggers**: `POST /api/sync/posts|plugins` for admins or `Bearer CRON_SECRET`, and "Sync now" buttons on the Sources and Plugins lists.
 - **SEO and consent**: metadata and canonical URLs, JSON-LD, runtime sitemaps and `robots.txt`, a default social image; cookie banner with Google Analytics 4 loaded only after consent (Consent Mode v2).
 - **Tooling**: `pnpm` scripts for migrations and seeds (production and dev), a standalone jobs worker, 117 Vitest unit and integration tests and 22 Playwright E2E tests against a separate `plc_test` database; specs, 31 ADRs and developer, moderator and sync guides.
+- MIT license with Payload Community as copyright holder (the Website template's notice is kept).
 
 ### Known limitations
 
@@ -30,7 +31,6 @@ First alpha: the bootstrap milestones M0–M5. It runs from source (`pnpm build 
 - The GitHub and Google OAuth round trip has to be checked manually with real apps; only the account-linking logic is automated.
 - The plugin sync usually ends as `partial`: npm rate-limits a few weekly-download lookups per run, and those plugins keep their previous count.
 - The post sync picks up edits to older blog posts only when they share a page with a new post.
-- Open decisions: Q26 (sync details, ADR-031) and Q27 (license copyright holder) in `spec/open-questions.md`.
 
 [Unreleased]: https://github.com/payload-community/payload-community-website/compare/v0.1.0-alpha.1...HEAD
 [0.1.0-alpha.1]: https://github.com/payload-community/payload-community-website/releases/tag/v0.1.0-alpha.1

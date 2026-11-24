@@ -1,7 +1,8 @@
 # ADR-031: Sync implementation details
 
-- Status: Proposed
+- Status: Accepted
 - Proposed: 2026-10-11
+- Accepted: 2026-11-24
 
 ## Context
 

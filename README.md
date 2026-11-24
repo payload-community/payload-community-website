@@ -31,4 +31,4 @@ Details, environment variables and test accounts: [Getting started](docs/getting
 
 ## License
 
-MIT, see [LICENSE.md](LICENSE.md). The copyright notice is still under review (Q27 in [open questions](spec/open-questions.md)).
+MIT © Payload Community, see [LICENSE.md](LICENSE.md). Parts derived from the Payload Website template keep the Payload CMS, Inc. notice.
