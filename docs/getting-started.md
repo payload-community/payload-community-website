@@ -86,12 +86,12 @@ Payload's "create first user" screen is disabled. Outside local development, the
 Other accounts:
 
 - **Admin-created users** (Admin panel → Users → Create) get an email with a link to set their password, valid for 7 days. The email is sent by a background job within a minute.
-- **Self-registration** (`POST /api/users` for now; the website form comes in M4) sends an activation link. The account can sign in after activation; `POST /api/users/resend-activation` sends a new link.
+- **Self-registration** (the website's `/sign-up` page, or `POST /api/users`) sends an activation link. The account can sign in after activation; `POST /api/users/resend-activation` sends a new link.
 - All emails end up in Mailpit locally.
 
 ## Jobs
 
-Background jobs send emails (invitations, activation resends; notifications from M3) and, from M5, run the post and plugin sync. In development they run automatically inside `pnpm dev` once a minute (`JOBS_AUTORUN`, default `true`). `pnpm worker` runs a standalone worker, and `pnpm payload jobs:run --queue sync` runs queued sync jobs once.
+Background jobs send emails (invitations, moderation notifications) and run the post and plugin sync. In development they run automatically inside `pnpm dev` once a minute (`JOBS_AUTORUN`, default `true`). `pnpm worker` runs a standalone worker, and `pnpm payload jobs:run --queue sync` runs queued sync jobs once. The sync needs `GITHUB_TOKEN` for plugins; see the [synchronization guide](sync.md) for schedules and manual runs.
 
 ## Tests, lint and types
 

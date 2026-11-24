@@ -1,6 +1,6 @@
 # AGENTS.md — Payload CMS Community Portal
 
-Guidance for AI agents and developers working in this repository. Read `spec/README.md` first, then `spec/BRIEF.md` (what to build), `spec/architecture/` (how it is built) and `spec/decisions/` (why) before changing anything.
+Guidance for AI agents and developers working in this repository. Read `spec/README.md` first, then `spec/BRIEF.md` (what to build), `spec/architecture/` (how it is built) and `spec/decisions/` (why) before changing anything. What is left to build is in `spec/roadmap.md`.
 
 ## Environment
 
@@ -54,40 +54,44 @@ Available from M1 on (scripts defined in `package.json`):
 | `pnpm migrate` / `pnpm payload migrate:create <name>` | Apply migrations (via `src/cli`) / create one |
 | `pnpm seed` | Idempotent production seed (sources, pages, navigation) |
 | `pnpm seed:dev` | Local sample data and users (never in production) |
-| `pnpm worker` | Run the jobs worker locally (`src/cli` via `tsx`; the image runs `node cli.mjs worker`) |
+| `pnpm worker` | Run the jobs worker (`src/cli` via `tsx`; from M6 the image runs `node cli.mjs worker`) |
 | `pnpm i18n:extract` / `pnpm i18n:compile` | Lingui catalogs |
 | `pnpm payload jobs:run --queue sync` | Run queued sync jobs once |
-| `helm lint deploy/helm/payload-cms-community-portal` | Chart validation |
+| `helm lint deploy/helm/payload-cms-community-portal` | Chart validation (from M6, once the chart exists) |
 
 ## Layout
 
 ```
-spec/            README.md (index), BRIEF.md (read-only), bootstrap-prompt.md (read-only), open-questions.md, ideas.md
+spec/            README.md (index), BRIEF.md (read-only), bootstrap-prompt.md (read-only), roadmap.md, open-questions.md, ideas.md
   architecture/  README.md (stack, overview, layout), access-control, data-model, moderation, auth, sync, frontend, operations
   decisions/     README.md (index + template), NNNN-short-title.md (one ADR per file)
-docs/            README.md (index), getting-started.md, development.md, moderation.md, deployment.md, observability.md, runbooks/
+docs/            README.md (index), getting-started.md, development.md, moderation.md, sync.md; deployment.md, observability.md, runbooks/ (M6/M7)
 src/
   access/        role and access helpers
   auth/oauth/    GitHub/Google user info + account linking (pure, unit-tested)
   collections/   Users, Sources, Posts, PostMedia, Media, Resources, Plugins, Builds, Pages
   moderation/    MAX_PENDING_SUBMISSIONS, shared hooks, moderation endpoint, admin view/components
   jobs/          Payload job tasks
-  sync/          post adapters (payload-rest), plugin sync (GitHub, npm)
+  sync/          post adapters (payload-rest), plugin sync (GitHub, npm), sync endpoint and admin buttons
   email/         react-email templates and messages
-  otel/          OpenTelemetry SDK, metrics, span helpers
+  otel/          OpenTelemetry SDK, metrics, span helpers (M6)
   seed/          production and dev seeds
-  cli/           entry point bundled into cli.mjs (migrate, seed, worker, self-test)
+  cli/           CLI entry point (migrate, seed, seed-dev, worker); bundled into cli.mjs with self-test in M6
   migrations/    Payload migrations (incl. partial unique indexes)
-  app/           Next.js routes: (frontend) website, (payload) admin + API, api/health
+  app/           Next.js routes: (frontend) website, (payload) admin + API; api/health (M6)
+  website/       website data access, listings, detail and auth components, consent, metadata
+  lingui/        Lingui server/client wiring
   locales/       Lingui catalogs
-tests/           e2e (Playwright), unit (Vitest), fixtures
-deploy/          helm/payload-cms-community-portal, grafana dashboards
+tests/           e2e (Playwright), unit and int (Vitest), helpers, fixtures
+deploy/          helm/payload-cms-community-portal, grafana dashboards (M6)
 .ddev/           DDEV config (local only, not committed)
 ```
 
 ## Milestones
 
 M0 plan → M1 scaffold → M2 auth/data model/roles → M3 moderation → M4 frontend → M5 sync jobs → M6 production readiness → M7 quality. At the end of each milestone: lint, typecheck, tests, commit, short summary. See `spec/bootstrap-prompt.md` §4.
+
+Status: M0–M5 are done and released as `0.1.0-alpha.1` (`CHANGELOG.md`). The bootstrap ended there; M6 and M7 continue from `spec/roadmap.md` in separate threads. Keep the roadmap's checkboxes, `CHANGELOG.md` (Unreleased section) and the *Planned (M6/M7)* markers in `spec/architecture/` up to date as items land, and follow its release checklist for every tag.
 
 <!-- BEGIN:nextjs-agent-rules -->
 

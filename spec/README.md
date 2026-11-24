@@ -10,6 +10,7 @@ What the portal must do, how it is designed, and why. Developer, moderator and o
 | [`decisions/`](decisions/README.md) | Agents, accepted by the owner | Architecture decision records (one file per decision). |
 | [`open-questions.md`](open-questions.md) | Agents ↔ owner | Ambiguities with their default, resolved questions, and proposed changes to the read-only documents. |
 | [`ideas.md`](ideas.md) | Anyone | Feature ideas with value, effort and risks; implemented only after approval. |
+| [`roadmap.md`](roadmap.md) | Agents, prioritized by the owner | Work left after the bootstrap (M6 production readiness, M7 quality), carry-over items and the release checklist. |
 
 ## How changes flow
 

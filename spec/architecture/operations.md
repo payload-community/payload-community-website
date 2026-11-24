@@ -15,11 +15,11 @@ Queues: `default` (emails/notifications), `sync` (synchronizations).
 | `sendInvitation` | default | – | 3 | `{ userId }` | `payload.forgotPassword({ disableEmail: true })` → token, extend expiry to 7 days, queue `sendEmail` (invitation template). |
 | `sendEmail` | default | – | 5 (exponential backoff) | `{ to, template, data }` | Render template, `payload.sendEmail`. |
 
-- Every task handler is wrapped in `withSpan('job <slug>')` and logs a single structured summary line.
+- Every task handler logs a single structured summary line. Wrapping it in `withSpan('job <slug>')` is *Planned (M6)*.
 - Jobs are queued from `afterChange` hooks with `payload.jobs.queue` (never inline email sending); a failed queue call is logged and never fails the save.
 - Moderation notifications have no fan-out task: the shared `afterChange` hook resolves the recipients and queues one `sendEmail` job per recipient inside the request transaction ([ADR-026](../decisions/0026-moderation-admin-controls.md)).
 - `jobs.autoRun`: `process.env.JOBS_AUTORUN !== 'false'` ⇒ `[{ cron: '* * * * *', allQueues: true, limit: 20 }]` else `[]`. `jobs.shouldAutoRun` mirrors the flag. Scheduling (`schedule` on tasks) is handled by the same cron (`handleSchedules`).
-- **Kubernetes**: web pods `JOBS_AUTORUN=false`; worker pod (1 replica, `Recreate`) runs `node cli.mjs worker` from the same image ([ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md)): it calls `getPayload({ config, cron: true })` with `JOBS_AUTORUN=true`, so Payload's own autoRun cron handles schedules and runs all queues every minute — the same behaviour as `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues`, without shipping the Payload CLI. Payload's schedule handling records the next scheduled job in the DB, so even an accidental second worker would not double-queue a schedule slot. SIGTERM → `payload.destroy()` (stops crons, closes the DB) before exit.
+- **Kubernetes** (*Planned (M6)*; `node cli.mjs worker` is `pnpm worker` from source today): web pods `JOBS_AUTORUN=false`; worker pod (1 replica, `Recreate`) runs `node cli.mjs worker` from the same image ([ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md)): it calls `getPayload({ config, cron: true })` with `JOBS_AUTORUN=true`, so Payload's own autoRun cron handles schedules and runs all queues every minute — the same behaviour as `payload jobs:run --cron "* * * * *" --handle-schedules --all-queues`, without shipping the Payload CLI. Payload's schedule handling records the next scheduled job in the DB, so even an accidental second worker would not double-queue a schedule slot. SIGTERM → `payload.destroy()` (stops crons, closes the DB) before exit.
 - **Fallback without a worker** (documented, not the default): a Kubernetes CronJob running `curl -X GET http://<web-service>/api/payload-jobs/run?allQueues=true&limit=20` with `Authorization: Bearer $CRON_SECRET` every minute (`concurrencyPolicy: Forbid`). The built-in endpoint also calls `handleSchedules` (verified in `payload/dist/queues/endpoints/run.js`). Downsides: long syncs run inside an HTTP request on a web pod (use the internal Service, not the Ingress, to avoid proxy timeouts) and are interrupted by web rollouts (Payload retries them).
 - **Manual triggers**: root endpoint `POST /api/sync/:task` (`task ∈ posts | plugins`): admin user **or** `Authorization: Bearer $CRON_SECRET`; queues the task on the `sync` queue (worker or autoRun picks it up within a minute). An already open job of the same task is reused (`202 { alreadyQueued: true }`). Admin buttons on the Sources list and Plugins list (`beforeListTable`, admins only). Retry rules: [§11.4](sync.md#114-triggers-retries-and-admin-buttons). `jobs.access.{run,queue,cancel}` = admin or `CRON_SECRET`.
 
@@ -60,6 +60,8 @@ De-duplication: notifications are queued only on a status **transition** (into `
 
 ## 17. Observability
 
+*Planned (M6)* ([roadmap M6.3](../roadmap.md#m63-opentelemetry)). Today: Payload's pino logger writes JSON to stdout, and jobs and moderation write one structured summary line per run or refusal.
+
 - `src/instrumentation.ts` (Next.js) → `register()` imports `./instrumentation.node` when `NEXT_RUNTIME === 'nodejs'`; `onRequestError` records the exception on the active span and logs it with `payload.logger`.
 - `src/otel/sdk.ts` (shared by web and worker): `@opentelemetry/sdk-node` `NodeSDK` started **only if** `OTEL_EXPORTER_OTLP_ENDPOINT` is set; exporters `@opentelemetry/exporter-{trace,metrics,logs}-otlp-proto`; standard `OTEL_*` variables (`OTEL_EXPORTER_OTLP_PROTOCOL=http/protobuf`, `OTEL_EXPORTER_OTLP_HEADERS` for Grafana Cloud). Instrumentations from `@opentelemetry/auto-instrumentations-node` limited to `http`, `undici`, `mongodb`, `mongoose`, `pino`, `dns`(off), `fs`(off). Resource: `service.name` (`OTEL_SERVICE_NAME`), `service.version` (`APP_VERSION` build arg / `package.json`), `deployment.environment.name`, `k8s.*` from `OTEL_RESOURCE_ATTRIBUTES` set by Helm via the downward API, plus `@opentelemetry/resource-detector-container`.
 - Worker: same SDK loaded with `NODE_OPTIONS=--import ./dist/otel/register.js` (compiled to JS in the image).
@@ -78,6 +80,8 @@ De-duplication: notifications are queued only on a status **transition** (into `
 ---
 
 ## 18. Deployment model
+
+*Planned (M6)* ([roadmap M6.4–M6.6](../roadmap.md#m64-container-image)): nothing in this section exists yet except the CLI entry point `src/cli/index.ts` (run through `tsx`) and the env variables in §18.2.
 
 ### 18.1 Image
 Multi-stage `Dockerfile` (Node 24 alpine, `corepack` pnpm, `pnpm install --frozen-lockfile`, `next build` with `output: 'standalone'`):

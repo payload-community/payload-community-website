@@ -6,6 +6,8 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 **Q26. Sync implementation details** (M5, decided as [ADR-031](decisions/0031-sync-implementation-details.md), please confirm). Guest posts use `guestAuthor`, video posts use their thumbnail; the post sync stops at the first page without a new post, so edits to older posts can lag; a failed image download keeps the post (and its previous image); imported plugins without a GitHub description show the repository name, and invalid homepages are dropped; manual reruns within 12 h of a full refresh only update GitHub counters (instead of the 24 h npm window); jobs retry only when everything failed (all sources, or the GitHub search); "Sync now" reuses an already queued or running job; npm download counts that stay rate-limited after retries keep their previous value (run status `partial`).
 
+**Q27. License copyright holder** (alpha release, owner decision). `LICENSE.md` is the Website template's MIT license with "Copyright (c) 2018-2025 Payload CMS, Inc.". The portal states it is not affiliated with Payload, so the notice should name the portal's owner (keeping the template's notice for the code it derives from is allowed by MIT). Default until decided: unchanged; must be settled before a public release ([roadmap](roadmap.md#carry-over-items-any-milestone)).
+
 ## Resolved (2026-10-11 review)
 
 | # | Question | Resolution |
@@ -61,3 +63,4 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 - **P9.** Brief, Users and Roles: deleted users' content is anonymized in every status ([ADR-011](decisions/0011-account-deletion-anonymizes-content.md)).
 - **P10.** Bootstrap prompt §3 rules 2 and 6, §4 M0, §5 and §6: replace `spec/architecture.md` with `spec/architecture/` and `spec/decisions.md` / `decisions.md` with `spec/decisions/` (one file per ADR).
 - **P11.** Brief, Moderation: add "Authors can unpublish their own entries; publishing them again requires a moderator's review." and in the status note, "changeable only by Moderators and Admins" → "…, except that authors can unpublish their own entries" ([ADR-026](decisions/0026-moderation-admin-controls.md)).
+- **P12.** Bootstrap prompt §4 and §6: the bootstrap ends after M5 with release 0.1.0-alpha.1 (owner decision, 2026-11-24). M6 (production readiness) and M7 (quality), and the definition-of-done items they cover (image, Helm chart, OpenTelemetry, `docs/deployment.md`, axe and Lighthouse checks), continue from [`roadmap.md`](roadmap.md).

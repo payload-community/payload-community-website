@@ -1,6 +1,6 @@
 # Architecture — Payload CMS Community Portal
 
-Status: **M0, reviewed 2026-10-10.** [`../BRIEF.md`](../BRIEF.md) is the source of truth for *what* to build; this folder describes *how*; the reasons are in [`../decisions/`](../decisions/README.md) (referenced as `ADR-NNN`). Where the architecture deliberately extends the brief (detail pages, email registration, connecting providers), the ADR says so.
+Status: **M0, reviewed 2026-10-10; implemented through M5 (release 0.1.0-alpha.1, 2026-11-24).** Parts marked *Planned (M6)* or *Planned (M7)* are designed but not built yet; the work is tracked in [`../roadmap.md`](../roadmap.md). [`../BRIEF.md`](../BRIEF.md) is the source of truth for *what* to build; this folder describes *how*; the reasons are in [`../decisions/`](../decisions/README.md) (referenced as `ADR-NNN`). Where the architecture deliberately extends the brief (detail pages, email registration, connecting providers), the ADR says so.
 
 Section numbers are global across the files below, so references such as §6.3 stay stable when files are reorganized.
 
@@ -41,14 +41,16 @@ The brief names the technologies; this table pins the concrete packages and thei
 | URL state | `nuqs` | 2.x | listings |
 | External APIs | `@octokit/rest` (+ throttling, retry), `zod`, `p-limit` | 22 / 4 / – | sync |
 | Analytics & consent | GA4 via `@next/third-parties`, `vanilla-cookieconsent` 3, Consent Mode v2 | | [§16](frontend.md#16-seo-analytics-consent-security) |
-| Observability | OpenTelemetry `@opentelemetry/sdk-node` + auto-instrumentations, OTLP/HTTP protobuf; pino logs | 0.223 / 0.81 | Grafana (Tempo, Mimir, Loki) |
+| Observability | OpenTelemetry `@opentelemetry/sdk-node` + auto-instrumentations, OTLP/HTTP protobuf; pino logs | 0.223 / 0.81 | Grafana (Tempo, Mimir, Loki). *Planned (M6)*; pino JSON logs exist today |
 | SEO | `plugin-seo`, `next-sitemap`, JSON-LD | | |
-| Tests | Vitest, Playwright, `@axe-core/playwright` | | |
-| Deployment | Docker (multi-stage), Kubernetes, Helm v4 chart | | [§18](operations.md#18-deployment-model) |
+| Tests | Vitest, Playwright, `@axe-core/playwright` | | axe checks *Planned (M7)* |
+| Deployment | Docker (multi-stage), Kubernetes, Helm v4 chart | | [§18](operations.md#18-deployment-model); *Planned (M6)* |
 
 ---
 
 ## 1. System overview
+
+Target deployment (*Planned (M6)*; until then the alpha runs from source with `pnpm build && pnpm start` plus `pnpm worker`):
 
 ```
                  ┌───────────────────────── Kubernetes ──────────────────────────┐
@@ -85,13 +87,15 @@ One small container image (Next.js standalone output + one bundled `cli.mjs`), t
 | `BeforeDashboard` | Replace with the pending-moderation widget. |
 | Live preview + `/next/preview` | Keep for pages and community posts. |
 | `AdminBar` (`@payloadcms/admin-bar`) | Keep. |
-| Template `Dockerfile` | Base for our multi-stage Dockerfile (Node 24, pnpm, non-root). |
+| Template `Dockerfile` | Not copied by the M1 scaffold; it is the starting point for our multi-stage Dockerfile (Node 24, pnpm, non-root), *Planned (M6)*. |
 | `tests/e2e`, `tests/helpers/{login,seedUser}.ts`, Vitest config | Extend. |
 | `DATABASE_URL` env name | Renamed to our existing `DATABASE_URI`. |
 
 ---
 
-## 21. Project layout (target)
+## 21. Project layout
+
+Entries marked `(M6)` do not exist yet ([roadmap](../roadmap.md)).
 
 ```
 src/
@@ -105,17 +109,17 @@ src/
   sync/posts/        types.ts, adapters/ (index.ts registry, payloadRest.ts), images.ts, index.ts (syncPosts)
   sync/plugins/      github.ts, npm.ts, mapper.ts, index.ts (syncPlugins)
   email/             templates/*.tsx, messages.ts, render.ts
-  otel/              sdk.ts, metrics.ts, withSpan.ts
+  otel/              sdk.ts, metrics.ts, withSpan.ts (M6)
   seed/              index.ts (prod), dev.ts, data/
-  cli/               index.ts → bundled to cli.mjs (migrate, seed, worker, self-test) — ADR-023
+  cli/               index.ts (migrate, seed, seed-dev, worker; run with tsx) → bundled to cli.mjs with self-test (M6) — ADR-023
   migrations/        Payload migrations, index.ts (explicit list used by `cli.mjs migrate`)
   app/(frontend)/    website routes
   website/           website data access, listings, detail and auth components, consent, metadata, sitemaps
   lingui/            server.ts (initLingui), ClientProvider.tsx
   app/(payload)/     admin + API (template)
-  app/api/health/    live, ready
+  app/api/health/    live, ready (M6)
   locales/en/        Lingui catalog
 tests/e2e/, tests/int/, tests/unit/, tests/helpers/ (test env, database reset, website fixtures, Mailpit), tests/fixtures/
-deploy/helm/payload-cms-community-portal/, deploy/grafana/
+deploy/helm/payload-cms-community-portal/, deploy/grafana/ (M6)
 docs/, spec/
 ```
