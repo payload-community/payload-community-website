@@ -2,6 +2,17 @@
 
 All notable changes to this project are documented in this file. From the release after 0.1.0-alpha.1, [release-it](https://github.com/release-it/release-it) generates each version from [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, and `perf`). The project uses [Semantic Versioning](https://semver.org/). Planned work is in [`spec/roadmap.md`](spec/roadmap.md).
 
+## [0.1.0-alpha.2](https://github.com/payload-community/payload-community-website/compare/v0.1.0-alpha.1...v0.1.0-alpha.2) (2026-11-25)
+
+### Added
+
+* add a standalone container image for web, worker and migrate ([ba34364](https://github.com/payload-community/payload-community-website/commit/ba34364e1ce89be4183332e98128e452a8f1b55c))
+* rename the public site to Payload Community ([127165e](https://github.com/payload-community/payload-community-website/commit/127165e890aa36ea55d98d062fcc0328e21d2d6d))
+
+### Fixed
+
+* ignore .pnpm-store dir ([652421d](https://github.com/payload-community/payload-community-website/commit/652421d5bdb0e29d0637c442938d36fa72a70909))
+
 ## [0.1.0-alpha.1] - 2026-11-24
 
 Hand-written notes for the first alpha (tag `v0.1.0-alpha.1`). Later versions are generated.
