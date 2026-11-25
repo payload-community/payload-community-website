@@ -5,6 +5,7 @@
 # Only pnpm is used
 package-lock.json
 yarn.lock
+/.pnpm-store/
 
 build
 dist
