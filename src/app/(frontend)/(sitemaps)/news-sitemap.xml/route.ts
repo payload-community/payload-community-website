@@ -6,6 +6,8 @@ const getSitemap = entrySitemap('posts', (slug) => `/news/${slug}`, 'news-sitema
   origin: { equals: 'community' },
 })
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   return getServerSideSitemap(await getSitemap())
 }

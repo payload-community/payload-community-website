@@ -54,7 +54,7 @@ De-duplication: notifications are queued only on a status **transition** (into `
   - In Kubernetes, Garage is operated separately from this chart (it is shared infrastructure); its web endpoint gets its own Ingress/TLS there. The portal chart only receives `S3_ENDPOINT` (S3 API, can be cluster-internal) and `S3_PUBLIC_URL` (public web host).
   - Caching: Payload gives each upload a unique file name within a collection (it appends a suffix on collisions), so a long `Cache-Control` (`public, max-age=604800`) is safe. `@payloadcms/storage-s3` 3.90.2 has no option to set object metadata on upload (verified in M1), so the header is added by the Ingress in front of Garage's web endpoint (Garage only returns `Cache-Control` stored on the object). Next.js image optimization caches its variants independently. Not `immutable`: a deleted file's name can be reused later. A CDN can be put in front later by changing only `S3_PUBLIC_URL`.
 - E2E: `S3_KEY_PREFIX=e2e` prepended to prefixes (or a separate bucket) so tests never touch dev files. Implemented in `src/plugins/storage.ts`.
-- `next.config.ts`: `images.remotePatterns` built from `S3_PUBLIC_URL` (protocol/host/port/path). DDEV check (done in M0): `garage.plc.ddev.site` resolves inside the web container to the DDEV router and the mkcert CA is trusted via `NODE_EXTRA_CA_CERTS`, but it resolves to a private IP, which Next.js 16 refuses to optimize (SSRF guard). Verified in M1: `images.dangerouslyAllowLocalIP` is enabled only when `NODE_ENV === 'development'`; production builds keep the guard.
+- `next.config.ts`: absolute upload URLs are **not** listed in `images.remotePatterns`. That list is baked into the image at build time, and `S3_PUBLIC_URL` differs per deployment ([ADR-033](../decisions/0033-image-build-without-database.md)). `src/imageLoader.ts` sends absolute URLs to `GET /media-image`, which allowlists the request-time origins of `S3_PUBLIC_URL` and `NEXT_PUBLIC_SERVER_URL`, refuses redirects, and resizes with `sharp`. Relative URLs still use `/_next/image`. DDEV check (done in M0): `garage.plc.ddev.site` resolves inside the web container to the DDEV router and the mkcert CA is trusted via `NODE_EXTRA_CA_CERTS`, but it resolves to a private IP, which Next.js 16 refuses to optimize (SSRF guard). The `/media-image` route fetches the configured file host anyway (the operator named it). `images.dangerouslyAllowLocalIP` stays on only when `NODE_ENV === 'development'`, for the built-in optimizer.
 
 ---
 
@@ -81,26 +81,27 @@ De-duplication: notifications are queued only on a status **transition** (into `
 
 ## 18. Deployment model
 
-*Planned (M6)* ([roadmap M6.4–M6.6](../roadmap.md#m64-container-image)): nothing in this section exists yet except the CLI entry point `src/cli/index.ts` (run through `tsx`) and the env variables in §18.2.
+The image in §18.1 is implemented ([ADR-033](../decisions/0033-image-build-without-database.md)). The Helm chart in §18.3 is still *Planned (M6)* ([roadmap M6.5](../roadmap.md#m65-helm-chart)). Locally the CLI entry point `src/cli/index.ts` runs through `tsx`; the image runs the bundled `cli.mjs`.
 
 ### 18.1 Image
 Multi-stage `Dockerfile` (Node 24 alpine, `corepack` pnpm, `pnpm install --frozen-lockfile`, `next build` with `output: 'standalone'`):
 - `runner` stage, user `node` (uid 1000), `NODE_ENV=production`, based on `node:24-alpine`; contains **only** the Next.js standalone output plus one bundled script ([ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md)):
   - `/app` = standalone server (`server.js`, traced `node_modules`, `.next/static`, `public`).
-  - `/app/cli.mjs` = `src/cli/index.ts` bundled with `esbuild` at build time (our code — Payload config, collections, jobs, seed, migrations — is bundled; npm packages stay external and resolve from the standalone `node_modules`). Subcommands:
+  - `/app/cli.mjs` = `src/cli/index.ts` bundled with `esbuild` ([ADR-033](../decisions/0033-image-build-without-database.md)). Application code and npm packages are bundled. `sharp` stays external (its native binary is already in the standalone trace). `next/cache` is a no-op stub because the worker has no Next.js cache. Subcommands:
     - `node cli.mjs migrate` → `getPayload({ config })` → `payload.db.migrate({ migrations })` (explicit list from `src/migrations/index.ts`, so no migration-directory scan at runtime).
     - `node cli.mjs seed` → idempotent production seed.
     - `node cli.mjs worker` → long-running jobs worker (§9).
-    - `node cli.mjs self-test` → imports the config and every task without connecting to the DB; run as a `RUN` step in the Dockerfile so a package missing from the standalone trace fails the **build**, not the deployment. Packages only the CLI needs are added with `outputFileTracingIncludes` in `next.config.ts`.
-  - No TypeScript sources, no Payload CLI, no full `node_modules`, no pnpm in the final stage. Target: well under 400 MB uncompressed (vs. roughly 1 GB+ with full production `node_modules`); measured and recorded in M6.
+    - `node cli.mjs self-test` → imports the config, every task, the migrations and the production seed without connecting to the DB; run as a `RUN` step in the Dockerfile. `sharp` must resolve from the standalone `node_modules`.
+  - No TypeScript sources, no Payload CLI, no full `node_modules`, no pnpm in the final stage. Target: well under 400 MB uncompressed. Measured 2026-11-25 without Docker (it is not installed in the web container): standalone directory 85 MB, `cli.mjs` 15 MB, plus `.next/static` and `public` copied on top of `node:24-alpine`. The owner records the `docker image inspect` size after `docker build` on the host.
 - Locally the same entry point runs through `tsx` (`pnpm migrate`, `pnpm seed`, `pnpm seed:dev`, `pnpm worker`; `seed-dev` is a local-only subcommand that refuses `NODE_ENV=production`); the Payload CLI (`pnpm payload migrate:create`, `generate:types`) stays a dev tool.
 - Bundling note for M6: `payload-oauth2` 1.0.21 publishes ESM with extensionless relative imports, which plain Node cannot resolve (Next.js, `tsx` and Vitest with `server.deps.inline` can). `esbuild` must bundle it into `cli.mjs` instead of leaving it external.
 - `ARG APP_VERSION` → `ENV APP_VERSION` (OTel `service.version`).
 - Default `CMD ["node", "server.js"]`; the worker and the migrate Job override the command.
+- **Build:** `docker build --build-arg APP_VERSION=<version> .` Docker is not installed in the web container; build on the host. `node cli.mjs self-test` passed against a standalone production build produced here with MongoDB unreachable.
 
 ### 18.2 Runtime configuration (env)
 Existing: `DATABASE_URI`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `CRON_SECRET`, `GITHUB_TOKEN`, `GITHUB_CLIENT_ID/SECRET`, `GOOGLE_CLIENT_ID/SECRET`, `ADMIN_GITHUB_LOGINS`, `ADMIN_EMAILS`, `S3_*`, `SMTP_*`, `EMAIL_FROM_*`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `OTEL_*`.
-Added in M1/M2: `JOBS_AUTORUN` (default `true`), `LOG_LEVEL` (default `info`), `S3_KEY_PREFIX` (empty; `e2e` in tests). Planned (added to `.env` empty + `.env.example` when introduced): `APP_VERSION` (image build arg), `DEPLOYMENT_ENVIRONMENT` (mapped into `OTEL_RESOURCE_ATTRIBUTES`).
+Added in M1/M2: `JOBS_AUTORUN` (default `true`), `LOG_LEVEL` (default `info`), `S3_KEY_PREFIX` (empty; `e2e` in tests). `APP_VERSION` is set by the image build argument (empty in `.env` for local development). `DEPLOYMENT_ENVIRONMENT` is still planned with OpenTelemetry (mapped into `OTEL_RESOURCE_ATTRIBUTES`).
 
 `NEXT_PUBLIC_*` are inlined at build time: the image is built per environment, or (preferred) GA ID and server URL are read at runtime on the server and passed to client components as props ([ADR-013](../decisions/0013-next-public-env-at-runtime.md)).
 

@@ -5,6 +5,7 @@ import type { Where } from 'payload'
 import type { Build, Plugin, Post, Resource } from '@/payload-types'
 
 import { getPayloadClient, PUBLIC_READ, type WebsiteCollection } from './queries'
+import { isProductionBuild } from './staticParams'
 
 type DocBySlug = { builds: Build; plugins: Plugin; posts: Post; resources: Resource }
 
@@ -43,6 +44,7 @@ export const findEntryBySlug = cache(
 
 /** Slugs prerendered at build time; newer entries render on first request. */
 export const entrySlugs = async (collection: WebsiteCollection): Promise<{ slug: string }[]> => {
+  if (isProductionBuild()) return []
   const payload = await getPayloadClient()
   const filter = DETAIL_FILTER[collection]
   const { docs } = await payload.find({

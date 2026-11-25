@@ -3,6 +3,7 @@ import type { Metadata } from 'next'
 import { PayloadRedirects } from '@/components/PayloadRedirects'
 import configPromise from '@payload-config'
 import { getPayload, type RequiredDataFromCollectionSlug } from 'payload'
+import { getPayloadClient } from '@/website/queries'
 import { draftMode } from 'next/headers'
 import React, { cache } from 'react'
 
@@ -12,10 +13,13 @@ import { initLingui } from '@/lingui/server'
 import { generateMeta } from '@/utilities/generateMeta'
 import { JsonLd } from '@/website/JsonLd'
 import { absoluteUrl, SITE_NAME } from '@/website/metadata'
+import { isProductionBuild } from '@/website/staticParams'
 import PageClient from './page.client'
 import { LivePreviewListener } from '@/components/LivePreviewListener'
+import { getServerSideURL } from '@/utilities/getURL'
 
 export async function generateStaticParams() {
+  if (isProductionBuild()) return []
   const payload = await getPayload({ config: configPromise })
   const pages = await payload.find({
     collection: 'pages',
@@ -68,7 +72,7 @@ export default async function Page({ params: paramsPromise }: Args) {
       {/* Allows redirects for valid pages too */}
       <PayloadRedirects disableNotFound url={url} />
 
-      {draft && <LivePreviewListener />}
+      {draft && <LivePreviewListener serverURL={getServerSideURL()} />}
 
       <RenderHero {...hero} />
       <RenderBlocks blocks={layout} />
@@ -109,7 +113,7 @@ export async function generateMetadata({ params: paramsPromise }: Args): Promise
 const queryPageBySlug = cache(async ({ slug }: { slug: string }) => {
   const { isEnabled: draft } = await draftMode()
 
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
 
   const result = await payload.find({
     collection: 'pages',

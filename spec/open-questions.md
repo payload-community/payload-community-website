@@ -6,6 +6,12 @@ Open items first, then resolved ones (kept for traceability). Product questions 
 
 None.
 
+## Resolved (2026-11-25)
+
+| # | Question | Resolution |
+|---|---|---|
+| T7 | Container image build has no database, and file hosts differ per deployment | `generateStaticParams` returns nothing during `next build`; section sitemaps are not prerendered. Absolute uploads are resized by `/media-image` from the runtime `S3_PUBLIC_URL` and `NEXT_PUBLIC_SERVER_URL` ([ADR-033](decisions/0033-image-build-without-database.md)). |
+
 ## Resolved (2026-11-24, alpha release)
 
 | # | Question | Resolution |

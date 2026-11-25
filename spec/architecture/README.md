@@ -87,7 +87,7 @@ One small container image (Next.js standalone output + one bundled `cli.mjs`), t
 | `BeforeDashboard` | Replace with the pending-moderation widget. |
 | Live preview + `/next/preview` | Keep for pages and community posts. |
 | `AdminBar` (`@payloadcms/admin-bar`) | Keep. |
-| Template `Dockerfile` | Not copied by the M1 scaffold; it is the starting point for our multi-stage Dockerfile (Node 24, pnpm, non-root), *Planned (M6)*. |
+| Template `Dockerfile` | Starting point for the repo `Dockerfile` (Node 24 alpine, pnpm, user `node` uid 1000, standalone output). See [ADR-023](../decisions/0023-small-image-with-bundled-cli-scripts.md) and [ADR-033](../decisions/0033-image-build-without-database.md). |
 | `tests/e2e`, `tests/helpers/{login,seedUser}.ts`, Vitest config | Extend. |
 | `DATABASE_URL` env name | Renamed to our existing `DATABASE_URI`. |
 
@@ -111,7 +111,7 @@ src/
   email/             templates/*.tsx, messages.ts, render.ts
   otel/              sdk.ts, metrics.ts, withSpan.ts (M6)
   seed/              index.ts (prod), dev.ts, data/
-  cli/               index.ts (migrate, seed, seed-dev, worker; run with tsx) → bundled to cli.mjs with self-test (M6) — ADR-023
+  cli/               index.ts (migrate, seed, seed-dev, worker, self-test; run with tsx) → bundled to cli.mjs — ADR-023
   migrations/        Payload migrations, index.ts (explicit list used by `cli.mjs migrate`)
   app/(frontend)/    website routes
   website/           website data access, listings, detail and auth components, consent, metadata, sitemaps

@@ -7,22 +7,6 @@ const __filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(__filename)
 import { redirects } from './redirects'
 
-type RemotePattern = NonNullable<NonNullable<NextConfig['images']>['remotePatterns']>[number]
-
-const toRemotePattern = (value: string | undefined): RemotePattern[] => {
-  if (!value) return []
-  const url = new URL(value)
-
-  return [
-    {
-      hostname: url.hostname,
-      pathname: `${url.pathname.replace(/\/+$/, '')}/**`,
-      port: url.port,
-      protocol: url.protocol.replace(':', '') as 'http' | 'https',
-    },
-  ]
-}
-
 const serverHostname = process.env.NEXT_PUBLIC_SERVER_URL
   ? new URL(process.env.NEXT_PUBLIC_SERVER_URL).hostname
   : undefined
@@ -30,6 +14,7 @@ const serverHostname = process.env.NEXT_PUBLIC_SERVER_URL
 const nextConfig: NextConfig = {
   // The dev server is reached through the DDEV router (e.g. https://plc.ddev.site).
   allowedDevOrigins: serverHostname ? [serverHostname] : [],
+  output: 'standalone',
   // E2E runs a second dev server next to `pnpm dev`; each needs its own build directory.
   distDir: process.env.NEXT_DIST_DIR || '.next',
   experimental: {
@@ -42,13 +27,12 @@ const nextConfig: NextConfig = {
     loadPaths: ['./node_modules/@payloadcms/ui/dist/scss/'],
   },
   images: {
-    // In DDEV, garage.plc.ddev.site resolves to the router's private IP. Production keeps the SSRF guard.
+    // Relative URLs still use /_next/image. Absolute file URLs use /media-image (ADR-033).
+    // In DDEV, garage.plc.ddev.site resolves to a private IP; the local optimizer keeps its guard.
     dangerouslyAllowLocalIP: process.env.NODE_ENV === 'development',
-    qualities: [100],
-    remotePatterns: [
-      ...toRemotePattern(process.env.NEXT_PUBLIC_SERVER_URL),
-      ...toRemotePattern(process.env.S3_PUBLIC_URL),
-    ],
+    loader: 'custom',
+    loaderFile: './src/imageLoader.ts',
+    qualities: [75, 100],
   },
   webpack: (webpackConfig) => {
     webpackConfig.resolve.extensionAlias = {

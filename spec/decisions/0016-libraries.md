@@ -3,6 +3,7 @@
 - Status: Accepted
 - Proposed: 2026-10-09
 - Accepted: 2026-10-10
+- Revised: 2026-11-25 — added `esbuild` 0.28.2 (direct devDependency for `cli.mjs`, [ADR-033](0033-image-build-without-database.md)). Earlier rows are unchanged.
 
 | Need | Library | Version | Weekly DL | Why |
 |---|---|---|---|---|
@@ -19,3 +20,4 @@
 | A11y tests | `@axe-core/playwright` | 4.13 | 13.6M | |
 | Sitemap | `next-sitemap` (template) | 4.2.3 (2023) | 0.5M | already in template; unmaintained since 2023 — replace with Next `sitemap.ts` if it breaks |
 | Lexical → text | `@payloadcms/richtext-lexical/plaintext` `convertLexicalToPlaintext` | 3.90.2 | official | |
+| CLI bundle | `esbuild` | 0.28.2 (2026-08-08) | ~300M | bundles `cli.mjs`; already chosen in [ADR-023](0023-small-image-with-bundled-cli-scripts.md), added as a direct devDependency in [ADR-033](0033-image-build-without-database.md) |

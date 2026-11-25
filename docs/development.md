@@ -28,7 +28,7 @@ Vitest has no macro transform: keep pure helpers that unit tests import in macro
 ## Caching
 
 - Listings are rendered per request.
-- Detail pages are statically generated, revalidated every 5 minutes and on demand when the moderation hooks publish, change or delete an entry (`src/moderation/revalidate.ts`, [ADR-029](../spec/decisions/0029-website-page-caching-and-revalidation.md)). Use `safeRevalidate` (`src/website/revalidate.ts`) in hooks: they also run in the CLI and the jobs worker, outside Next.js.
+- Detail pages are revalidated every 5 minutes and on demand when the moderation hooks publish, change or delete an entry (`src/moderation/revalidate.ts`, [ADR-029](../spec/decisions/0029-website-page-caching-and-revalidation.md)). A production build does not prerender them from the database ([ADR-033](../spec/decisions/0033-image-build-without-database.md)); the first request renders the page and the cache keeps it. Use `safeRevalidate` (`src/website/revalidate.ts`) in hooks: they also run in the CLI and the jobs worker, outside Next.js.
 - Section sitemaps are cached with tags `<section>-sitemap` for up to one hour.
 
 ## SEO

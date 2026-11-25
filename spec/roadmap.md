@@ -15,7 +15,7 @@ Rules from [`AGENTS.md`](../AGENTS.md) apply unchanged (pnpm only, pinned Payloa
 | M0 plan, M1 scaffold, M2 auth/data model/roles, M3 moderation, M4 website, M5 sync jobs | Done |
 | Tests | 117 Vitest (unit + integration on `plc_test`), 22 Playwright E2E; all pass |
 | Runs | From source: `pnpm build && pnpm start` (web) plus `pnpm worker` (jobs), or `pnpm dev` |
-| Production artifacts | None yet: no Dockerfile, Helm chart, OpenTelemetry, health endpoints or security headers (M6) |
+| Production artifacts | Dockerfile and bundled `cli.mjs` (M6.4). No Helm chart, OpenTelemetry, health endpoints or security headers yet |
 | Open decisions | None (Q26 and Q27 resolved 2026-11-24, [`open-questions.md`](open-questions.md)) |
 
 **An alpha deployment that is reachable from the internet must not happen before the M6 items marked "before public deployment" are done** (security headers, ingress rate limits, health probes).
@@ -58,17 +58,17 @@ Design: [§17](architecture/operations.md#17-observability). Libraries already c
 
 ### M6.4 Container image
 
-Design: [§18.1](architecture/operations.md#181-image), [ADR-023](decisions/0023-small-image-with-bundled-cli-scripts.md).
+Design: [§18.1](architecture/operations.md#181-image), [ADR-023](decisions/0023-small-image-with-bundled-cli-scripts.md), [ADR-033](decisions/0033-image-build-without-database.md).
 
-- `next.config.ts`: `output: 'standalone'`; `outputFileTracingIncludes` for packages only the CLI needs.
-- `cli.mjs` built with `esbuild` from `src/cli/index.ts`: our code bundled, npm packages external, **except `payload-oauth2`** (extensionless ESM imports; must be bundled). Add `esbuild` as a dev dependency (ADR-016 update).
-- New CLI subcommand `self-test`: imports the config and every task without connecting to MongoDB; runs as a `RUN` step so a missing traced package fails the build.
-- Multi-stage `Dockerfile`, starting from the Website template's (`templates/website/Dockerfile` in the `payloadcms/payload` repository at tag v3.90.2; it was not copied into this repo) (Node 24 alpine, corepack pnpm, `--frozen-lockfile`, `pnpm build`, `pnpm i18n:compile` is part of `build`), runner as uid 1000, `ARG APP_VERSION`, `CMD ["node","server.js"]`; `.dockerignore`.
-- `NEXT_PUBLIC_*` at runtime: the GA ID is already served by `/site-config.json` ([ADR-028](decisions/0028-website-chrome-runtime-config-and-consent.md)); check every remaining `NEXT_PUBLIC_SERVER_URL` read in client code and the `next.config.ts` image `remotePatterns` (build-time!) — the image must work for any host with only env vars ([ADR-013](decisions/0013-next-public-env-at-runtime.md)). Expect to switch `remotePatterns` to a runtime-safe approach or a custom image loader; record it.
-- **The build must not need MongoDB.** Today `pnpm build` connects to the database: `generateStaticParams` in `src/app/(frontend)/[slug]`, `news/[slug]`, `resources/[slug]`, `plugins/[slug]` and `builds/[slug]` queries Payload, and the build fails with `Failed to collect page data` when MongoDB is unreachable (verified 2026-11-24). A `docker build` has no database. Options: return `[]` during the build (pages render on first request and are cached by ISR, [ADR-029](decisions/0029-website-page-caching-and-revalidation.md)), or skip prerendering behind an env flag; record the choice in an ADR.
-- Measure and record the image size (target well under 400 MB).
+- [x] `next.config.ts`: `output: 'standalone'`; `outputFileTracingIncludes` for packages only the CLI needs.
+- [x] `cli.mjs` built with `esbuild` from `src/cli/index.ts`: our code bundled, npm packages external, **except `payload-oauth2`** (extensionless ESM imports; must be bundled). `esbuild` 0.28.2 is a dev dependency (ADR-016).
+- [x] New CLI subcommand `self-test`: imports the config, every task, the migrations and the production seed without connecting to MongoDB; runs as a `RUN` step so a missing traced package fails the build.
+- [x] Multi-stage `Dockerfile`, starting from the Website template's (`templates/website/Dockerfile` in the `payloadcms/payload` repository at tag v3.90.2) (Node 24 alpine, corepack pnpm, `--frozen-lockfile`, `pnpm build`, `pnpm i18n:compile` is part of `build`), runner as uid 1000, `ARG APP_VERSION`, `CMD ["node","server.js"]`; `.dockerignore`.
+- [x] `NEXT_PUBLIC_*` at runtime: GA ID via `/site-config.json` (dynamic `process.env` read). No client `NEXT_PUBLIC_SERVER_URL` read. Absolute images go through `/media-image` ([ADR-033](decisions/0033-image-build-without-database.md)).
+- [x] Production build returns no static params and does not prerender sitemaps, so `docker build` does not need MongoDB ([ADR-033](decisions/0033-image-build-without-database.md)).
+- [x] Measure the output. Docker is not installed here, so the image size itself is not recorded. A production build with MongoDB unreachable produced a standalone directory of about 85 MB plus a 15 MB `cli.mjs` and 5 MB of static assets, before the Alpine base. Target remains well under 400 MB. The owner runs `docker build` on the host and can note `docker image inspect` if the compressed image matters.
 - Trap: `pnpm build` rewrites `tsconfig.json` when `NEXT_DIST_DIR` is not `.next` (Next adds the dist types path); never commit that change.
-- Acceptance: `docker build` succeeds (if Docker is available in the container; otherwise ask the owner to build on the host), `node server.js`, `node cli.mjs migrate|seed|worker|self-test` all start with only env vars plus MongoDB/S3/SMTP access.
+- Acceptance: `docker build` succeeds on the host, then `node server.js` and `node cli.mjs migrate|seed|worker|self-test` start with only env vars plus MongoDB/S3/SMTP access. `self-test` is checked against the standalone output in this environment; the image itself is not.
 
 ### M6.5 Helm chart
 

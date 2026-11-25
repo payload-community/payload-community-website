@@ -4,9 +4,15 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Added
+
+- Container image (`Dockerfile`) for the web server, jobs worker and migrate/seed job: Next.js standalone output plus a bundled `cli.mjs` (`node cli.mjs migrate|seed|worker|self-test`). Build with `docker build --build-arg APP_VERSION=<version> .` on a host where Docker is installed.
+
 ### Changed
 
 - The public site name is **Payload Community** (wordmark, titles, emails, and seeded Home, About and privacy copy). "Payload CMS" stays where the text means the product. "portal" stays in ordinary descriptions and in technical identifiers such as the npm package name.
+- `pnpm build` no longer queries MongoDB. Detail pages and CMS pages render on first request and stay cached (`revalidate` / on-demand revalidation).
+- Uploaded images are optimized at request time for the deployment's file host (`/media-image`), instead of a host list frozen at build time. `NEXT_PUBLIC_SERVER_URL` and `NEXT_PUBLIC_GA_MEASUREMENT_ID` are read on the server at request time.
 
 ## [0.1.0-alpha.1] - 2026-11-24
 

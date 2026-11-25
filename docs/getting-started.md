@@ -65,7 +65,7 @@ Never commit `.env`. When you add a variable, add it to `.env.example` with a co
 
 ## Uploads and images
 
-Uploads (the `media` collection) are stored in Garage through `@payloadcms/storage-s3` under the `media/` key prefix. Payload saves the public URL (`${S3_PUBLIC_URL}/media/...`) and browsers load files directly from Garage's web endpoint. `next/image` is allowed to optimize images from `S3_PUBLIC_URL` (see `images.remotePatterns` in `next.config.ts`). In DDEV, `garage.plc.ddev.site` resolves to a private IP, which Next.js blocks by default, so `images.dangerouslyAllowLocalIP` is enabled in development only. A production build run locally (`pnpm build && pnpm start`) cannot optimize Garage images.
+Uploads (the `media` collection) are stored in Garage through `@payloadcms/storage-s3` under the `media/` key prefix. Payload saves the public URL (`${S3_PUBLIC_URL}/media/...`). `next/image` sends that absolute URL to `/media-image`, which resizes it only when the host matches the current `S3_PUBLIC_URL` or `NEXT_PUBLIC_SERVER_URL`. Relative URLs still go through `/_next/image`. In DDEV, Garage's hostname is a private IP; `/media-image` fetches it because it is the configured file host. The built-in optimizer's private-IP guard stays on outside development.
 
 ## Database, seeding and accounts
 

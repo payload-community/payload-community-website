@@ -3,6 +3,7 @@
 - Status: Accepted
 - Proposed: 2026-10-10
 - Accepted: 2026-10-11
+- Amended by: [ADR-033](0033-image-build-without-database.md) (production builds prerender no slugs)
 
 ## Context
 

@@ -13,8 +13,6 @@ import { useRouter } from 'next/navigation'
 
 import './index.scss'
 
-import { getClientSideURL } from '@/utilities/getURL'
-
 const baseClass = 'admin-bar'
 
 /** First URL segment → collection; anything else is a page. */
@@ -93,7 +91,9 @@ export const AdminBar: React.FC<{
             logo: 'text-white',
             user: 'text-white',
           }}
-          cmsURL={getClientSideURL()}
+          // Empty keeps links and /api/users/me on this host. A build-time server URL would be wrong
+          // for every other deployment of the same image (ADR-013).
+          cmsURL=""
           collectionSlug={collection}
           collectionLabels={{ plural: t(labels.plural), singular: t(labels.singular) }}
           logo={

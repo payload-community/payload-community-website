@@ -3,12 +3,42 @@ import { loadEnv } from 'payload/node'
 
 loadEnv()
 
-const COMMANDS = ['migrate', 'seed', 'seed-dev', 'worker'] as const
+const COMMANDS = ['migrate', 'seed', 'seed-dev', 'worker', 'self-test'] as const
 type Command = (typeof COMMANDS)[number]
 
 const usage = `Usage: cli <${COMMANDS.join('|')}>`
 
+/** Imports the config, tasks, migrations and seed without opening a database connection. */
+const selfTest = async () => {
+  const [{ default: config }, { jobs }, { migrations }, { seed }] = await Promise.all([
+    import('@payload-config'),
+    import('@/jobs'),
+    import('@/migrations'),
+    import('@/seed'),
+    import('@/jobs/syncPosts'),
+    import('@/jobs/syncPlugins'),
+    import('@/jobs/sendEmail'),
+    import('@/jobs/sendInvitation'),
+  ])
+  const loaded = await Promise.resolve(config)
+  const slugs = (jobs.tasks ?? []).map((task) => task.slug).sort()
+  const required = ['sendEmail', 'sendInvitation', 'syncPlugins', 'syncPosts']
+  const missing = required.filter((slug) => !slugs.includes(slug))
+  if (!loaded.collections?.length) throw new Error('self-test: payload config did not load')
+  if (missing.length > 0) throw new Error(`self-test: missing tasks ${missing.join(', ')}`)
+  if (!Array.isArray(migrations) || migrations.length === 0) {
+    throw new Error('self-test: migrations did not load')
+  }
+  if (typeof seed !== 'function') throw new Error('self-test: seed did not load')
+  console.log(`self-test ok tasks=${slugs.join(',')}`)
+}
+
 const main = async (command: Command) => {
+  if (command === 'self-test') {
+    await selfTest()
+    return
+  }
+
   if (command === 'worker') process.env.JOBS_AUTORUN = 'true'
 
   // Imported after loadEnv so the config sees the environment.

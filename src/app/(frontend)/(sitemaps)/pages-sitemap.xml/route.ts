@@ -37,6 +37,8 @@ const getPagesSitemap = unstable_cache(
   { revalidate: 3600, tags: ['pages-sitemap'] },
 )
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   return getServerSideSitemap(await getPagesSitemap())
 }

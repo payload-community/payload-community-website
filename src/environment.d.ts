@@ -30,6 +30,7 @@ declare global {
       EMAIL_FROM_NAME?: string
       JOBS_AUTORUN?: string
       LOG_LEVEL?: string
+      APP_VERSION?: string
     }
   }
 }

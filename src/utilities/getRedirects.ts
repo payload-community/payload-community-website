@@ -1,9 +1,10 @@
-import configPromise from '@payload-config'
-import { getPayload } from 'payload'
 import { unstable_cache } from 'next/cache'
 
+import { getPayloadClient } from '@/website/queries'
+import { postponeBuildPrerender } from '@/website/staticParams'
+
 export async function getRedirects(depth = 1) {
-  const payload = await getPayload({ config: configPromise })
+  const payload = await getPayloadClient()
 
   const { docs: redirects } = await payload.find({
     collection: 'redirects',
@@ -20,7 +21,12 @@ export async function getRedirects(depth = 1) {
  *
  * Cache all redirects together to avoid multiple fetches.
  */
-export const getCachedRedirects = () =>
-  unstable_cache(async () => getRedirects(), ['redirects'], {
+export const getCachedRedirects = () => {
+  const cached = unstable_cache(async () => getRedirects(), ['redirects'], {
     tags: ['redirects'],
   })
+  return async () => {
+    await postponeBuildPrerender()
+    return cached()
+  }
+}
