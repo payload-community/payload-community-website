@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file. From the release after 0.1.0-alpha.1, [release-it](https://github.com/release-it/release-it) generates each version from [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, and `perf`). The project uses [Semantic Versioning](https://semver.org/). Planned work is in [`spec/roadmap.md`](spec/roadmap.md).
 
+## [0.1.0-alpha.4](https://github.com/payload-community/payload-community-website/compare/v0.1.0-alpha.3...v0.1.0-alpha.4) (2026-11-25)
+
+### Fixed
+
+* keep test config out of the image build ([ecb7098](https://github.com/payload-community/payload-community-website/commit/ecb70986ed7bab2e278ebc6f3e9b9d5188f7556c))
+
 ## [0.1.0-alpha.3](https://github.com/payload-community/payload-community-website/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2026-11-25)
 
 ### Fixed
