@@ -12,12 +12,12 @@ export const Logo = ({ className }: Props) => {
     <span className={clsx('flex flex-col leading-tight font-semibold', className)}>
       <span className="text-lg">
         <Trans comment="First line of the site wordmark in the header and footer">
-          Payload CMS
+          Payload
         </Trans>
       </span>
       <span className="text-xs font-normal uppercase tracking-widest opacity-70">
-        <Trans comment="Second line of the site wordmark, below 'Payload CMS'">
-          Community Portal
+        <Trans comment="Second line of the site wordmark, below 'Payload'" context="Site wordmark">
+          Community
         </Trans>
       </span>
     </span>

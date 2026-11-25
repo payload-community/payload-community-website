@@ -1,4 +1,4 @@
-# Architecture — Payload CMS Community Portal
+# Architecture — Payload Community
 
 Status: **M0, reviewed 2026-10-10; implemented through M5 (release 0.1.0-alpha.1, 2026-11-24).** Parts marked *Planned (M6)* or *Planned (M7)* are designed but not built yet; the work is tracked in [`../roadmap.md`](../roadmap.md). [`../BRIEF.md`](../BRIEF.md) is the source of truth for *what* to build; this folder describes *how*; the reasons are in [`../decisions/`](../decisions/README.md) (referenced as `ADR-NNN`). Where the architecture deliberately extends the brief (detail pages, email registration, connecting providers), the ADR says so.
 
@@ -79,7 +79,7 @@ One small container image (Next.js standalone output + one bundled `cli.mjs`), t
 | `posts`, `categories` collections, `nestedDocsPlugin` (only used by categories) | **Replace** with brief's Posts + Post Media; remove Categories and nested-docs. |
 | `searchPlugin` + `/search` page | **Remove**; listings search with plain `where` queries on title/description. [ADR-015](../decisions/0015-template-features-removed.md) |
 | `redirectsPlugin` | Keep (`pages`, `posts`). Admin-only. |
-| `seoPlugin` | Keep (`pages`, `posts`); title suffix "Payload CMS Community Portal". |
+| `seoPlugin` | Keep (`pages`, `posts`); title suffix "Payload Community". |
 | `header` / `footer` globals | Keep; seeded menu; footer gets "not affiliated" note (Lingui string rendered by the component, not stored content) and "Cookie settings" link. |
 | `/posts/[slug]` rendering (PostHero, RichText, RelatedPosts) | Reuse at `/news/[slug]` for community posts. |
 | `/next/seed` endpoint + admin "Seed" button (`BeforeDashboard/SeedButton`) | Remove; replaced by `pnpm seed` / `pnpm seed:dev` scripts. |

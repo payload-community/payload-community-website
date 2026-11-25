@@ -4,9 +4,9 @@ import type { Metadata } from 'next'
 import { initLingui } from '@/lingui/server'
 import { getServerSideURL } from '@/utilities/getURL'
 import { mergeOpenGraph } from '@/utilities/mergeOpenGraph'
+import { SITE_NAME } from '@/website/siteName'
 
-// eslint-disable-next-line lingui/no-unlocalized-strings -- brand name, not translated
-export const SITE_NAME = 'Payload CMS Community Portal'
+export { SITE_NAME }
 
 export const SITE_DESCRIPTION = msg`News, plugins, resources and builds for Payload CMS, collected by the community.`
 

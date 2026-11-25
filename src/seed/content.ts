@@ -52,7 +52,7 @@ export const HOME_CTA = {
   url: '/sign-up',
 } as const
 
-export const HOME_INTRO = `# Payload CMS Community Portal
+export const HOME_INTRO = `# Payload Community
 
 News, resources, plugins and builds for [Payload](https://payloadcms.com), collected and shared by the community.`
 
@@ -66,14 +66,14 @@ export const COMMUNITY_MARKDOWN = `## Where to find the community
 
 Sign in with GitHub or Google to submit posts, resources, plugins and builds. Moderators review every submission before it is published.`
 
-export const ABOUT_MARKDOWN = `The Payload CMS Community Portal is a community project that collects news, learning resources, plugins and builds for Payload in one place.
+export const ABOUT_MARKDOWN = `The Payload Community is a community project that collects news, learning resources, plugins and builds for Payload in one place.
 
 It is not affiliated with or endorsed by Payload.
 
 The source code is on [GitHub](${REPOSITORY_URL}). Ideas and contributions are welcome.`
 
 /** Generated privacy policy (ADR-022); the operator reviews it before launch. */
-export const PRIVACY_MARKDOWN = `This policy explains which personal data the Payload CMS Community Portal processes and why.
+export const PRIVACY_MARKDOWN = `This policy explains which personal data the Payload Community processes and why.
 
 ## Data we collect
 

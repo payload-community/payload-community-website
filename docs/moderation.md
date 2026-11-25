@@ -1,6 +1,6 @@
 # Moderation guide
 
-For moderators and admins of the Payload CMS Community Portal. Everything happens in the admin panel at `/admin`.
+For moderators and admins of the Payload Community. Everything happens in the admin panel at `/admin`.
 
 ## How pre-moderation works
 

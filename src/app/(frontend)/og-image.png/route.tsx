@@ -17,9 +17,9 @@ export function GET() {
         width: '100%',
       }}
     >
-      <div style={{ fontSize: 96, fontWeight: 700, letterSpacing: '-2px' }}>Payload CMS</div>
+      <div style={{ fontSize: 96, fontWeight: 700, letterSpacing: '-2px' }}>Payload</div>
       <div style={{ color: '#a3a3a3', fontSize: 44, letterSpacing: '8px', marginTop: 12 }}>
-        COMMUNITY PORTAL
+        COMMUNITY
       </div>
     </div>,
     { height: 630, width: 1200 },

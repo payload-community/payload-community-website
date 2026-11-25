@@ -3,6 +3,7 @@
 - Status: Accepted
 - Proposed: 2026-10-10
 - Accepted: 2026-10-11
+- The wordmark text ("Payload CMS / Community Portal") is superseded by [ADR-032](0032-site-name.md). The rest of this decision stands.
 
 ## Context
 

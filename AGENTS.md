@@ -1,4 +1,4 @@
-# AGENTS.md — Payload CMS Community Portal
+# AGENTS.md — Payload Community
 
 Guidance for AI agents and developers working in this repository. Read `spec/README.md` first, then `spec/BRIEF.md` (what to build), `spec/architecture/` (how it is built) and `spec/decisions/` (why) before changing anything. What is left to build is in `spec/roadmap.md`.
 

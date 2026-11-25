@@ -4,6 +4,10 @@ All notable changes to this project are documented here. The format follows [Kee
 
 ## [Unreleased]
 
+### Changed
+
+- The public site name is **Payload Community** (wordmark, titles, emails, and seeded Home, About and privacy copy). "Payload CMS" stays where the text means the product. "portal" stays in ordinary descriptions and in technical identifiers such as the npm package name.
+
 ## [0.1.0-alpha.1] - 2026-11-24
 
 First alpha: the bootstrap milestones M0–M5. It runs from source (`pnpm build && pnpm start` plus `pnpm worker`, or `pnpm dev` in DDEV). Production artifacts (container image, Helm chart, OpenTelemetry, health endpoints, security headers) are not included yet; **do not expose this version to the internet** before roadmap M6.

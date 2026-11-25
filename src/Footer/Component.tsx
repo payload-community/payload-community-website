@@ -22,8 +22,8 @@ export async function Footer() {
           </Link>
           <p className="text-sm text-white/70" data-testid="not-affiliated-note">
             <Trans>
-              Payload CMS Community Portal is a community project. It is not affiliated with or
-              endorsed by Payload.
+              Payload Community is a community project. It is not affiliated with or endorsed by
+              Payload.
             </Trans>
           </p>
         </div>

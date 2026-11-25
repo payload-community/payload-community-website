@@ -40,7 +40,7 @@ export const HeaderClient: React.FC<HeaderClientProps> = ({ data }) => {
         <Link
           aria-label={t({
             comment: 'Accessible name of the site wordmark link in the header',
-            message: 'Payload CMS Community Portal, home',
+            message: 'Payload Community, home',
           })}
           href="/"
         >

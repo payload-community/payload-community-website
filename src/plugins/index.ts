@@ -8,10 +8,9 @@ import { oauthPlugins } from '@/auth/oauth'
 import { revalidateRedirects } from '@/hooks/revalidateRedirects'
 import type { Page, Post } from '@/payload-types'
 import { getServerSideURL } from '@/utilities/getURL'
+import { SITE_NAME } from '@/website/siteName'
 
 import { storagePlugin } from './storage'
-
-const SITE_NAME = 'Payload CMS Community Portal'
 
 const generateTitle: GenerateTitle<Post | Page> = ({ doc }) =>
   doc?.title ? `${doc.title} | ${SITE_NAME}` : SITE_NAME

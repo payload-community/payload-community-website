@@ -65,3 +65,4 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [029](0029-website-page-caching-and-revalidation.md) | Website page caching and revalidation (ISR fallback, guarded on-demand paths) | Accepted | 2026-10-10 |
 | [030](0030-runtime-sitemaps-robots-and-default-og-image.md) | Runtime sitemaps, robots.txt and default social image | Accepted | 2026-10-10 |
 | [031](0031-sync-implementation-details.md) | Sync implementation details (mapping fallbacks, freshness window, retries, trigger deduplication) | Accepted | 2026-10-11 |
+| [032](0032-site-name.md) | Public site name is Payload Community | Accepted | 2026-11-25 |

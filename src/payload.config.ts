@@ -23,6 +23,7 @@ import { moderationEndpoint } from './moderation/endpoint'
 import { syncEndpoint } from './sync/endpoint'
 import { plugins } from './plugins'
 import { getServerSideURL } from './utilities/getURL'
+import { SITE_NAME } from './website/siteName'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -44,7 +45,7 @@ export default buildConfig({
       baseDir: path.resolve(dirname),
     },
     meta: {
-      titleSuffix: ' | Payload CMS Community Portal',
+      titleSuffix: ` | ${SITE_NAME}`,
     },
     user: Users.slug,
     livePreview: {

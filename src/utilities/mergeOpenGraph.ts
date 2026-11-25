@@ -1,4 +1,7 @@
 import type { Metadata } from 'next'
+
+import { SITE_NAME } from '@/website/siteName'
+
 import { getServerSideURL } from './getURL'
 
 const defaultOpenGraph: Metadata['openGraph'] = {
@@ -10,8 +13,8 @@ const defaultOpenGraph: Metadata['openGraph'] = {
       width: 1200,
     },
   ],
-  siteName: 'Payload CMS Community Portal',
-  title: 'Payload CMS Community Portal',
+  siteName: SITE_NAME,
+  title: SITE_NAME,
 }
 
 export const mergeOpenGraph = (og?: Metadata['openGraph']): Metadata['openGraph'] => {

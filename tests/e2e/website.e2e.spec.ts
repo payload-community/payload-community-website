@@ -113,7 +113,7 @@ test.describe('Detail pages', () => {
     await expect(page.getByRole('heading', { level: 1 })).toHaveText(fixtures.post.title)
     await expect(page.getByTestId('post-detail')).toContainText('by Ada Admin')
     expect(await jsonLdTypes(page)).toContain('BlogPosting')
-    await expect(page).toHaveTitle(`${fixtures.post.title} | Payload CMS Community Portal`)
+    await expect(page).toHaveTitle(`${fixtures.post.title} | Payload Community`)
   })
 
   test('resource, plugin and build', async ({ page }) => {

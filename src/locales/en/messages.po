@@ -187,10 +187,11 @@ msgstr "Close"
 msgid "Community"
 msgstr "Community"
 
-#. Second line of the site wordmark, below 'Payload CMS'
+#. Second line of the site wordmark, below 'Payload'
 #: src/components/Logo/Logo.tsx
-msgid "Community Portal"
-msgstr "Community Portal"
+msgctxt "Site wordmark"
+msgid "Community"
+msgstr "Community"
 
 #. Button: link a GitHub/Google account, e.g. 'Connect GitHub'
 #: src/app/(frontend)/account/page.tsx
@@ -561,23 +562,23 @@ msgstr "Pagination"
 msgid "Password"
 msgstr "Password"
 
+#. First line of the site wordmark in the header and footer
+#: src/components/Logo/Logo.tsx
+msgid "Payload"
+msgstr "Payload"
+
 #: src/website/listing/copy.ts
 msgid "Payload builds that bundle unreleased fixes and features on top of an official release."
 msgstr "Payload builds that bundle unreleased fixes and features on top of an official release."
 
-#. First line of the site wordmark in the header and footer
-#: src/components/Logo/Logo.tsx
-msgid "Payload CMS"
-msgstr "Payload CMS"
-
 #: src/Footer/Component.tsx
-msgid "Payload CMS Community Portal is a community project. It is not affiliated with or endorsed by Payload."
-msgstr "Payload CMS Community Portal is a community project. It is not affiliated with or endorsed by Payload."
+msgid "Payload Community is a community project. It is not affiliated with or endorsed by Payload."
+msgstr "Payload Community is a community project. It is not affiliated with or endorsed by Payload."
 
 #. Accessible name of the site wordmark link in the header
 #: src/Header/Component.client.tsx
-msgid "Payload CMS Community Portal, home"
-msgstr "Payload CMS Community Portal, home"
+msgid "Payload Community, home"
+msgstr "Payload Community, home"
 
 #: src/website/listing/copy.ts
 msgid "Payload plugins found on GitHub and npm, with stars, versions and weekly downloads."

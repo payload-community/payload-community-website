@@ -1,4 +1,4 @@
-# Payload CMS Community Portal
+# Payload Community
 
 A community portal for [Payload CMS](https://payloadcms.com): news, resources, plugins and builds, with community submissions and moderation. Built on Payload 3 (Website template), Next.js and MongoDB. Not affiliated with Payload CMS, Inc.
 

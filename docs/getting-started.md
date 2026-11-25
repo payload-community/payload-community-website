@@ -122,7 +122,7 @@ In production, replace `https://plc.ddev.site` with the production `NEXT_PUBLIC_
 
 1. Open GitHub **Settings → Developer settings → OAuth Apps → New OAuth App** (or the same page in your organization's settings).
 2. Fill in:
-   - **Application name:** `Payload Community Portal (local)`
+   - **Application name:** `Payload Community (local)`
    - **Homepage URL:** `https://plc.ddev.site`
    - **Authorization callback URL:** `https://plc.ddev.site/api/users/oauth/github/callback`
    - Leave **Enable Device Flow** unchecked.
@@ -137,7 +137,7 @@ The portal requests the `read:user` and `user:email` scopes when users sign in; 
 2. **APIs & Services → OAuth consent screen** (Google Auth Platform): configure an **External** app with an app name and support email, and add the scopes `openid`, `email` and `profile`. While the app is in *Testing*, add your Google account under **Test users**.
 3. **APIs & Services → Credentials → Create credentials → OAuth client ID**:
    - **Application type:** Web application
-   - **Name:** `Payload Community Portal (local)`
+   - **Name:** `Payload Community (local)`
    - **Authorized JavaScript origins:** `https://plc.ddev.site`
    - **Authorized redirect URIs:** `https://plc.ddev.site/api/users/oauth/google/callback`
 4. Click **Create** and put the values into `.env` as `GOOGLE_CLIENT_ID` and `GOOGLE_CLIENT_SECRET`.
