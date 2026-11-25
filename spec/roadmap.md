@@ -15,7 +15,7 @@ Rules from [`AGENTS.md`](../AGENTS.md) apply unchanged (pnpm only, pinned Payloa
 | M0 plan, M1 scaffold, M2 auth/data model/roles, M3 moderation, M4 website, M5 sync jobs | Done |
 | Tests | 117 Vitest (unit + integration on `plc_test`), 22 Playwright E2E; all pass |
 | Runs | From source: `pnpm build && pnpm start` (web) plus `pnpm worker` (jobs), or `pnpm dev` |
-| Production artifacts | Dockerfile and bundled `cli.mjs` (M6.4). No Helm chart, OpenTelemetry, health endpoints or security headers yet |
+| Production artifacts | Dockerfile and bundled `cli.mjs` (M6.4). GitHub Actions can publish a GitHub release and push the image to GHCR ([ADR-034](decisions/0034-release-it-and-github-image-publish.md)). No Helm chart, OpenTelemetry, health endpoints or security headers yet |
 | Open decisions | None (Q26 and Q27 resolved 2026-11-24, [`open-questions.md`](open-questions.md)) |
 
 **An alpha deployment that is reachable from the internet must not happen before the M6 items marked "before public deployment" are done** (security headers, ingress rate limits, health probes).
@@ -133,7 +133,7 @@ To add:
 
 ## Release checklist (for every tag)
 
-1. `pnpm lint`, `pnpm typecheck`, `pnpm i18n:extract` (no missing strings, no catalog diff), `pnpm test`, `pnpm build`.
+1. `pnpm lint`, `pnpm typecheck`, `pnpm i18n:extract` (no missing strings, no catalog diff), `pnpm test`, `pnpm build`. The Release workflow repeats lint, extract and typecheck. It does not run `pnpm test` or `pnpm build` (the image build compiles the app).
 2. Manual OAuth check above (until it is automated or accepted as known risk).
-3. `CHANGELOG.md` entry, `package.json` version; the owner creates and pushes the annotated tag `vX.Y.Z[-pre]`.
-4. From M6 on: `helm lint` / `helm template` with both values files, image built and its size recorded.
+3. Dispatch the Release workflow on `main` ([`docs/releases.md`](../docs/releases.md)). release-it bumps `package.json`, prepends `CHANGELOG.md` from Conventional Commits, pushes `chore: release vX.Y.Z[-pre]` and the annotated tag, and opens the GitHub release. The image workflow then pushes `ghcr.io/payload-community/payload-community-website:<version>` (`linux/amd64`). Do not write the changelog entry by hand.
+4. From M6 on: `helm lint` / `helm template` with both values files, and record the published image size (`docker image inspect` or the GHCR package page).

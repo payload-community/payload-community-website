@@ -1,20 +1,10 @@
 # Changelog
 
-All notable changes to this project are documented here. The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/) and the project uses [Semantic Versioning](https://semver.org/) with pre-release tags. Planned work is in [`spec/roadmap.md`](spec/roadmap.md).
-
-## [Unreleased]
-
-### Added
-
-- Container image (`Dockerfile`) for the web server, jobs worker and migrate/seed job: Next.js standalone output plus a bundled `cli.mjs` (`node cli.mjs migrate|seed|worker|self-test`). Build with `docker build --build-arg APP_VERSION=<version> .` on a host where Docker is installed.
-
-### Changed
-
-- The public site name is **Payload Community** (wordmark, titles, emails, and seeded Home, About and privacy copy). "Payload CMS" stays where the text means the product. "portal" stays in ordinary descriptions and in technical identifiers such as the npm package name.
-- `pnpm build` no longer queries MongoDB. Detail pages and CMS pages render on first request and stay cached (`revalidate` / on-demand revalidation).
-- Uploaded images are optimized at request time for the deployment's file host (`/media-image`), instead of a host list frozen at build time. `NEXT_PUBLIC_SERVER_URL` and `NEXT_PUBLIC_GA_MEASUREMENT_ID` are read on the server at request time.
+All notable changes to this project are documented in this file. From the release after 0.1.0-alpha.1, [release-it](https://github.com/release-it/release-it) generates each version from [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, and `perf`). The project uses [Semantic Versioning](https://semver.org/). Planned work is in [`spec/roadmap.md`](spec/roadmap.md).
 
 ## [0.1.0-alpha.1] - 2026-11-24
+
+Hand-written notes for the first alpha (tag `v0.1.0-alpha.1`). Later versions are generated.
 
 First alpha: the bootstrap milestones M0–M5. It runs from source (`pnpm build && pnpm start` plus `pnpm worker`, or `pnpm dev` in DDEV). Production artifacts (container image, Helm chart, OpenTelemetry, health endpoints, security headers) are not included yet; **do not expose this version to the internet** before roadmap M6.
 
@@ -42,5 +32,4 @@ First alpha: the bootstrap milestones M0–M5. It runs from source (`pnpm build 
 - The plugin sync usually ends as `partial`: npm rate-limits a few weekly-download lookups per run, and those plugins keep their previous count.
 - The post sync picks up edits to older blog posts only when they share a page with a new post.
 
-[Unreleased]: https://github.com/payload-community/payload-community-website/compare/v0.1.0-alpha.1...HEAD
 [0.1.0-alpha.1]: https://github.com/payload-community/payload-community-website/releases/tag/v0.1.0-alpha.1

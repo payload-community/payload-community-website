@@ -67,3 +67,4 @@ ADR-001 to ADR-022 were written as a single log during M0 and keep their origina
 | [031](0031-sync-implementation-details.md) | Sync implementation details (mapping fallbacks, freshness window, retries, trigger deduplication) | Accepted | 2026-10-11 |
 | [032](0032-site-name.md) | Public site name is Payload Community | Accepted | 2026-11-25 |
 | [033](0033-image-build-without-database.md) | Image build without a database, and runtime image optimization | Proposed | 2026-11-25 |
+| [034](0034-release-it-and-github-image-publish.md) | Releases with release-it, changelog from commits, image on GHCR | Proposed | 2026-11-25 |

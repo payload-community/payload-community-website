@@ -4,6 +4,7 @@
 - Proposed: 2026-10-09
 - Accepted: 2026-10-10
 - Revised: 2026-11-25 — added `esbuild` 0.28.2 (direct devDependency for `cli.mjs`, [ADR-033](0033-image-build-without-database.md)). Earlier rows are unchanged.
+- Revised: 2026-11-25 — added `release-it` and `@release-it/conventional-changelog` ([ADR-034](0034-release-it-and-github-image-publish.md)).
 
 | Need | Library | Version | Weekly DL | Why |
 |---|---|---|---|---|
@@ -21,3 +22,4 @@
 | Sitemap | `next-sitemap` (template) | 4.2.3 (2023) | 0.5M | already in template; unmaintained since 2023 — replace with Next `sitemap.ts` if it breaks |
 | Lexical → text | `@payloadcms/richtext-lexical/plaintext` `convertLexicalToPlaintext` | 3.90.2 | official | |
 | CLI bundle | `esbuild` | 0.28.2 (2026-08-08) | ~300M | bundles `cli.mjs`; already chosen in [ADR-023](0023-small-image-with-bundled-cli-scripts.md), added as a direct devDependency in [ADR-033](0033-image-build-without-database.md) |
+| Releases | `release-it`, `@release-it/conventional-changelog` | 21.1.3 (2026-11-22) / 12.0.2 (2026-09-14) | 1.0M / 0.5M | version, changelog, tag and GitHub release; devDependency only ([ADR-034](0034-release-it-and-github-image-publish.md)) |

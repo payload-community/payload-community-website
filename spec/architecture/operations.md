@@ -97,7 +97,7 @@ Multi-stage `Dockerfile` (Node 24 alpine, `corepack` pnpm, `pnpm install --froze
 - Bundling note for M6: `payload-oauth2` 1.0.21 publishes ESM with extensionless relative imports, which plain Node cannot resolve (Next.js, `tsx` and Vitest with `server.deps.inline` can). `esbuild` must bundle it into `cli.mjs` instead of leaving it external.
 - `ARG APP_VERSION` → `ENV APP_VERSION` (OTel `service.version`).
 - Default `CMD ["node", "server.js"]`; the worker and the migrate Job override the command.
-- **Build:** `docker build --build-arg APP_VERSION=<version> .` Docker is not installed in the web container; build on the host. `node cli.mjs self-test` passed against a standalone production build produced here with MongoDB unreachable.
+- **Build:** `docker build --build-arg APP_VERSION=<version> .` Docker is not installed in the web container; build on the host, or let the Release workflow build and push `linux/amd64` to GHCR ([§18.4](#184-releases-and-the-container-registry)). `node cli.mjs self-test` passed against a standalone production build produced here with MongoDB unreachable.
 
 ### 18.2 Runtime configuration (env)
 Existing: `DATABASE_URI`, `PAYLOAD_SECRET`, `NEXT_PUBLIC_SERVER_URL`, `CRON_SECRET`, `GITHUB_TOKEN`, `GITHUB_CLIENT_ID/SECRET`, `GOOGLE_CLIENT_ID/SECRET`, `ADMIN_GITHUB_LOGINS`, `ADMIN_EMAILS`, `S3_*`, `SMTP_*`, `EMAIL_FROM_*`, `NEXT_PUBLIC_GA_MEASUREMENT_ID`, `OTEL_*`.
@@ -132,3 +132,12 @@ templates/
 Secrets: `existingSecret` name (keys: `DATABASE_URI`, `PAYLOAD_SECRET`, `CRON_SECRET`, `GITHUB_TOKEN`, `GITHUB_CLIENT_ID`, `GITHUB_CLIENT_SECRET`, `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `S3_ACCESS_KEY_ID`, `S3_SECRET_ACCESS_KEY`, `SMTP_USER`, `SMTP_PASS`, `OTEL_EXPORTER_OTLP_HEADERS`), loaded with `envFrom.secretRef`. Downward API env `K8S_POD_NAME`, `K8S_NAMESPACE_NAME`, `K8S_NODE_NAME` → `OTEL_RESOURCE_ATTRIBUTES=k8s.pod.name=$(K8S_POD_NAME),k8s.namespace.name=$(K8S_NAMESPACE_NAME),k8s.node.name=$(K8S_NODE_NAME),deployment.environment.name=…,service.version=<image tag>`.
 
 Validation: `helm lint` and `helm template` with defaults and `values-production.example.yaml` (no cluster).
+
+### 18.4 Releases and the container registry
+
+[ADR-034](../decisions/0034-release-it-and-github-image-publish.md). Operator steps: [`docs/releases.md`](../../docs/releases.md).
+
+- `release-it` (`.release-it.json`) bumps `package.json`, writes the next `CHANGELOG.md` section from Conventional Commits since the previous `v*` tag, commits `chore: release v${version}`, and pushes the annotated tag and the GitHub release. npm publish is off (`private: true`).
+- `.github/workflows/release.yml` is `workflow_dispatch` on `main`. It runs lint, `pnpm i18n:extract` (the tree must stay clean) and typecheck, then release-it. `pnpm test` stays outside CI (MongoDB, Garage, Mailpit).
+- `.github/workflows/image.yml` checks out that tag and pushes `ghcr.io/<github.repository>:<version>` (`linux/amd64`, `APP_VERSION` build-arg). A version with no pre-release id is also tagged `latest`. The Release workflow calls this after a real (not dry-run) release. A pushed `v*` tag or a manual run of this workflow rebuilds an existing version. A tag created by the Release workflow's `GITHUB_TOKEN` does not start a second run.
+- The image name for this repository is `ghcr.io/payload-community/payload-community-website`. Helm values will point at that name when the chart lands (M6.5).

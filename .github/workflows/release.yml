@@ -1,0 +1,145 @@
+# pnpm test needs MongoDB, Garage and Mailpit, which this workflow does not
+# provide. Run the release checklist locally before dispatching. See docs/releases.md.
+
+name: Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      increment:
+        description: Version increment (ignored when Version is set)
+        type: choice
+        options:
+          - auto
+          - patch
+          - minor
+          - major
+          - prerelease
+        default: auto
+      preRelease:
+        description: Pre-release identifier. Leave empty for a stable release.
+        type: string
+        default: alpha
+      version:
+        description: Exact version without a leading v (optional; overrides the increment)
+        type: string
+        required: false
+      dryRun:
+        description: Dry run (no commit, tag, GitHub release, or image)
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release
+  cancel-in-progress: false
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.publish.outputs.version }}
+      published: ${{ steps.publish.outputs.published }}
+    steps:
+      - name: Require main
+        if: github.ref != 'refs/heads/main'
+        run: |
+          echo "Run this workflow from the main branch." >&2
+          exit 1
+
+      - uses: actions/checkout@v5
+        with:
+          fetch-depth: 0
+
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 24
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm lint
+      - run: pnpm i18n:extract
+      - run: pnpm typecheck
+      - name: Refuse a dirty tree
+        run: git diff --exit-code
+
+      - name: Configure git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Ensure the current version is tagged
+        env:
+          RELEASE_DRY_RUN: ${{ inputs.dryRun }}
+        run: |
+          set -euo pipefail
+          version="$(node -p "require('./package.json').version")"
+          tag="v${version}"
+          if git rev-parse -q --verify "refs/tags/${tag}^{commit}" >/dev/null; then
+            exit 0
+          fi
+          expected="4df44697e0242794124a7846459a36a5f22acd52"
+          if [[ "${version}" == "0.1.0-alpha.1" ]] && git cat-file -e "${expected}^{commit}" 2>/dev/null; then
+            git tag -a "${tag}" "${expected}" -m "${tag}"
+            if [[ "${RELEASE_DRY_RUN}" != "true" ]]; then
+              git push origin "refs/tags/${tag}"
+            fi
+            exit 0
+          fi
+          echo "Tag ${tag} does not exist. Create it on the commit for ${version} before releasing." >&2
+          exit 1
+
+      - name: Publish the release
+        id: publish
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          RELEASE_INCREMENT: ${{ inputs.increment }}
+          RELEASE_PRERELEASE: ${{ inputs.preRelease }}
+          RELEASE_VERSION: ${{ inputs.version }}
+          RELEASE_DRY_RUN: ${{ inputs.dryRun }}
+          npm_config_package_lock: "false"
+        run: |
+          set -euo pipefail
+          if [[ -n "${RELEASE_VERSION}" && ! "${RELEASE_VERSION}" =~ ^[0-9]+\.[0-9]+\.[0-9]+(-[0-9A-Za-z.-]+)?$ ]]; then
+            echo "Version must be semver without a leading v." >&2
+            exit 1
+          fi
+          if [[ -n "${RELEASE_PRERELEASE}" && ! "${RELEASE_PRERELEASE}" =~ ^[0-9A-Za-z.-]+$ ]]; then
+            echo "Pre-release identifier must be letters, numbers, dots, or hyphens." >&2
+            exit 1
+          fi
+          args=(--ci)
+          if [[ -n "${RELEASE_VERSION}" ]]; then
+            args+=("${RELEASE_VERSION}")
+          elif [[ "${RELEASE_INCREMENT}" != "auto" ]]; then
+            args+=("${RELEASE_INCREMENT}")
+          fi
+          if [[ -n "${RELEASE_PRERELEASE}" ]]; then
+            args+=("--preRelease=${RELEASE_PRERELEASE}")
+          fi
+          if [[ "${RELEASE_DRY_RUN}" == "true" ]]; then
+            args+=(--dry-run)
+          fi
+          pnpm exec release-it "${args[@]}"
+          if [[ "${RELEASE_DRY_RUN}" == "true" ]]; then
+            echo "published=false" >> "${GITHUB_OUTPUT}"
+          else
+            echo "published=true" >> "${GITHUB_OUTPUT}"
+            echo "version=$(node -p "require('./package.json').version")" >> "${GITHUB_OUTPUT}"
+          fi
+
+  image:
+    needs: release
+    if: needs.release.outputs.published == 'true'
+    uses: ./.github/workflows/image.yml
+    with:
+      version: ${{ needs.release.outputs.version }}
+    permissions:
+      contents: read
+      packages: write
+      id-token: write
+      attestations: write

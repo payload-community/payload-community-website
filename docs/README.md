@@ -4,5 +4,6 @@
 - [Website development](development.md): translations, data access, caching, SEO and tests for the public website.
 - [Moderation guide](moderation.md): the moderation queue, actions and emails, for moderators and admins.
 - [Synchronization guide](sync.md): post and plugin sync schedules, manual runs and troubleshooting.
+- [Releases](releases.md): cutting a version, the generated changelog, and the container image on GHCR.
 
 Specifications and architecture decisions are in [`spec/`](../spec/README.md).

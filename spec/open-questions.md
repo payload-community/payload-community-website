@@ -11,6 +11,7 @@ None.
 | # | Question | Resolution |
 |---|---|---|
 | T7 | Container image build has no database, and file hosts differ per deployment | `generateStaticParams` returns nothing during `next build`; section sitemaps are not prerendered. Absolute uploads are resized by `/media-image` from the runtime `S3_PUBLIC_URL` and `NEXT_PUBLIC_SERVER_URL` ([ADR-033](decisions/0033-image-build-without-database.md)). |
+| T8 | How releases and the container image are published | `release-it` writes `CHANGELOG.md` from Conventional Commits. A manual GitHub Actions workflow on `main` opens the GitHub release and pushes `linux/amd64` to `ghcr.io/<repository>`. npm is not published. `pnpm test` stays a local checklist item ([ADR-034](decisions/0034-release-it-and-github-image-publish.md)). |
 
 ## Resolved (2026-11-24, alpha release)
 

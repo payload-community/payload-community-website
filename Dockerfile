@@ -2,6 +2,8 @@
 # Starting point: templates/website/Dockerfile in payloadcms/payload v3.90.2,
 # adjusted for Node 24, pnpm only, and user `node` (uid 1000).
 # Build: docker build --build-arg APP_VERSION=<version> -t payload-community .
+# Published releases push ghcr.io/payload-community/payload-community-website:<version>
+# (docs/releases.md).
 
 FROM node:24-alpine AS base
 RUN apk add --no-cache libc6-compat \

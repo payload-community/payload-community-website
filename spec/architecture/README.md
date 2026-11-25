@@ -44,7 +44,7 @@ The brief names the technologies; this table pins the concrete packages and thei
 | Observability | OpenTelemetry `@opentelemetry/sdk-node` + auto-instrumentations, OTLP/HTTP protobuf; pino logs | 0.223 / 0.81 | Grafana (Tempo, Mimir, Loki). *Planned (M6)*; pino JSON logs exist today |
 | SEO | `plugin-seo`, `next-sitemap`, JSON-LD | | |
 | Tests | Vitest, Playwright, `@axe-core/playwright` | | axe checks *Planned (M7)* |
-| Deployment | Docker (multi-stage), Kubernetes, Helm v4 chart | | [§18](operations.md#18-deployment-model); *Planned (M6)* |
+| Deployment | Docker (multi-stage), Kubernetes, Helm v4 chart | | [§18](operations.md#18-deployment-model). Image publish to GHCR is in place ([ADR-034](../decisions/0034-release-it-and-github-image-publish.md)); the Helm chart is *Planned (M6)* |
 
 ---
 

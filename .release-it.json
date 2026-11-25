@@ -1,0 +1,41 @@
+{
+  "git": {
+    "commitMessage": "chore: release v${version}",
+    "requireBranch": "main",
+    "requireCommits": true,
+    "tag": true,
+    "tagAnnotation": "v${version}",
+    "tagName": "v${version}"
+  },
+  "github": {
+    "release": true,
+    "releaseName": "v${version}"
+  },
+  "npm": {
+    "publish": false,
+    "versionArgs": ["--ignore-scripts"]
+  },
+  "plugins": {
+    "@release-it/conventional-changelog": {
+      "infile": "CHANGELOG.md",
+      "header": "# Changelog\n\nAll notable changes to this project are documented in this file. From the release after 0.1.0-alpha.1, [release-it](https://github.com/release-it/release-it) generates each version from [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, and `perf`). The project uses [Semantic Versioning](https://semver.org/). Planned work is in [`spec/roadmap.md`](spec/roadmap.md).",
+      "preset": {
+        "name": "conventionalcommits",
+        "types": [
+          { "type": "feat", "section": "Added", "effect": "bump" },
+          { "type": "feature", "section": "Added", "effect": "bump" },
+          { "type": "fix", "section": "Fixed", "effect": "bump" },
+          { "type": "perf", "section": "Changed", "effect": "bump" },
+          { "type": "revert", "section": "Reverts", "effect": "bump" },
+          { "type": "docs", "section": "Documentation", "effect": "hidden" },
+          { "type": "style", "section": "Styles", "effect": "hidden" },
+          { "type": "chore", "section": "Miscellaneous Chores", "effect": "hidden" },
+          { "type": "refactor", "section": "Code Refactoring", "effect": "hidden" },
+          { "type": "test", "section": "Tests", "effect": "hidden" },
+          { "type": "build", "section": "Build System", "effect": "hidden" },
+          { "type": "ci", "section": "Continuous Integration", "effect": "hidden" }
+        ]
+      }
+    }
+  }
+}
