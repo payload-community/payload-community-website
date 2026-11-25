@@ -12,7 +12,8 @@ RUN apk add --no-cache libc6-compat \
 
 FROM base AS deps
 WORKDIR /app
-COPY package.json pnpm-lock.yaml ./
+# pnpm-workspace.yaml holds allowBuilds. Without it, pnpm 11 refuses the install.
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
 RUN pnpm install --frozen-lockfile
 
 FROM base AS builder
