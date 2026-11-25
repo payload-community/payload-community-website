@@ -22,6 +22,10 @@ spec
 docs
 deploy
 tests
+# next build typechecks these, and they import ./tests, which is omitted above.
+playwright.config.ts
+vitest.setup.ts
+vitest.config.mts
 tsconfig.tsbuildinfo
 .vercel
 public/media
