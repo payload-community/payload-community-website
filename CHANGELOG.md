@@ -2,6 +2,12 @@
 
 All notable changes to this project are documented in this file. From the release after 0.1.0-alpha.1, [release-it](https://github.com/release-it/release-it) generates each version from [Conventional Commits](https://www.conventionalcommits.org/) (`feat`, `fix`, and `perf`). The project uses [Semantic Versioning](https://semver.org/). Planned work is in [`spec/roadmap.md`](spec/roadmap.md).
 
+## [0.1.0-alpha.3](https://github.com/payload-community/payload-community-website/compare/v0.1.0-alpha.2...v0.1.0-alpha.3) (2026-11-25)
+
+### Fixed
+
+* copy pnpm build approvals into the image install ([6af5555](https://github.com/payload-community/payload-community-website/commit/6af55553a3c781267e4b24055545236a79bb3b65))
+
 ## [0.1.0-alpha.2](https://github.com/payload-community/payload-community-website/compare/v0.1.0-alpha.1...v0.1.0-alpha.2) (2026-11-25)
 
 ### Added
